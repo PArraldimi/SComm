@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "420058158834",
+    "firebase_url": "https://scomm-dddbd.firebaseio.com",
+    "project_id": "scomm-dddbd",
+    "storage_bucket": "scomm-dddbd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:420058158834:android:112e076cdb91ccc617e26b",
+        "android_client_info": {
+          "package_name": "com.exo.scomm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "420058158834-m6o1i69rhrattlc6ikr8bi2porkdgp7c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.exo.scomm",
+            "certificate_hash": "d504097a0491c509e72638f2e7eed80afdbca383"
+          }
+        },
+        {
+          "client_id": "420058158834-b5kff6d0sns0bsp22qmpkd9ggk6bgto8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPFv3Sm1HHDAlp5J-c847aHQ99spel2gM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "420058158834-b5kff6d0sns0bsp22qmpkd9ggk6bgto8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

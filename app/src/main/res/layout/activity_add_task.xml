@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/task_title"
+        app:endIconMode="clear_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:padding="5dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ed_task_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/i_want_to"
+            android:fontFamily="@font/century"
+            android:textColor="#000000"
+            android:singleLine="true"
+            android:textCursorDrawable = "@null"
+            android:backgroundTint="@color/ocean_blue" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/task_title">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:id="@+id/relative01"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/textView01"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="30dp"
+                    android:fontFamily="@font/century"
+                    android:text="@string/task_description"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                    android:textColor="#000000" />
+
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_below="@id/textView01"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/scrollviewborder"
+                    tools:ignore="NestedScrolling">
+
+                    <EditText
+                        android:id="@+id/ed_task_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:backgroundTint="@color/ocean_blue"
+                        android:hint="Describe your task"
+                        android:fontFamily="@font/century"
+                        android:singleLine="false"
+                        android:textColor="#000000"
+                        android:textCursorDrawable="@null"
+                        android:textSize="20sp" />
+                </ScrollView>
+            </RelativeLayout>
+
+            <RadioGroup
+                android:id="@+id/radio_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <RadioButton
+                    android:id="@+id/private_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="30dp"
+                    android:text="Private"
+                    android:fontFamily="@font/century"
+                    android:checked="true"
+                    android:textSize="20sp"
+                    android:buttonTint="@color/cool_blue"
+                    android:onClick="onRadioButtonClicked"/>
+                <RadioButton
+                    android:id="@+id/public_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="30dp"
+                    android:text="Public"
+                    android:fontFamily="@font/century"
+                    android:textSize="20sp"
+                    android:buttonTint="@color/cool_blue"
+                    android:onClick="onRadioButtonClicked"/>
+            </RadioGroup>
+
+            <Button
+                android:id="@+id/btn_invite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginTop="-70dp"
+                android:background="@drawable/button_grey"
+                android:text="Invite"
+                android:textAllCaps="false"
+                tools:ignore="RtlHardcoded" />
+
+            <RelativeLayout
+                android:id="@+id/relative03"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp">
+                <TextView
+                    android:id="@+id/textView02"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/century"
+                    android:layout_marginStart="10dp"
+                    android:text="Remind Me At:"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                    android:textColor="#000000" />
+                <LinearLayout
+                    android:id="@+id/linear_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/textView02"
+                    android:layout_margin="20dp">
+
+                    <Button
+                        android:id="@+id/date_picker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pick Time"
+                        android:textAllCaps="false"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/button_grey"
+                        android:contentDescription="Select Date"
+                        android:layout_gravity ="center_horizontal"/>
+                    <TextView
+                        android:id="@+id/view_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/century"
+                        android:textSize="20sp"
+                        android:textColor="@color/cool_blue"
+                        />
+                </LinearLayout>
+
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/linear_time"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_below="@+id/linear_date"-->
+<!--                    android:layout_margin="20dp">-->
+
+<!--                    <Button-->
+<!--                        android:id="@+id/time_picker01"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="Pick Time"-->
+<!--                        android:textAllCaps="false"-->
+<!--                        android:layout_marginBottom="10dp"-->
+<!--                        android:contentDescription="Select Time"-->
+<!--                        android:layout_gravity ="center_horizontal"/>-->
+<!--                    <TextView-->
+<!--                        android:id="@+id/view_time"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:textSize="20sp"-->
+<!--                        android:textColor="@color/cool_blue" />-->
+<!--                </LinearLayout>-->
+
+
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/button_add_task"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_background"
+                android:imeOptions="actionSend"
+                android:layout_marginTop="30dp"
+                android:text="@string/add_task"
+                android:textStyle="bold"
+                android:fontFamily="@font/segoeui"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                tools:ignore="TextViewEdits"
+                android:layout_gravity="center_horizontal"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

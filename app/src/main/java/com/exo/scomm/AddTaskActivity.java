@@ -1,45 +1,33 @@
 package com.exo.scomm;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.kunzisoft.switchdatetime.SwitchDateTimeDialogFragment;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -55,7 +43,6 @@ public class AddTaskActivity extends AppCompatActivity {
     private EditText mDescription;
     private RadioButton mPrivate, mPublic;
     private RadioGroup type;
-    private String privateSelected, publicSelected;
     private DatabaseReference mDatabase;
     private FirebaseUser mCurrentUser;
     private StorageReference mStorage;
@@ -74,8 +61,9 @@ public class AddTaskActivity extends AppCompatActivity {
     private SwitchDateTimeDialogFragment dateTimeFragment;
 
     Calendar calendar = Calendar.getInstance();
+    String newTask_id;
+    private DatabaseReference mRootRef;
 
-    @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +83,7 @@ public class AddTaskActivity extends AppCompatActivity {
         mInvite.setVisibility(View.GONE);
 
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
+        mRootRef = FirebaseDatabase.getInstance().getReference();
         mStorage = FirebaseStorage.getInstance().getReference();
 
         CurrentDate = calendar.getTime();
@@ -106,11 +95,9 @@ public class AddTaskActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.private_radio) {
-                    privateSelected = "Private";
                     mInvite.setVisibility(View.GONE);
                 }
                 else if (checkedId == R.id.public_radio){
-                    publicSelected = "Public";
                     mInvite.setVisibility(View.VISIBLE);
                 }
             }
@@ -133,7 +120,11 @@ public class AddTaskActivity extends AppCompatActivity {
         mInvite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(AddTaskActivity.this, UsersActivity.class));
+                newTask_id = FirebaseDatabase.getInstance().getReference().child("Tasks").child(mCurrentUser.getUid()).push().getKey();
+                Intent usersIntent = new Intent(AddTaskActivity.this, UsersActivity.class);
+                usersIntent.putExtra("task_id", newTask_id);
+                startActivity(usersIntent);
+
             }
         });
 
@@ -258,9 +249,6 @@ public class AddTaskActivity extends AppCompatActivity {
 //
 //            return builder.create();
 //        }
-
-
-
     }
 
     @Override
@@ -271,39 +259,71 @@ public class AddTaskActivity extends AppCompatActivity {
     }
 
     private void addTask(String title, String description, String selectedItem, String date) {
-        Log.e("check", "description" + description);
-        Log.e("check", "title" + title);
-
 
         mProgressDialog.setTitle("Adding Task");
         mProgressDialog.setMessage("Please wait while we add the task");
         mProgressDialog.setCanceledOnTouchOutside(false);
         mProgressDialog.show();
         String userId = mCurrentUser.getUid();
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("Tasks").child(userId).push();
         HashMap<String, String> usermap = new HashMap<>();
-        usermap.put("task_owner", userId);
+        usermap.put("taskOwner", userId);
         usermap.put("title", title);
         usermap.put("description", description);
         usermap.put("type", selectedItem);
         usermap.put("date", date);
         Log.e("check", "usermap" + usermap);
-        mDatabase.setValue(usermap).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()){
-                    mProgressDialog.dismiss();
-                    Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(AddTaskActivity.this, HomeActivity.class));
-                    finish();
-                }
-                else{
-                    Log.e("Error", task.getResult().toString());
-                }
-            }
-        });
-    }
+        if (selectedItem.equals("Private")){
+            String task_id = FirebaseDatabase.getInstance().getReference().child("Tasks").child(userId).push().getKey();
+            assert task_id != null;
+            mDatabase= FirebaseDatabase.getInstance().getReference().child("Tasks").child(userId).child(task_id);
+            usermap.put("task_id", task_id);
+            mDatabase.setValue(usermap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()){
+                        mProgressDialog.dismiss();
 
+                        Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(AddTaskActivity.this, HomeActivity.class));
+                        finish();
+                    }
+                    else{
+                        Log.e("Error", task.getResult().toString());
+                    }
+                }
+            });
+        }else if(selectedItem .equals("Public")){
+
+//            DatabaseReference newNotificationRef = mRootRef.child("notifications").child(user_id).push();
+//            String newNotificationId = newNotificationRef.getKey();
+//
+//            HashMap<String, String> notificationData = new HashMap<>();
+//            notificationData.put("from", mCurrentUser.getUid());
+//            notificationData.put("type", "request");
+//            notificationData.put("task_id", newTask_id);
+//            notificationData.put("to_user", user_id);
+
+            usermap.put("task_id", newTask_id);
+            mDatabase= FirebaseDatabase.getInstance().getReference().child("Tasks").child(userId).child(newTask_id);
+
+            mDatabase.setValue(usermap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()){
+                        mProgressDialog.dismiss();
+
+                        Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(AddTaskActivity.this, HomeActivity.class));
+                        finish();
+                    }
+                    else{
+                        Log.e("Error", Objects.requireNonNull(task.getResult()).toString());
+                    }
+                }
+            });
+        }
+
+    }
 
     public void onRadioButtonClicked(View view) {
 

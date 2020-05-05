@@ -42,5 +42,6 @@
     <string name="update_account">Update Account</string>
     <string name="describe_your_task">Describe Your Task</string>
     <string name="task_description">Task Description:</string>
+    <string name="clear_all_notifications">Clear All Notifications</string>
 
 </resources>

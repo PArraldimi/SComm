@@ -1,16 +1,17 @@
 package com.exo.scomm;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.exo.scomm.model.TasksModel;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -85,9 +86,9 @@ public class TaskListActivity extends AppCompatActivity {
         {
             super(itemView);
 
-            mType = itemView.findViewById(R.id.type);
-            mTitle = itemView.findViewById(R.id.title);
-            mDate = itemView.findViewById(R.id.date_time);
+            mType = itemView.findViewById(R.id.task_item_type);
+            mTitle = itemView.findViewById(R.id.task_item_title);
+            mDate = itemView.findViewById(R.id.task_item_date_time);
         }
     }
 }

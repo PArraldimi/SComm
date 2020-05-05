@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="2dp"
+    android:elevation="8dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="10dp"
+    app:cardBackgroundColor="#7C97F5"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/upcoming_item_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Title"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="@font/century"
+            android:layout_margin="10dp"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+
+        <View
+            android:id="@+id/SplitLine_hor1"
+            android:layout_width="match_parent"
+            android:layout_height= "2dp"
+            android:layout_below="@+id/upcoming_item_title"
+            android:background="@color/grey_90" />
+
+        <TextView
+            android:id="@+id/upcoming_item_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/SplitLine_hor1"
+            android:layout_alignParentStart="true"
+            android:fontFamily="@font/century"
+            android:text="Type"
+            android:layout_marginStart="10dp"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="3dp"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/upcoming_item_date_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date/Time"
+            android:fontFamily="@font/century"
+            android:textStyle="italic"
+            android:layout_marginStart="5dp"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:layout_below="@+id/upcoming_item_type" />
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

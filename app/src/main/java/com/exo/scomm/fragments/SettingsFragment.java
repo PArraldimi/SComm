@@ -1,4 +1,4 @@
-package com.exo.scomm;
+package com.exo.scomm.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -14,8 +14,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
+import com.exo.scomm.MainActivity;
+import com.exo.scomm.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -138,7 +139,7 @@ public class SettingsFragment extends Fragment {
                         else
                         {
                             userName.setVisibility(View.VISIBLE);
-                            Toast.makeText(getContext(), "Please set & update your profile information...", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getContext(), "Please set & update your profile information...", Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -163,7 +164,7 @@ public class SettingsFragment extends Fragment {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                startActivity(new Intent(getContext(),MainActivity.class));
+                                startActivity(new Intent(getContext(), MainActivity.class));
                                 Toast.makeText(getContext(), "", Toast.LENGTH_SHORT).show();
                             } else {
                                 String message = task.getException().toString();
@@ -183,5 +184,6 @@ public class SettingsFragment extends Fragment {
         firebaseAuth.signOut();
         startActivity(new Intent(context, MainActivity.class));
     }
+
 
 }

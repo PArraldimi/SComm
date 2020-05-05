@@ -1,12 +1,14 @@
-package com.exo.scomm;
+package com.exo.scomm.model;
 
-public class Contacts {
-    public String username, image, status;
+public class User {
+    private String username;
+    private String image;
+    private String status;
 
-    public Contacts() {
+    public User() {
     }
 
-    public Contacts(String username, String image, String status) {
+    public User(String username, String image, String status) {
         this.username = username;
         this.image = image;
         this.status = status;

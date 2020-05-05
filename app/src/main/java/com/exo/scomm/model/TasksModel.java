@@ -1,19 +1,23 @@
-package com.exo.scomm;
-
-import java.util.Date;
+package com.exo.scomm.model;
 
 public class TasksModel {
-    public String date, description, task_owner, title, type;
+    private String date;
+    private String description;
+    private String taskOwner;
+    private String title;
+    private String type;
+    private String task_id;
 
-    public TasksModel(){
+    public TasksModel() {
     }
 
-    public TasksModel(String date, String description, String task_owner, String title, String type) {
+    public TasksModel(String date, String description, String taskOwner, String title, String type, String task_id) {
         this.date = date;
         this.description = description;
-        this.task_owner = task_owner;
+        this.taskOwner = taskOwner;
         this.title = title;
         this.type = type;
+        this.task_id = task_id;
     }
 
     public String getDate() {
@@ -32,12 +36,12 @@ public class TasksModel {
         this.description = description;
     }
 
-    public String getTask_owner() {
-        return task_owner;
+    public String getTaskOwner() {
+        return taskOwner;
     }
 
-    public void setTask_owner(String task_owner) {
-        this.task_owner = task_owner;
+    public void setTaskOwner(String taskOwner) {
+        this.taskOwner = taskOwner;
     }
 
     public String getTitle() {
@@ -54,6 +58,14 @@ public class TasksModel {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getTask_id() {
+        return task_id;
+    }
+
+    public void setTask_id(String task_id) {
+        this.task_id = task_id;
     }
 }
 

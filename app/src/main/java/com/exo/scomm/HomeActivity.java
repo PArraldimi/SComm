@@ -2,6 +2,7 @@ package com.exo.scomm;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -11,6 +12,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.exo.scomm.fragments.ChatroomFragment;
+import com.exo.scomm.fragments.HomeFragment;
+import com.exo.scomm.fragments.NotificationFragment;
+import com.exo.scomm.fragments.SettingsFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -20,14 +25,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 public class HomeActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore firebaseFirestore;
     private FloatingActionButton add_task;
-
+    BottomNavigationView mainbottomNav;
 
     private HomeFragment homeFragment;
     private NotificationFragment notificationFragment;
@@ -45,12 +49,10 @@ public class HomeActivity extends AppCompatActivity {
         firebaseFirestore = FirebaseFirestore.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
 
-
-
         if (firebaseAuth.getCurrentUser() != null) {
 
-            BottomNavigationView mainbottomNav = findViewById(R.id.bottom_nav);
-             add_task = findViewById(R.id.fab);
+            mainbottomNav = findViewById(R.id.bottom_nav);
+            add_task = findViewById(R.id.fab);
 
             // FRAGMENTS
             homeFragment = new HomeFragment();
@@ -58,53 +60,27 @@ public class HomeActivity extends AppCompatActivity {
             chatroomFragment = new ChatroomFragment();
             settingsFragment = new SettingsFragment();
 
-
-
-
             initializeFragment();
-
-
-
 
             mainbottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
                     switch (item.getItemId()) {
-
                         case R.id.bottom_home:
                             replaceFragment(homeFragment);
-                            
                             return true;
-
                         case R.id.bottom_notification:
-
                             replaceFragment(notificationFragment);
-                            
-
                             return true;
-
                         case R.id.bottom_Chatroom:
-
                             replaceFragment(chatroomFragment);
-                            
                             return true;
-
                         case R.id.bottom_settings:
-
                             replaceFragment(settingsFragment);
-//                            startActivity(new Intent(HomeActivity.this, SettingsActivity.class));
-
                             return true;
-
-                        
-
                         default:
                             return false;
-
-
                     }
-
                 }
             });
 
@@ -115,7 +91,18 @@ public class HomeActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
             });
+        }
+    }
 
+    @Override
+    public void onBackPressed() {
+        //get current tab index.
+        int index = mainbottomNav.getSelectedItemId();
+        //decide what to do
+        if (index == R.id.bottom_home) {
+            finish();
+        } else {
+            mainbottomNav.setSelectedItemId(R.id.bottom_home);
         }
 
 
@@ -131,11 +118,9 @@ public class HomeActivity extends AppCompatActivity {
         fragmentTransaction.add(R.id.main_container, settingsFragment);
 
 
-
         fragmentTransaction.hide(chatroomFragment);
         fragmentTransaction.hide(notificationFragment);
         fragmentTransaction.hide(settingsFragment);
-
 
 
         fragmentTransaction.commit();
@@ -143,10 +128,11 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-    private void replaceFragment(Fragment fragment){
+    private void replaceFragment(Fragment fragment) {
+
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        if(fragment == homeFragment){
+        if (fragment == homeFragment) {
 
 
             fragmentTransaction.hide(chatroomFragment);
@@ -156,7 +142,7 @@ public class HomeActivity extends AppCompatActivity {
 
         }
 
-        if(fragment == notificationFragment){
+        if (fragment == notificationFragment) {
 
             fragmentTransaction.hide(homeFragment);
             fragmentTransaction.hide(settingsFragment);
@@ -165,7 +151,7 @@ public class HomeActivity extends AppCompatActivity {
 
         }
 
-        if(fragment == chatroomFragment){
+        if (fragment == chatroomFragment) {
 
             fragmentTransaction.hide(homeFragment);
             fragmentTransaction.hide(settingsFragment);
@@ -175,13 +161,12 @@ public class HomeActivity extends AppCompatActivity {
 
         }
 
-        if(fragment == settingsFragment){
+        if (fragment == settingsFragment) {
 
             fragmentTransaction.hide(homeFragment);
             fragmentTransaction.hide(chatroomFragment);
             fragmentTransaction.hide(notificationFragment);
             fragmentTransaction.addToBackStack(null);
-
 
         }
 
@@ -199,10 +184,10 @@ public class HomeActivity extends AppCompatActivity {
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (currentUser == null){
+        if (currentUser == null) {
 
             sendToLogin();
-        }else {
+        } else {
 
             String current_user_id = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
 
@@ -210,9 +195,9 @@ public class HomeActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
-                    if (task.isSuccessful()){
+                    if (task.isSuccessful()) {
 
-                        if (!Objects.requireNonNull(task.getResult()).exists()){
+                        if (!Objects.requireNonNull(task.getResult()).exists()) {
 
                             Intent setupIntent = new Intent(HomeActivity.this, SetupActivity.class);
                             startActivity(setupIntent);
@@ -220,15 +205,17 @@ public class HomeActivity extends AppCompatActivity {
 
                         }
 
-                    }else {
+                    } else {
                         String errorMessage = Objects.requireNonNull(task.getException()).getMessage();
                         Toast.makeText(HomeActivity.this, "Error : " + errorMessage, Toast.LENGTH_LONG).show();
+                        Log.e("Error", errorMessage);
                     }
 
                 }
             });
         }
     }
+
 
     private void sendToLogin() {
 

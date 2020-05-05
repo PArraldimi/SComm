@@ -4,7 +4,7 @@
 
     <item
         android:title="Find Scommers"
-        android:id="@+id/find_scommers"
+        android:id="@+id/find_all_scommers"
         app:showAsAction="never">
     </item>
 

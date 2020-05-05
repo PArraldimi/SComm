@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/linear01"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/relative01"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp">
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:fontFamily="@font/century"
+                android:text="@string/my_schedule"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/text_view_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView1"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/century"
+                android:text="@string/date"
+                android:textSize="15sp" />
+
+        </RelativeLayout>
+        <!--        profile image layout here-->
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/relative02"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/linear01">
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:fontFamily="@font/century"
+            android:text="Task Details"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:layout_below="@+id/textView2"
+            android:maxHeight="160dp"
+            android:minHeight="140dp">
+
+            <include layout="@layout/task_detail_item" android:id="@+id/details_task_item"/>
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relative03"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/relative02">
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:fontFamily="@font/century"
+            android:text="My Companions"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+        <Button
+            android:id="@+id/details_invite"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="10dp"
+            android:paddingStart="10dp"
+            android:elevation="15dp"
+            android:layout_marginEnd="10dp"
+            android:paddingEnd="10dp"
+            android:backgroundTint="#fff"
+            android:background="@drawable/button_background"
+            android:layout_alignParentEnd="true"
+            android:text="Invite"
+            android:textAllCaps="false"
+            android:textSize="16sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView3"
+            android:elevation="70dp"
+            android:maxHeight="70dp"
+            android:minHeight="70dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/task_details_companions_recycler"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relative04"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/relative03">
+
+
+        <TextView
+            android:id="@+id/details_about_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:fontFamily="@font/century"
+            android:text="About Task"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/task_details_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="30dp"
+            android:padding="5dp"
+            android:src="@drawable/ic_edit_black" />
+
+
+        <TextView
+            android:id="@+id/details_task_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/details_about_task"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="35dp"
+            android:fontFamily="@font/century"
+            android:padding="5dp"
+            android:text="What we will be going to do"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/details_delete_task"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginStart="10dp"
+            android:layout_above="@+id/details_add_new_task"
+            android:layout_toEndOf="@+id/details_add_new_task"
+            android:text="Delete Task"
+            android:paddingStart="10dp"
+            android:elevation="15dp"
+            android:layout_marginEnd="10dp"
+            android:paddingEnd="10dp"
+            android:backgroundTint="#fff"
+            android:background="@drawable/button_background"
+            android:textAllCaps="false"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/details_add_new_task"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_marginStart="30dp"
+            android:paddingStart="20dp"
+            android:elevation="15dp"
+            android:paddingEnd="20dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginBottom="20dp"
+            android:backgroundTint="#fff"
+            android:background="@drawable/button_background"
+            android:layout_alignParentBottom="true"
+            android:text="Add New Task"
+            android:textAllCaps="false"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
+</RelativeLayout>
+
+
+

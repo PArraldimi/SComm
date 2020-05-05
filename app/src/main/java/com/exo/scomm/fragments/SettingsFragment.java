@@ -174,9 +174,6 @@ public class SettingsFragment extends Fragment {
                     });
         }
 
-
-
-
     }
 
     private void logout (Context context) {

@@ -98,14 +98,13 @@ public class HomeActivity extends AppCompatActivity {
     public void onBackPressed() {
         //get current tab index.
         int index = mainbottomNav.getSelectedItemId();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
         //decide what to do
-        if (index == R.id.bottom_home) {
+        if (index == R.id.bottom_home || user==null) {
             finish();
         } else {
             mainbottomNav.setSelectedItemId(R.id.bottom_home);
         }
-
-
     }
 
     private void initializeFragment() {

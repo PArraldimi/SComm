@@ -80,6 +80,7 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+
     @Override
     public void onStart() {
         super.onStart();

@@ -31,17 +31,18 @@
     <string name="change_number">Change Number</string>
     <string name="todo">TODO</string>
     <string name="enter_phone_number_below">Enter Phone Number Below</string>
-    <string name="_07xxxxxxxx">07xxxxxxxx</string>
+    <string name="_07xxxxxxxx">07…</string>
     <string name="send_code">Send Code</string>
-    <string name="i_want_to">I want to...</string>
+    <string name="i_want_to">I want to…</string>
     <string name="add_task">Add Task</string>
     <string name="account_setup">ACCOUNT SETUP</string>
     <string name="username">Username:</string>
     <string name="settings_fragment">Settings Fragment</string>
     <string name="log_out">Log Out</string>
-    <string name="update_account">Update Account</string>
     <string name="describe_your_task">Describe Your Task</string>
     <string name="task_description">Task Description:</string>
     <string name="clear_all_notifications">Clear All Notifications</string>
+    <string name="update_account">Update Account</string>
+    <string name="edit_username">Edit Username</string>
 
 </resources>

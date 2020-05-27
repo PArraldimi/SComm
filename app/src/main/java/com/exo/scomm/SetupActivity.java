@@ -226,7 +226,6 @@ public class SetupActivity extends AppCompatActivity {
         } else {
 
             download_uri = mainImageURI;
-
         }
 
         Map<String, String> userMap = new HashMap<>();

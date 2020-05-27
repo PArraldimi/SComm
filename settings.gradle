@@ -1,2 +1,7 @@
+<<<<<<< HEAD
 include ':app'
 rootProject.name='SComm'
+=======
+include ':app'
+rootProject.name='SComm'
+>>>>>>> latest-mark

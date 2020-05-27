@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <resources>
     <string name="app_name">SComm</string>
 
@@ -44,3 +45,51 @@
     <string name="task_description">Task Description:</string>
 
 </resources>
+=======
+<resources>
+    <string name="app_name">SComm</string>
+
+
+    <string-array name="country_code">
+
+        <item>+254</item>
+        <item>+255</item>
+        <item>+236</item>
+        <item>+265</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="date">Date</string>
+    <string name="my_schedule">My Schedule</string>
+    <string name="today_s_todo_list">Today\'s TODO List</string>
+    <string name="enter_code_sent_to_your_phone_below">Enter Code Sent to your phone Below:</string>
+    <string name="enter_code">enter code</string>
+    <string name="verify">Verify</string>
+    <string name="resend_code">Resend code</string>
+    <string name="change_number">Change Number</string>
+    <string name="todo">TODO</string>
+    <string name="enter_phone_number_below">Enter Phone Number Below</string>
+    <string name="_07xxxxxxxx">07xxxxxxxx</string>
+    <string name="send_code">Send Code</string>
+    <string name="i_want_to">I want to...</string>
+    <string name="add_task">Add Task</string>
+    <string name="account_setup">ACCOUNT SETUP</string>
+    <string name="username">Username:</string>
+    <string name="settings_fragment">Settings Fragment</string>
+    <string name="log_out">Log Out</string>
+    <string name="update_account">Update Account</string>
+    <string name="describe_your_task">Describe Your Task</string>
+    <string name="task_description">Task Description:</string>
+
+</resources>
+>>>>>>> latest-mark

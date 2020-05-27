@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:state_pressed="true" >
@@ -21,4 +22,29 @@
             <gradient android:angle="-90" android:startColor="#99CCFF" android:centerColor="#006994" android:endColor="#99CCFF" />
         </shape>
     </item>
+=======
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:state_pressed="true" >
+        <shape android:shape="rectangle"  >
+            <corners android:radius="20dip" />
+            <stroke android:width="1dip" android:color="#0077be" />
+            <gradient android:angle="-90" android:startColor="#0077be" android:endColor="#0077be"  />
+        </shape>
+    </item>
+    <item android:state_focused="true">
+        <shape android:shape="rectangle"  >
+            <corners android:radius="20dip" />
+            <stroke android:width="1dip" android:color="#006994" />
+            <solid android:color="#0077be"/>
+        </shape>
+    </item>
+    <item >
+        <shape android:shape="rectangle"  >
+            <corners android:radius="20dip" />
+            <stroke android:width="1dip" android:color="#0077be" />
+            <gradient android:angle="-90" android:startColor="#99CCFF" android:centerColor="#006994" android:endColor="#99CCFF" />
+        </shape>
+    </item>
+>>>>>>> latest-mark
 </selector>

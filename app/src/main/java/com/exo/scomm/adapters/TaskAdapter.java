@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package com.exo.scomm.adapters;
 
 import android.content.Context;
@@ -109,3 +110,65 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> 
 
 
 }
+=======
+package com.exo.scomm.adapters;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.exo.scomm.R;
+import com.exo.scomm.model.Task;
+
+import java.util.List;
+
+public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> {
+    private Context context;
+    private List<Task> taskList;
+
+    public TaskAdapter(Context context, List<Task> taskList) {
+        super();
+        this.context= context;
+        this.taskList=taskList;
+    }
+
+    @NonNull
+    @Override
+    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.task_item, parent, false);
+
+        return new MyViewHolder(itemView);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull TaskAdapter.MyViewHolder holder, int position) {
+        Task task = taskList.get(position);
+        holder.title.setText(task.getTitle());
+        holder.type.setText(task.getType());
+        holder.date.setText(task.getDate());
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return taskList.size();
+    }
+
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
+        public TextView title, date, type;
+
+        public MyViewHolder(View view) {
+            super(view);
+            title = (TextView) view.findViewById(R.id.title);
+            date = (TextView) view.findViewById(R.id.date_time);
+            type = (TextView) view.findViewById(R.id.type);
+        }
+    }
+}
+>>>>>>> latest-mark

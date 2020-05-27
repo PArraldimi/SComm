@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -20,4 +21,28 @@
         android:id="@+id/bottom_settings"
         android:icon="@drawable/ic_button_settings"
         android:title="Settings"/>
+=======
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/bottom_home"
+        android:icon="@drawable/ic_button_home"
+        android:title="Home"/>
+
+    <item
+        android:id="@+id/bottom_notification"
+        android:icon="@drawable/ic_button_notifications"
+        android:title="Notifications"/>
+
+    <item
+        android:id="@+id/bottom_Chatroom"
+        android:icon="@drawable/ic_button_chatroom"
+        android:title="Chatroom"/>
+
+    <item
+        android:id="@+id/bottom_settings"
+        android:icon="@drawable/ic_button_settings"
+        android:title="Settings"/>
+>>>>>>> latest-mark
 </menu>

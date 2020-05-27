@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -257,4 +258,265 @@
 
 <!--    </RelativeLayout>-->
 
+=======
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".OtpVerifyActivity">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="#ffffff">
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/logo"
+            android:contentDescription="@string/todo" />
+
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_below="@id/relativeLayout"
+        android:layout_marginTop="-50dp"
+        android:background="@drawable/waves"
+        android:contentDescription="@string/todo" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imageView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="70dp"
+        android:fontFamily="@font/century"
+        android:text="@string/enter_code_sent_to_your_phone_below"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        android:textColor="#000000" />
+
+
+    <EditText
+        android:id="@+id/editTextCode"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_below="@id/textView"
+        android:layout_centerHorizontal="true"
+        android:digits="0123456789"
+        android:inputType="number"
+        android:hint="@string/enter_code"
+        android:gravity="center_horizontal"
+        android:maxLength="6"
+        android:singleLine="true"
+        android:imeOptions="actionSend"
+        android:autofillHints="" />
+    <Button
+        android:id="@+id/buttonVerify"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextCode"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/button_background"
+        android:text="@string/verify"
+        android:textStyle="bold"
+        android:textAllCaps="false"
+        android:textColor="#ffffff" />
+
+    <TextView
+        android:id="@+id/resend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/century"
+        android:text="@string/resend_code"
+        android:textColor="@color/colorPrimary"
+        android:layout_below="@id/buttonVerify"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="30dp"
+        android:textStyle="italic" />
+
+    <TextView
+        android:id="@+id/change_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/century"
+        android:layout_below="@id/resend"
+        android:layout_alignParentEnd="true"
+        android:text="@string/change_number"
+        android:textColor="@color/colorPrimary"
+        android:layout_marginEnd="30dp"
+        android:textStyle="italic" />
+
+
+    <ProgressBar
+        android:id="@+id/progressbar"
+        android:layout_margin="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/buttonVerify"
+        android:layout_centerHorizontal="true"
+        android:indeterminateDrawable="@drawable/progress"/>
+
+</RelativeLayout>
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:background="@android:color/white"-->
+<!--    android:fitsSystemWindows="true"-->
+<!--    android:orientation="vertical"-->
+<!--    tools:context=".OtpVerifyActivity">-->
+
+<!--    <androidx.appcompat.widget.Toolbar-->
+<!--        android:id="@+id/toolbar"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="?attr/actionBarSize"-->
+<!--        app:contentInsetStartWithNavigation="0dp"-->
+<!--        app:layout_collapseMode="pin"-->
+<!--        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">-->
+
+<!--        <RelativeLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_centerInParent="true"-->
+<!--                android:fontFamily="@font/segoeuib"-->
+<!--                android:text="VERIFICATION"-->
+<!--                android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"-->
+<!--                android:textColor="@color/grey_80"-->
+<!--                tools:ignore="RtlHardcoded" />-->
+
+<!--        </RelativeLayout>-->
+
+<!--    </androidx.appcompat.widget.Toolbar>-->
+
+<!--    <RelativeLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent">-->
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_centerInParent="true"-->
+<!--            android:gravity="center"-->
+<!--            android:orientation="vertical">-->
+
+<!--            <ImageView-->
+<!--                android:layout_width="200dp"-->
+<!--                android:layout_height="200dp"-->
+<!--                android:src="@drawable/img_code_verification" />-->
+
+<!--            <TextView-->
+<!--                android:layout_width="280dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="@dimen/spacing_medium"-->
+<!--                android:fontFamily="@font/segoeui"-->
+<!--                android:gravity="center"-->
+<!--                android:text="OTP has been sent to you on your mobile phone. Please enter it below"-->
+<!--                android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"-->
+<!--                android:textColor="@color/grey_60" />-->
+
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="@dimen/spacing_xlarge"-->
+<!--                android:layout_marginBottom="@dimen/spacing_large"-->
+<!--                android:orientation="horizontal">-->
+
+
+<!--                <com.google.android.material.textfield.TextInputEditText-->
+<!--                    android:id="@+id/tiet6"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:gravity="center"-->
+<!--                    android:inputType="number"-->
+<!--                    android:maxLength="6"-->
+<!--                    android:maxLines="1"-->
+<!--                    android:singleLine="true"-->
+<!--                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"-->
+<!--                    android:textColor="@color/grey_90"-->
+<!--                    android:textStyle="bold" />-->
+
+<!--            </LinearLayout>-->
+
+<!--            <androidx.appcompat.widget.AppCompatButton-->
+<!--                android:id="@+id/verifybtn"-->
+<!--                style="@style/Widget.AppCompat.Button.Borderless"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:background="@drawable/button_background"-->
+<!--                android:gravity="center"-->
+<!--                android:text="Verify"-->
+<!--                android:textAllCaps="false"-->
+<!--                android:textColor="#707070"-->
+<!--                android:textStyle="bold" />-->
+
+<!--            <androidx.appcompat.widget.LinearLayoutCompat-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="start"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                android:orientation="horizontal">-->
+
+
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:fontFamily="@font/segoeui"-->
+<!--                    android:text="Didn't get the code? "-->
+<!--                    android:textColor="#707070" />-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:fontFamily="@font/segoeui"-->
+<!--                    android:text="Resend "-->
+<!--                    android:textColor="@color/colorPrimary"-->
+<!--                    android:textStyle="italic" />-->
+
+<!--            </androidx.appcompat.widget.LinearLayoutCompat>-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/change_number"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="end"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                android:fontFamily="@font/segoeui"-->
+<!--                android:text="Change Number  "-->
+<!--                android:textColor="@color/colorPrimary"-->
+<!--                android:textStyle="italic" />-->
+
+<!--            <ProgressBar-->
+<!--                android:id="@+id/progressbar"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_below="@id/verifybtn"-->
+<!--                android:layout_centerHorizontal="true"-->
+<!--                android:visibility="gone" />-->
+
+
+<!--        </LinearLayout>-->
+
+<!--    </RelativeLayout>-->
+
+>>>>>>> latest-mark
 <!--</LinearLayout>-->

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView android:id="@+id/card_view"
     android:layout_width="match_parent"
@@ -72,4 +73,80 @@
 
                 </RelativeLayout>
 
+=======
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:elevation="8dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="10dp"
+    app:cardBackgroundColor="#7C97F5"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:id="@+id/type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:fontFamily="@font/century"
+                        android:text="Type"
+                        android:layout_marginStart="10dp"
+                        android:textColor="#FFFFFF"
+                        android:layout_marginBottom="10dp"
+                        android:textSize="16sp" />
+                    <TextView
+                        android:id="@+id/title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/type"
+                        android:text="Title"
+                        android:fontFamily="@font/century"
+                        android:layout_margin="5dp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/date_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Date/Time"
+                        android:fontFamily="@font/century"
+                        android:textStyle="italic"
+                        android:layout_marginStart="5dp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:layout_below="@+id/title" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/date_time"
+                        android:background="#6988F3"
+                        android:padding="2dp">
+
+<!--                   Scommers to scommin here-->
+
+                        <TextView
+                            android:id="@+id/scommin"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="To Scommin"
+                            android:fontFamily="@font/century"
+                            android:layout_margin="5dp"
+                            android:textColor="#FFFFFF"
+                            android:textSize="13sp"
+                            android:gravity ="end|bottom" />
+
+    <!--                    #6988F3-->
+                    </LinearLayout>
+
+
+                </RelativeLayout>
+
+>>>>>>> latest-mark
             </androidx.cardview.widget.CardView>

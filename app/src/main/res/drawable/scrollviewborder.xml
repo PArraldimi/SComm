@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="utf-8"?>
 <shape
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -5,4 +6,13 @@
     <stroke
         android:width="2dp"
         android:color="#A9A9A9"/>
+=======
+<?xml version="1.0" encoding="utf-8"?>
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <stroke
+        android:width="2dp"
+        android:color="#A9A9A9"/>
+>>>>>>> latest-mark
 </shape>

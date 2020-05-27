@@ -13,5 +13,4 @@
         android:id="@+id/find_scommers"
         app:showAsAction="never">
     </item>
-
 </menu>

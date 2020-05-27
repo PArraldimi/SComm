@@ -98,6 +98,5 @@ public class UsersActivity extends AppCompatActivity {
             userStatus = mView.findViewById(R.id.single_user_status);
             profileImage = mView.findViewById(R.id.single_user_circle_image);
         }
-
     }
 }

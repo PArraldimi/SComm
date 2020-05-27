@@ -60,5 +60,4 @@
             android:theme="@style/Base.Theme.AppCompat" />
         <activity android:name=".MainActivity" />
     </application>
-
 </manifest>

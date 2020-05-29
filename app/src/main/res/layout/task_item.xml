@@ -2,12 +2,12 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_view"
-    android:layout_width="match_parent"
+    android:layout_width="200dp"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    android:elevation="8dp"
-    app:cardBackgroundColor="#7C97F5"
-    app:cardCornerRadius="10dp"
+    android:elevation="5dp"
+    app:cardBackgroundColor="#708DF3"
+    app:cardCornerRadius="20dp"
     app:cardElevation="10dp">
 
     <RelativeLayout
@@ -25,7 +25,7 @@
             android:fontFamily="@font/century"
             android:text="Type"
             android:textColor="#FFFFFF"
-            android:textSize="16sp" />
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/task_item_title"
@@ -36,7 +36,7 @@
             android:fontFamily="@font/century"
             android:text="Title"
             android:textColor="#FFFFFF"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/task_item_date_time"
@@ -47,14 +47,14 @@
             android:fontFamily="@font/century"
             android:text="Date/Time"
             android:textColor="#FFFFFF"
-            android:textSize="16sp"
+            android:textSize="12sp"
             android:textStyle="italic" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/task_item_date_time"
-            android:background="#6988F3"
+            android:background="#5377F3"
             android:padding="2dp">
 
             <!--                   Scommers to scommin here-->

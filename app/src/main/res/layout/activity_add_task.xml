@@ -20,6 +20,7 @@
             android:fontFamily="@font/century"
             android:textColor="#000000"
             android:singleLine="true"
+            android:maxLength="20"
             android:textCursorDrawable = "@null"
             android:backgroundTint="@color/ocean_blue" />
 

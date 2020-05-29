@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:elevation="30dp"
     android:layout_height="wrap_content">
     <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="50dp"
+        android:layout_width="80dp"
         android:src="@drawable/profile_image"
         android:id="@+id/companion_profile_image"
         android:layout_marginStart="2dp"
         android:layout_marginTop="2dp"
+        android:elevation="30dp"
         android:layout_centerHorizontal="true"
         android:layout_height="50dp"/>
     <TextView
@@ -16,7 +16,7 @@
         android:id="@+id/companion_user_name"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/companion_profile_image"
-        android:text="nandwere"
+        android:text="Me"
         android:layout_height="wrap_content"/>
 
 </RelativeLayout>

@@ -87,7 +87,7 @@ public class TaskDetails extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child(task_id).exists()) {
                     String taskOwner = Objects.requireNonNull(dataSnapshot.child(task_id).child("taskOwner").getValue()).toString();
-                    mRootRef.child("Users").child(taskOwner).addValueEventListener(new ValueEventListener() {
+                    mRootRef.child("Companions").child(taskOwner).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             String name = Objects.requireNonNull(dataSnapshot.child("username").getValue()).toString();
@@ -144,7 +144,7 @@ public class TaskDetails extends AppCompatActivity {
     }
 
     public void invite(View view) {
-        Intent usersIntent = new Intent(TaskDetails.this, AllUsersActivity.class);
+        Intent usersIntent = new Intent(TaskDetails.this, AllCompanions.class);
         usersIntent.putExtra("task_id", task_id);
         startActivity(usersIntent);
     }

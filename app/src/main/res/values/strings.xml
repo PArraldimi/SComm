@@ -49,5 +49,13 @@
     <string name="delete_task">Delete Task</string>
     <string name="add_new_task">Add New Task</string>
     <string name="about_task">About Task</string>
+    <string name="pick_time">Pick Time</string>
+    <string name="select_date">Select Date</string>
+    <string name="remind_me_at">Remind Me At:</string>
+    <string name="all_users">All Users</string>
+    <string name="send_invite_request">Send Invite Request</string>
+    <string name="send_friend_request">Send Friend Request</string>
+    <string name="decline_friend_request">Decline Friend Request</string>
+    <string name="scommers">Scommers</string>
 
 </resources>

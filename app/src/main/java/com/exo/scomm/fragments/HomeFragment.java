@@ -53,7 +53,7 @@ public class HomeFragment extends Fragment {
     private DatabaseReference taskRef;
     private DatabaseReference companionRef;
     private DatabaseReference usersRef;
-    private TextView textViewDate, mSeeAllUsers;
+    private TextView textViewDate;
     private String currentUid;
     private Calendar calendar;
 
@@ -70,7 +70,7 @@ public class HomeFragment extends Fragment {
         upComingRecycler = view.findViewById(R.id.upcoming_recycler);
         textViewDate = view.findViewById(R.id.text_view_date);
         List<TasksModel> taskList = new ArrayList<>();
-        mSeeAllUsers = view.findViewById(R.id.see_all_users);
+        TextView seeAllUsers = view.findViewById(R.id.see_all_users);
         todayTasks = new ArrayList<>();
         upcomingTasks = new ArrayList<>();
         companionsList = new ArrayList<>();
@@ -85,13 +85,15 @@ public class HomeFragment extends Fragment {
 
         getTaskCompanions();
 
-        mSeeAllUsers.setOnClickListener(new View.OnClickListener() {
+        seeAllUsers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent usersIntent = new Intent(getContext(), AllUsersActivity.class);
                 startActivity(usersIntent);
             }
         });
+
+        getAllTasks();
 
         return view;
     }
@@ -140,7 +142,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        getAllTasks();
         String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
         textViewDate.setText(currentDate);
         setUpLayouts();

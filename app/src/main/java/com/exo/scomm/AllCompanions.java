@@ -73,7 +73,6 @@ public class AllCompanions extends AppCompatActivity {
                 };
 
         companionsRecyclerView.setAdapter(adapter);
-
         adapter.startListening();
     }
 }

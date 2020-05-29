@@ -65,7 +65,7 @@
             android:background="@color/ocean_blue"
             android:layout_gravity="center_horizontal"
             android:layout_above="@+id/send_freReq_btn"
-            android:text="Send Invite Request"
+            android:text="@string/send_invite_request"
             android:id="@+id/send_inviteReq_btn"
             android:layout_height="35dp"/>
 
@@ -78,7 +78,7 @@
             android:background="@color/colorAccent"
             android:layout_gravity="center_horizontal"
             android:layout_above="@+id/decline_freReq_btn"
-            android:text="Send Friend Request"
+            android:text="@string/send_friend_request"
             android:id="@+id/send_freReq_btn"
             android:layout_height="35dp"/>
         <Button
@@ -90,7 +90,7 @@
             android:paddingStart="3dp"
             android:background="@color/colorPrimary"
             android:layout_gravity="center_horizontal"
-            android:text="Decline Friend Request"
+            android:text="@string/decline_friend_request"
             android:id="@+id/decline_freReq_btn"
             android:layout_height="35dp"/>
     </RelativeLayout>

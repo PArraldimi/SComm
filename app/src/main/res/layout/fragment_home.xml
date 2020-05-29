@@ -22,7 +22,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:id="@+id/see_all_users"
-                android:text="All Users"
+                android:text="@string/all_users"
                 android:clickable="true"
                 android:focusable="true"
                 android:textStyle="bold"

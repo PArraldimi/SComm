@@ -106,7 +106,8 @@
             android:paddingEnd="10dp"
             android:backgroundTint="#6E94F9"
             android:layout_alignParentEnd="true"
-            android:text="Invite"
+            android:text="@string/invite"
+            android:onClick="invite"
             android:textAllCaps="false"
             android:textSize="16sp" />
 
@@ -141,7 +142,7 @@
                 android:layout_marginBottom="7dp"
                 android:layout_marginStart="10dp"
                 android:fontFamily="@font/century"
-                android:text="About Task"
+                android:text="@string/about_task"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -178,8 +179,10 @@
             android:layout_marginStart="25dp"
             android:layout_above="@+id/details_add_new_task"
             android:layout_toEndOf="@+id/details_add_new_task"
-            android:text="Delete Task"
             android:textColor="#FFFFFF"
+            android:text="@string/delete_task"
+            android:onClick="deleteTask"
+
             android:paddingStart="10dp"
             android:elevation="20dp"
             android:paddingEnd="10dp"
@@ -211,8 +214,10 @@
             android:layout_marginEnd="40dp"
             android:layout_marginBottom="20dp"
             android:backgroundTint="#6E94F9"
+            android:onClick="addNewTask"
+            android:background="@drawable/button_background"
             android:layout_alignParentBottom="true"
-            android:text="Add New Task"
+            android:text="@string/add_new_task"
             android:textAllCaps="false"
             android:textSize="18sp" />
     </RelativeLayout>

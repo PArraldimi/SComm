@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.exo.scomm.R;
-import com.exo.scomm.UsersActivity;
+import com.exo.scomm.AllUsersActivity;
 import com.exo.scomm.model.User;
 import com.squareup.picasso.Picasso;
 
@@ -51,7 +51,7 @@ public class CompanionsTasksAdapter extends RecyclerView.Adapter<CompanionsTasks
             holder.button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mCtxt.startActivity(new Intent(mCtxt.getApplicationContext(), UsersActivity.class));
+                    mCtxt.startActivity(new Intent(mCtxt.getApplicationContext(), AllUsersActivity.class));
                 }
             });
         }else {

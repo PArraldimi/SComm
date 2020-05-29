@@ -19,6 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".AllCompanions"></activity>
 
         <service
             android:name=".FirebaseMessagingService"
@@ -27,6 +28,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
         <activity android:name=".Profile">
             <intent-filter>
                 <action android:name="com.example.letschat_TARGET_NOTIFICATION" />
@@ -34,7 +36,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".ChatActivity" >
+        <activity android:name=".ChatActivity">
             <intent-filter>
                 <action android:name="com.example.letschat_ACCEPT_TARGET_NOTIFICATION" />
 
@@ -44,7 +46,7 @@
         <activity android:name=".TaskDetails" />
         <activity android:name=".SettingsActivity" />
         <activity android:name=".TaskListActivity" />
-        <activity android:name=".UsersActivity" />
+        <activity android:name=".AllUsersActivity" />
         <activity android:name=".AddTaskActivity" />
         <activity android:name=".SetupActivity" />
         <activity android:name=".HomeActivity">
@@ -60,4 +62,5 @@
             android:theme="@style/Base.Theme.AppCompat" />
         <activity android:name=".MainActivity" />
     </application>
+
 </manifest>

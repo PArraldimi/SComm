@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:src="@drawable/profile_image_placeholder"
         android:id="@+id/profile_image_view"
-        android:layout_height="250dp"/>
+        android:layout_height="200dp"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:orientation="vertical"
@@ -39,12 +39,36 @@
         <TextView
             android:layout_width="wrap_content"
             android:gravity="center_horizontal"
+            android:text="Message"
+            android:layout_centerInParent="true"
+            android:layout_above="@+id/profile_friendsCount"
+            android:padding="15dp"
+            android:id="@+id/profile_friends_msg"
+            android:layout_marginBottom="5dp"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:gravity="center_horizontal"
             android:text="Total Friends"
             android:layout_centerInParent="true"
-            android:layout_above="@+id/send_freReq_btn"
+            android:layout_above="@+id/send_inviteReq_btn"
             android:id="@+id/profile_friendsCount"
             android:layout_marginBottom="5dp"
             android:layout_height="wrap_content"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="15dp"
+            android:paddingEnd="3dp"
+            android:paddingStart="3dp"
+            android:background="@color/ocean_blue"
+            android:layout_gravity="center_horizontal"
+            android:layout_above="@+id/send_freReq_btn"
+            android:text="Send Invite Request"
+            android:id="@+id/send_inviteReq_btn"
+            android:layout_height="35dp"/>
+
         <Button
             android:layout_width="wrap_content"
             android:layout_centerInParent="true"
@@ -54,7 +78,7 @@
             android:background="@color/colorAccent"
             android:layout_gravity="center_horizontal"
             android:layout_above="@+id/decline_freReq_btn"
-            android:text="Send Invitation"
+            android:text="Send Friend Request"
             android:id="@+id/send_freReq_btn"
             android:layout_height="35dp"/>
         <Button
@@ -66,7 +90,7 @@
             android:paddingStart="3dp"
             android:background="@color/colorPrimary"
             android:layout_gravity="center_horizontal"
-            android:text="Decline Invite"
+            android:text="Decline Friend Request"
             android:id="@+id/decline_freReq_btn"
             android:layout_height="35dp"/>
     </RelativeLayout>

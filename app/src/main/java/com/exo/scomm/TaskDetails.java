@@ -30,11 +30,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class TaskDetails extends AppCompatActivity {
-    Button deleteTask, invite, addNewTask;
+    Button deleteTask,  addNewTask;
     RecyclerView myTaskCompanions, todayTasks;
     TextView taskDesc, taskTitle, taskDate, taskType, taskCreator;
     ImageView editTask;
@@ -52,13 +51,12 @@ public class TaskDetails extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_t_ask_details);
         deleteTask = this.findViewById(R.id.details_delete_task);
-        invite = this.findViewById(R.id.details_invite);
         addNewTask = this.findViewById(R.id.details_add_new_task);
         taskDesc = this.findViewById(R.id.details_task_desc);
-        taskTitle = (TextView) findViewById(R.id.detail_task_item_title);
-        taskDate = (TextView) findViewById(R.id.detail_task_item_time);
-        taskType = (TextView) findViewById(R.id.detail_task_item_type);
-        taskCreator = (TextView) findViewById(R.id.details_task_item_creator);
+        taskTitle = findViewById(R.id.detail_task_item_title);
+        taskDate = findViewById(R.id.detail_task_item_time);
+        taskType = findViewById(R.id.detail_task_item_type);
+        taskCreator = findViewById(R.id.details_task_item_creator);
         myTaskCompanions = this.findViewById(R.id.task_details_companions_recycler);
         editTask = this.findViewById(R.id.task_details_edit);
 
@@ -75,7 +73,7 @@ public class TaskDetails extends AppCompatActivity {
 
         mCurrentUID = FirebaseAuth.getInstance().getUid();
         mRootRef = FirebaseDatabase.getInstance().getReference();
-        taskCompRef = mRootRef.child("task_companions").child(mCurrentUID);
+        taskCompRef = mRootRef.child("TaskCompanions").child(mCurrentUID);
         tasksModelList = DataHolder.getTodayTasks();
 
         linearLayoutManager = new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false);
@@ -88,7 +86,7 @@ public class TaskDetails extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child(task_id).exists()) {
-                    String taskOwner = dataSnapshot.child(task_id).child("taskOwner").getValue().toString();
+                    String taskOwner = Objects.requireNonNull(dataSnapshot.child(task_id).child("taskOwner").getValue()).toString();
                     mRootRef.child("Users").child(taskOwner).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -122,51 +120,6 @@ public class TaskDetails extends AppCompatActivity {
 
             }
         });
-
-
-        addNewTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(TaskDetails.this, AddTaskActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        deleteTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Map friendsMap = new HashMap();
-                friendsMap.put("task_companions/" + mCurrentUID + "/" + task_id + "/", null);
-                friendsMap.put("Tasks/" + mCurrentUID + "/" + task_id + "/", null);
-                mRootRef.updateChildren(friendsMap, new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                        if (databaseError == null) {
-                            Toast.makeText(TaskDetails.this, "Task deleted successfully", Toast.LENGTH_SHORT).show();
-                            taskType.setText("");
-                            taskDate.setText("");
-                            taskTitle.setText("");
-                            taskDesc.setText("");
-                        } else {
-                            String error = databaseError.getMessage();
-                            Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-            }
-        });
-
-
-        invite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent usersIntent = new Intent(TaskDetails.this, UsersActivity.class);
-                usersIntent.putExtra("task_id", task_id);
-                startActivity(usersIntent);
-            }
-        });
     }
 
     @Override
@@ -182,11 +135,43 @@ public class TaskDetails extends AppCompatActivity {
         myTaskCompanions.setAdapter(adapter);
         myTaskCompanions.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 lastScrollPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition();
             }
         });
         myTaskCompanions.scrollToPosition(lastScrollPosition);
+    }
+
+    public void invite(View view) {
+        Intent usersIntent = new Intent(TaskDetails.this, AllUsersActivity.class);
+        usersIntent.putExtra("task_id", task_id);
+        startActivity(usersIntent);
+    }
+
+    public void deleteTask(View view) {
+        HashMap<String, Object> friendsMap = new HashMap<>();
+        friendsMap.put("TaskCompanions/" + mCurrentUID + "/" + task_id + "/", null);
+        friendsMap.put("Tasks/" + mCurrentUID + "/" + task_id + "/", null);
+        mRootRef.updateChildren(friendsMap, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                if (databaseError == null) {
+                    Toast.makeText(TaskDetails.this, "Task deleted successfully", Toast.LENGTH_SHORT).show();
+                    taskType.setText("");
+                    taskDate.setText("");
+                    taskTitle.setText("");
+                    taskDesc.setText("");
+                } else {
+                    String error = databaseError.getMessage();
+                    Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    public void addNewTask(View view) {
+        Intent intent = new Intent(TaskDetails.this, AddTaskActivity.class);
+        startActivity(intent);
     }
 }

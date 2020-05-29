@@ -1,5 +1,6 @@
 package com.exo.scomm.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +13,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.exo.scomm.AddTaskActivity;
+import com.exo.scomm.AllCompanions;
+import com.exo.scomm.AllUsersActivity;
 import com.exo.scomm.R;
 import com.exo.scomm.adapters.CompanionsAdapter;
 import com.exo.scomm.adapters.DataHolder;
@@ -42,15 +46,16 @@ public class HomeFragment extends Fragment {
     private TodayTasksAdapter todayTasksAdapter;
     private CompanionsAdapter companionsAdapter;
     private UpComingTasksAdapter upComingTasksAdapter;
-    private List<TasksModel> taskList, todaysTasks, upcomingTasks;
+    private List<TasksModel> todayTasks;
+    private List<TasksModel> upcomingTasks;
     private List<User> companionsList;
-    private RecyclerView todaysTasksRecycler, companionsRecycler, upComingRecycler;
+    private RecyclerView todayTasksRecycler, companionsRecycler, upComingRecycler;
     private DatabaseReference taskRef;
-    private DatabaseReference companionRef, taskCompRef, mRootRef;
+    private DatabaseReference companionRef;
     private DatabaseReference usersRef;
-    TextView textViewDate;
+    private TextView textViewDate, mSeeAllUsers;
     private String currentUid;
-    Calendar calendar;
+    private Calendar calendar;
 
     public HomeFragment() {
     }
@@ -60,36 +65,38 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         calendar = Calendar.getInstance();
-        todaysTasksRecycler = view.findViewById(R.id.task_recycler);
+        todayTasksRecycler = view.findViewById(R.id.task_recycler);
         companionsRecycler = view.findViewById(R.id.companions_recycler);
         upComingRecycler = view.findViewById(R.id.upcoming_recycler);
         textViewDate = view.findViewById(R.id.text_view_date);
-        taskList = new ArrayList<>();
-        todaysTasks = new ArrayList<>();
+        List<TasksModel> taskList = new ArrayList<>();
+        mSeeAllUsers = view.findViewById(R.id.see_all_users);
+        todayTasks = new ArrayList<>();
         upcomingTasks = new ArrayList<>();
         companionsList = new ArrayList<>();
         FirebaseUser mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
         assert mCurrentUser != null;
         currentUid = mCurrentUser.getUid();
-        mRootRef = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
 
         taskRef = mRootRef.child("Tasks").child(currentUid);
         companionRef = FirebaseDatabase.getInstance().getReference().child("Companions");
-        taskCompRef = mRootRef.child("task_companions").child(currentUid);
+        DatabaseReference taskCompRef = mRootRef.child("TaskCompanions").child(currentUid);
+
+        getTaskCompanions();
+
+        mSeeAllUsers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent usersIntent = new Intent(getContext(), AllUsersActivity.class);
+                startActivity(usersIntent);
+            }
+        });
 
         return view;
     }
 
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        getAllTasks();
-        String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
-        textViewDate.setText(currentDate);
-        todaysTasksRecycler.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
-        upComingRecycler.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
-        companionsRecycler.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
+    private void getTaskCompanions() {
         companionRef.child(currentUid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -129,6 +136,22 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+    
+    @Override
+    public void onStart() {
+        super.onStart();
+        getAllTasks();
+        String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
+        textViewDate.setText(currentDate);
+        setUpLayouts();
+
+    }
+
+    private void setUpLayouts() {
+        todayTasksRecycler.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
+        upComingRecycler.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
+        companionsRecycler.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
+    }
 
     private void getAllTasks() {
         final String today = new Date().toString();
@@ -149,17 +172,17 @@ public class HomeFragment extends Fragment {
                         tasksModel.setTask_id(taskId);
                         String taskDate = task.getDate();
                         if (isSameDay(new Date(today), new Date(taskDate))) {
-                            todaysTasks.add(tasksModel);
+                            todayTasks.add(tasksModel);
                         } else if (new Date(taskDate).after(new Date(today))) {
                             upcomingTasks.add(tasksModel);
                         }
-                        todayTasksAdapter = new TodayTasksAdapter(getContext(), todaysTasks);
+                        todayTasksAdapter = new TodayTasksAdapter(getContext(), todayTasks);
                         upComingTasksAdapter = new UpComingTasksAdapter(getContext(), upcomingTasks);
-                        todaysTasksRecycler.setAdapter(todayTasksAdapter);
+                        todayTasksRecycler.setAdapter(todayTasksAdapter);
                         upComingRecycler.setAdapter(upComingTasksAdapter);
                     }
                 }
-                DataHolder.setTodayTasks(todaysTasks);
+                DataHolder.setTodayTasks(todayTasks);
             }
 
             @Override

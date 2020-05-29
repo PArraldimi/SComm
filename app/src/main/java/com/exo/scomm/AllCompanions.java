@@ -1,17 +1,15 @@
 package com.exo.scomm;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.exo.scomm.model.User;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -20,39 +18,34 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-
-
-public class UsersActivity extends AppCompatActivity {
-
-    private RecyclerView FindFriendsRecyclerList;
-    private DatabaseReference UsersRef;
+public class AllCompanions extends AppCompatActivity {
+    private RecyclerView companionsRecyclerView;
+    private DatabaseReference companionsRef;
     private String task_id;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_users);
+        setContentView(R.layout.activity_all_companions);
         task_id = getIntent().getStringExtra("task_id");
-        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        companionsRef = FirebaseDatabase.getInstance().getReference().child("Companions");
 
-        FindFriendsRecyclerList = findViewById(R.id.find_friends_recycler_list);
-        FindFriendsRecyclerList.setLayoutManager(new LinearLayoutManager(this));
+        companionsRecyclerView = findViewById(R.id.companions_recycler_view);
+        companionsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
         FirebaseRecyclerOptions<User> options =
                 new FirebaseRecyclerOptions.Builder<User>()
-                        .setQuery(UsersRef, User.class)
+                        .setQuery(companionsRef, User.class)
                         .build();
 
-        FirebaseRecyclerAdapter<User, FindFriendViewHolder> adapter =
-                new FirebaseRecyclerAdapter<User, FindFriendViewHolder>(options) {
+        FirebaseRecyclerAdapter<User, AllUsersActivity.FindFriendViewHolder> adapter =
+                new FirebaseRecyclerAdapter<User, AllUsersActivity.FindFriendViewHolder>(options) {
                     @Override
-                    protected void onBindViewHolder(@NonNull FindFriendViewHolder holder, int position, @NonNull final User model) {
+                    protected void onBindViewHolder(@NonNull AllUsersActivity.FindFriendViewHolder holder, int position, @NonNull final User model) {
                         holder.userName.setText(model.getUsername());
                         holder.userStatus.setText(model.getStatus());
                         Picasso.get().load(model.getImage()).placeholder(R.drawable.profile_image).into(holder.profileImage);
@@ -61,8 +54,7 @@ public class UsersActivity extends AppCompatActivity {
                         holder.mView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-
-                                Intent profileIntent = new Intent(UsersActivity.this, Profile.class);
+                                Intent profileIntent = new Intent(AllCompanions.this, Profile.class);
                                 profileIntent.putExtra("uid", uid);
                                 profileIntent.putExtra("task_id", task_id);
                                 profileIntent.putExtra("username", model.getUsername());
@@ -74,29 +66,14 @@ public class UsersActivity extends AppCompatActivity {
 
                     @NonNull
                     @Override
-                    public FindFriendViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                    public AllUsersActivity.FindFriendViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.users_display, parent, false);
-                        return new FindFriendViewHolder(view);
+                        return new AllUsersActivity.FindFriendViewHolder(view);
                     }
                 };
 
-        FindFriendsRecyclerList.setAdapter(adapter);
+        companionsRecyclerView.setAdapter(adapter);
 
         adapter.startListening();
-    }
-
-    public static class FindFriendViewHolder extends RecyclerView.ViewHolder {
-        View mView;
-        TextView userName, userStatus;
-        CircleImageView profileImage;
-
-        FindFriendViewHolder(@NonNull View itemView) {
-            super(itemView);
-            mView = itemView;
-
-            userName = mView.findViewById(R.id.single_user_tv_name);
-            userStatus = mView.findViewById(R.id.single_user_status);
-            profileImage = mView.findViewById(R.id.single_user_circle_image);
-        }
     }
 }

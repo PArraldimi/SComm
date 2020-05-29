@@ -44,5 +44,10 @@
     <string name="clear_all_notifications">Clear All Notifications</string>
     <string name="update_account">Update Account</string>
     <string name="edit_username">Edit Username</string>
+    <string name="invite_companions">Invite Companions</string>
+    <string name="invite">Invite</string>
+    <string name="delete_task">Delete Task</string>
+    <string name="add_new_task">Add New Task</string>
+    <string name="about_task">About Task</string>
 
 </resources>

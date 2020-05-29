@@ -4,11 +4,6 @@
     android:layout_height="match_parent"
     android:background="@drawable/color_gradient">
 
-    <!-- TODO: Update blank fragment layout -->
-    <LinearLayout
-        android:id="@+id/linear01"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
         <RelativeLayout
             android:id="@+id/relative01"
@@ -24,6 +19,17 @@
                 android:text="@string/my_schedule"
                 android:textColor="#FFFFFF"
                 android:textSize="25sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:id="@+id/see_all_users"
+                android:text="All Users"
+                android:clickable="true"
+                android:focusable="true"
+                android:textStyle="bold"
+                android:layout_margin="10dp"
+                android:layout_alignParentEnd="true"
+                android:fontFamily="@font/century"
+                android:layout_height="wrap_content"/>
 
             <TextView
                 android:id="@+id/text_view_date"
@@ -39,13 +45,12 @@
 
         </RelativeLayout>
         <!--        profile image layout here-->
-    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/relative02"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/linear01">
+        android:layout_below="@id/relative01">
         <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"

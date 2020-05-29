@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
@@ -27,6 +31,7 @@ public class AllUsersActivity extends AppCompatActivity {
 
     private RecyclerView FindFriendsRecyclerList;
     private DatabaseReference UsersRef;
+    List<User> selectedUsers = new ArrayList<>();
     private String task_id;
 
     @Override
@@ -69,6 +74,10 @@ public class AllUsersActivity extends AppCompatActivity {
 
                             }
                         });
+
+                        if (holder.selectCheck.isChecked()){
+                            selectedUsers.add(model);
+                        }
                     }
 
                     @NonNull
@@ -88,6 +97,7 @@ public class AllUsersActivity extends AppCompatActivity {
         View mView;
         TextView userName, userStatus;
         CircleImageView profileImage;
+        CheckBox selectCheck;
 
         FindFriendViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -96,6 +106,10 @@ public class AllUsersActivity extends AppCompatActivity {
             userName = mView.findViewById(R.id.single_user_tv_name);
             userStatus = mView.findViewById(R.id.single_user_status);
             profileImage = mView.findViewById(R.id.single_user_circle_image);
+            selectCheck = mView.findViewById(R.id.select_check);
+
         }
     }
+
+
 }

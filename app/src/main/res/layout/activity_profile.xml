@@ -36,25 +36,16 @@
             android:layout_centerHorizontal="true"
             android:id="@+id/profile_displayStatus"
             android:layout_height="wrap_content"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="Message"
-            android:layout_centerInParent="true"
-            android:layout_above="@+id/profile_friendsCount"
-            android:padding="15dp"
-            android:id="@+id/profile_friends_msg"
-            android:layout_marginBottom="5dp"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="Total Friends"
-            android:layout_centerInParent="true"
-            android:layout_above="@+id/send_inviteReq_btn"
-            android:id="@+id/profile_friendsCount"
-            android:layout_marginBottom="5dp"
-            android:layout_height="wrap_content"/>
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:gravity="center_horizontal"-->
+<!--            android:text="Total Friends"-->
+<!--            android:layout_centerInParent="true"-->
+<!--            android:layout_above="@+id/send_inviteReq"-->
+<!--            android:id="@+id/profile_friendsCount"-->
+<!--            android:layout_marginBottom="5dp"-->
+<!--            android:layout_height="wrap_content"/>-->
 
         <Button
             android:layout_width="wrap_content"
@@ -64,23 +55,11 @@
             android:paddingStart="3dp"
             android:background="@color/ocean_blue"
             android:layout_gravity="center_horizontal"
-            android:layout_above="@+id/send_freReq_btn"
+            android:layout_above="@+id/decline_inviteReq"
             android:text="@string/send_invite_request"
-            android:id="@+id/send_inviteReq_btn"
+            android:id="@+id/send_inviteReq"
             android:layout_height="35dp"/>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_marginTop="15dp"
-            android:paddingEnd="3dp"
-            android:paddingStart="3dp"
-            android:background="@color/colorAccent"
-            android:layout_gravity="center_horizontal"
-            android:layout_above="@+id/decline_freReq_btn"
-            android:text="@string/send_friend_request"
-            android:id="@+id/send_freReq_btn"
-            android:layout_height="35dp"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_alignParentBottom="true"
@@ -88,10 +67,10 @@
             android:layout_margin="15dp"
             android:paddingEnd="3dp"
             android:paddingStart="3dp"
-            android:background="@color/colorPrimary"
+            android:background="@color/colorAccent"
             android:layout_gravity="center_horizontal"
             android:text="@string/decline_friend_request"
-            android:id="@+id/decline_freReq_btn"
+            android:id="@+id/decline_inviteReq"
             android:layout_height="35dp"/>
     </RelativeLayout>
 

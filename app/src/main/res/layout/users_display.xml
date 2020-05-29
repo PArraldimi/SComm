@@ -3,14 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    android:background="#DAD7D7"
-    >
+    android:background="#DAD7D7">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:elevation="10dp"
+        android:layout_height="match_parent"
         android:background="#DAD7D7"
-        android:layout_height="match_parent">
+        android:elevation="10dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/single_user_circle_image"
@@ -39,9 +38,10 @@
         <ImageView
             android:id="@+id/single_user_online"
             android:layout_width="30dp"
+            android:layout_gravity="center_horizontal"
             android:layout_height="30dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerInParent="true"
+            android:layout_marginStart="5dp"
+            android:layout_toEndOf="@+id/single_user_tv_name"
             android:src="@drawable/online_toggle_image" />
 
         <TextView
@@ -56,6 +56,14 @@
             android:text="User Defaulty Status"
             android:textSize="16sp"
             android:textStyle="italic" />
+
+        <CheckBox
+            android:id="@+id/select_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerHorizontal="true" />
+
 
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

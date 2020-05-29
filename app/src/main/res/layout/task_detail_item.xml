@@ -3,10 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    android:elevation="8dp"
-    app:cardCornerRadius="10dp"
-    android:backgroundTint="#EDE2E2"
-    app:cardElevation="10dp"
+    android:elevation="5dp"
+    app:cardCornerRadius="15dp"
+    android:backgroundTint="#4E73F5"
+    app:cardElevation="15dp"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -17,16 +17,15 @@
             android:id="@+id/detail_task_item_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
-            android:padding="5dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="15dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:fontFamily="@font/century"
+            android:fontFamily="@font/arialregular"
             android:text="Title"
             android:layout_marginBottom="2dp"
-            android:textSize="16sp" />
+            android:textSize="20dp"
+            android:textColor="#FFFFFF"/>
         <TextView
             android:id="@+id/detail_task_item_time"
             android:layout_width="match_parent"
@@ -34,22 +33,22 @@
             android:layout_below="@+id/detail_task_item_title"
             android:text="Task Time"
             android:layout_marginBottom="2dp"
-            android:fontFamily="@font/century"
+            android:fontFamily="@font/arialregular"
             android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
-            android:textSize="20sp" />
+            android:textSize="14sp"
+            android:textColor="#F1F1F1"/>
         <TextView
             android:id="@+id/details_task_item_creator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Created By Paul"
             android:layout_marginBottom="2dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
-            android:fontFamily="@font/century"
+            android:layout_marginStart="15dp"
+            android:fontFamily="@font/arialregular"
             android:textStyle="italic"
             android:textSize="16sp"
-            android:layout_below="@+id/detail_task_item_time" />
+            android:layout_below="@+id/detail_task_item_time"
+            android:textColor="#FFFFFF"/>
         <TextView
             android:id="@+id/detail_task_item_type"
             android:layout_width="wrap_content"
@@ -57,12 +56,13 @@
             android:text="Public"
             android:padding="2dp"
             android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
+            android:layout_marginEnd="15dp"
             android:layout_marginBottom="10dp"
             android:fontFamily="@font/century"
             android:textStyle="italic"
             android:textSize="16sp"
             android:layout_alignParentEnd="true"
+            android:textColor="#FFFFFF"
             android:layout_below="@+id/details_task_item_creator" />
 
     </RelativeLayout>

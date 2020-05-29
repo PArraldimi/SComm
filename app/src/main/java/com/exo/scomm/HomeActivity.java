@@ -68,15 +68,19 @@ public class HomeActivity extends AppCompatActivity {
                     switch (item.getItemId()) {
                         case R.id.bottom_home:
                             replaceFragment(homeFragment);
+                            add_task.setVisibility(View.VISIBLE);
                             return true;
                         case R.id.bottom_notification:
                             replaceFragment(notificationFragment);
+                            add_task.setVisibility(View.GONE);
                             return true;
                         case R.id.bottom_Chatroom:
                             replaceFragment(chatroomFragment);
+                            add_task.setVisibility(View.GONE);
                             return true;
                         case R.id.bottom_settings:
                             replaceFragment(settingsFragment);
+                            add_task.setVisibility(View.GONE);
                             return true;
                         default:
                             return false;

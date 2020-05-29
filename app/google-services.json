@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "420058158834-dhqtlap3b7vlb48g44oqg5qjgorj35bj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.exo.scomm",
+            "certificate_hash": "07e4c8722e35c515375ff4c161b06ba88f1e5c99"
+          }
+        },
+        {
           "client_id": "420058158834-fkjq7aq53g96qgc7e4fk6rvrkelm0c6p.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

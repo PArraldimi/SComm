@@ -1,1 +1,1 @@
-# SCheduled Community
+# SComm(SCheduled Community)

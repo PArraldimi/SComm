@@ -1,16 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/user_container"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".TaskListActivity">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/find_friends_recycler_list"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="-4dp" />
+        android:layout_height="wrap_content"
+        android:id="@+id/relative002"
+        android:background="@color/colorPrimaryDark"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:layout_marginBottom="10dp">
 
+        <ImageView
+            android:id="@+id/back_button"
+            android:layout_width="50dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:background="@drawable/ic_chevron_left_black_24dp" />
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/arialregular"
+            android:text="Select Scommers"
+            android:layout_marginTop="5dp"
+            android:layout_toEndOf="@+id/back_button"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relative003"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/relative002"
+        android:layout_above="@+id/relative004"
+        android:layout_marginBottom="5dp">
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:layout_width="match_parent"
+            android:id="@+id/swipe_layout_recycler"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/find_friends_recycler_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/action_linear"
+                android:layout_below="@+id/chat_app_bar" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relative004"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimaryDark"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+        <ImageView
+            android:id="@+id/list_icon"
+            android:layout_width="40dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:background="@drawable/ic_chevron_list_black_24dp" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/arialregular"
+            android:text="List of selected Scommers"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
+            android:layout_toEndOf="@+id/list_icon"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"/>
+    </RelativeLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/relative004"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="-12dp"
+        android:src="@drawable/ic_check_black_24dp"
+        app:backgroundTint="@color/ocean_blue"
+        app:elevation="10dp"
+        app:fabSize="normal"
+        android:clickable="true" />
+</RelativeLayout>

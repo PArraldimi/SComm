@@ -85,10 +85,10 @@ public class ChatroomFragment extends Fragment {
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 final String userName = dataSnapshot.child("username").getValue().toString();
                                 String image = dataSnapshot.child("image").getValue().toString();
-                                if (dataSnapshot.hasChild("online")) {
-                                    String userOnline =  dataSnapshot.child("online").getValue().toString();
-                                    holder.setUserOnline(userOnline);
-                                }
+//                                if (dataSnapshot.hasChild("online")) {
+//                                    String userOnline =  dataSnapshot.child("online").getValue().toString();
+//                                    holder.setUserOnline(userOnline);
+//                                }
                                 holder.setName(userName);
                                 holder.setProfileImage(image);
                                 holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -160,14 +160,14 @@ public class ChatroomFragment extends Fragment {
             Picasso.get().load(image).placeholder(R.drawable.profile_image_placeholder).into(imageView);
         }
 
-        void setUserOnline(String online_status) {
-            ImageView userOnlineView = mView.findViewById(R.id.single_user_online);
-            if (online_status.equals("true")) {
-                userOnlineView.setVisibility(View.VISIBLE);
-            } else {
-                userOnlineView.setVisibility(View.INVISIBLE);
-            }
-        }
+//        void setUserOnline(String online_status) {
+//            ImageView userOnlineView = mView.findViewById(R.id.single_user_online);
+//            if (online_status.equals("true")) {
+//                userOnlineView.setVisibility(View.VISIBLE);
+//            } else {
+//                userOnlineView.setVisibility(View.INVISIBLE);
+//            }
+//        }
     }
 
 

@@ -2,44 +2,61 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#cccccc">
-
-    <include
-        android:id="@+id/chat_app_bar"
-        layout="@layout/app_bar_layout" />
-
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_layout_recycler"
+    android:background="@drawable/color_gradient">
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/action_clear_all"
-        android:layout_below="@+id/chat_app_bar">
+        android:layout_height="wrap_content"
+        android:id="@+id/relative001"
+        android:background="#80BBF8"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:layout_marginBottom="10dp">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/notification_recycler"
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/arialregular"
+            android:text="My Notification"
+            android:layout_marginStart="20dp"
+            android:layout_centerVertical="true"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/relative001"
+        android:layout_above="@+id/action_clear_all">
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:id="@+id/swipe_layout_recycler"
+            android:layout_height="match_parent">
 
-            android:layout_below="@+id/chat_app_bar" />
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/notification_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/action_linear"
+                android:layout_below="@+id/chat_app_bar" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </RelativeLayout>
     <Button
         android:id="@+id/action_clear_all"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#F8F7F7"
         android:layout_marginTop="4dp"
         android:layout_centerHorizontal="true"
         android:paddingEnd="25dp"
         android:paddingStart="25dp"
         android:text="@string/clear_all_notifications"
+        android:textColor="@color/white"
         android:textAllCaps="false"
-        android:background="@drawable/button_background"
+        android:backgroundTint="#6E94F9"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="4dp"
         android:orientation="horizontal">
-
-
     </Button>
 
 </RelativeLayout>

@@ -1,89 +1,166 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
-    tools:context=".fragments.SettingsFragment">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/color_gradient">
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/relative003"
+            android:background="#80BBF8"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:layout_marginBottom="10dp"
+            tools:ignore="MissingConstraints">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profile_image"
-        android:layout_width="140dp"
-        android:layout_height="140dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/profile_image"
-        app:civ_border_color="#FF000000"
-        app:civ_border_width="2dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/arialregular"
+                android:text="Account Settings"
+                android:layout_marginStart="20dp"
+                android:layout_centerVertical="true"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"/>
+    </RelativeLayout>
 
-    <EditText
-        android:id="@+id/edit_username"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_below="@id/profile_image"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="52dp"
-        android:layout_marginEnd="24dp"
-        android:background="@drawable/inputs_bordered"
-        android:drawableStart="@drawable/edit_profile"
-        android:hint="@string/edit_username"
-        android:inputType="text"
-        android:padding="6dp"
-        android:drawableEnd="@android:drawable/ic_menu_edit"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_image" />
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/relative003">
 
-    <Button
-        android:id="@+id/btn_update_profile"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_above="@+id/btn_logout"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_centerInParent="true"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="32dp"
-        android:background="@drawable/button_background"
-        android:text="@string/update_account"
-        android:textAllCaps="false"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_username" />
+        <RelativeLayout
+            android:id="@+id/relative004"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/btn_logout"
-        android:layout_width="match_parent"
-        android:layout_height="35dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center_horizontal"
-        android:elevation="10dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="64dp"
-        android:background="@drawable/button_background"
-        android:backgroundTint="@color/white"
-        android:text="@string/log_out"
-        android:textAllCaps="false"
-        android:textColor="#0077be"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_update_profile"
-        app:layout_constraintVertical_bias="0.978" />
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profile_image"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_margin="10dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/profile_image_placeholder" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/profile_image"
+                android:text="Username"
+                android:layout_marginTop="21dp"
+                android:textColor="@color/white"
+                android:textSize="25dp"
+                android:fontFamily="@font/arialregular" />
 
+            <TextView
+                android:id="@+id/account_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/profile_image"
+                android:layout_below="@+id/username"
+                android:text="phonenumber"
+                android:textColor="@color/white"
+                android:layout_marginTop="5dp"
+                android:textSize="15dp"
+                android:fontFamily="@font/arialregular" />
+        </RelativeLayout>
+
+        <EditText
+            android:id="@+id/edit_username"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_below="@id/relative004"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:background="@drawable/inputs_bordered"
+            android:drawableStart="@drawable/ic_account_circle_black_24dp"
+            android:hint="@string/edit_username"
+            android:inputType="text"
+            android:textColor="@color/white"
+            android:padding="2dp"
+            android:textAlignment="center" />
+        <Button
+            android:id="@+id/btn_update_profile"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_below="@+id/edit_username"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="#6E94F9"
+            android:elevation="20dp"
+            android:onClick="invite"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:text="Update"
+            android:textAllCaps="false"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/privacy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/edit_username"
+            android:layout_marginTop="50dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingStart="20dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="20dp"
+            android:background="#6BBBF8"
+            android:drawableStart="@drawable/ic_lock_black_24dp"
+            android:text="Privacy"
+            android:textAllCaps="false"
+            android:textColor="@color/ocean_blue"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="left"/>
+
+        <Button
+            android:id="@+id/details_delete_account"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/privacy"
+            android:layout_marginTop="10dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingStart="20dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="20dp"
+            android:background="#6BBBF8"
+            android:drawableStart="@drawable/ic_delete_black_24dp"
+            android:text="Delete my account"
+            android:textAllCaps="false"
+            android:textColor="@color/ocean_blue"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="left"/>
+
+        <Button
+            android:id="@+id/btn_logout"
+            android:layout_width="391dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/details_delete_account"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:background="#6BBBF8"
+            android:drawableStart="@drawable/ic_exit_to_app_black_24dp"
+            android:gravity="left"
+            android:paddingStart="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="Logout"
+            android:textAllCaps="false"
+            android:textColor="@color/ocean_blue"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+</RelativeLayout>

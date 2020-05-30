@@ -14,11 +14,11 @@
                 android:id="@+id/textView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:fontFamily="@font/century"
+                android:layout_marginStart="10dp"
+                android:fontFamily="@font/arialregular"
                 android:text="@string/my_schedule"
                 android:textColor="#FFFFFF"
-                android:textSize="25sp" />
+                android:textSize="27sp" />
             <TextView
                 android:layout_width="wrap_content"
                 android:id="@+id/see_all_users"
@@ -28,7 +28,7 @@
                 android:textStyle="bold"
                 android:layout_margin="10dp"
                 android:layout_alignParentEnd="true"
-                android:fontFamily="@font/century"
+                android:fontFamily="@font/arialregular"
                 android:layout_height="wrap_content"/>
 
             <TextView
@@ -38,10 +38,10 @@
                 android:layout_below="@+id/textView1"
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="5dp"
-                android:fontFamily="@font/century"
+                android:fontFamily="@font/arialregular"
                 android:text="@string/date"
                 android:textColor="#FFFFFF"
-                android:textSize="15sp" />
+                android:textSize="12sp" />
 
         </RelativeLayout>
         <!--        profile image layout here-->
@@ -55,9 +55,10 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
             android:layout_marginStart="35dp"
             android:layout_marginBottom="5dp"
-            android:fontFamily="@font/century"
+            android:fontFamily="@font/arialregular"
             android:text="@string/today_s_todo_list"
             android:textColor="#FFFFFF"
             android:textSize="20sp"
@@ -93,10 +94,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
-            android:fontFamily="@font/century"
+            android:fontFamily="@font/arialregular"
             android:text="Scommer(s)"
             android:textColor="#FFFFFF"
-            android:textSize="20sp"
+            android:textSize="15dp"
             android:textStyle="bold" />
 
         <RelativeLayout
@@ -128,7 +129,7 @@
             android:id="@+id/upcoming_header"
             android:layout_marginStart="35dp"
             android:text="Upcoming TODO List"
-            android:fontFamily="@font/century"
+            android:fontFamily="@font/arialregular"
             android:textColor="#FFFFFF"
             android:textSize="20sp"
             android:textStyle="bold" />

@@ -25,15 +25,15 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/linear01">
         <RelativeLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/relative"
-            android:layout_marginTop="10dp">
+            android:background="#80BBF8">
             <ImageView
                 android:id="@+id/back_button"
-                android:layout_width="70dp"
-                android:layout_height="60dp"
-                android:layout_marginTop="18dp"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
                 android:background="@drawable/ic_chevron_left_black_24dp" />
 
             <TextView
@@ -42,9 +42,9 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/arialregular"
                 android:text="Task Details"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="5dp"
                 android:layout_toEndOf="@+id/back_button"
-                android:textSize="25sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="#FFFFFF"/>
             <TextView
@@ -54,9 +54,10 @@
                 android:fontFamily="@font/arialregular"
                 android:text="Date"
                 android:layout_marginTop="2dp"
+                android:layout_marginBottom="5dp"
                 android:layout_toEndOf="@+id/back_button"
                 android:layout_below="@+id/textView2"
-                android:textSize="15sp"
+                android:textSize="12sp"
                 android:textColor="#F5F5F5"/>
         </RelativeLayout>
 
@@ -93,21 +94,21 @@
             android:layout_margin="8dp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"/>
+
         <Button
             android:id="@+id/details_invite"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginBottom="10dp"
-            android:paddingStart="10dp"
-            android:elevation="20dp"
-            android:layout_marginEnd="10dp"
-            android:paddingEnd="10dp"
-            android:backgroundTint="#6E94F9"
             android:layout_alignParentEnd="true"
-            android:text="@string/invite"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="#6E94F9"
+            android:elevation="20dp"
             android:onClick="invite"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:text="@string/invite"
             android:textAllCaps="false"
             android:textSize="16sp" />
 
@@ -176,17 +177,14 @@
             android:id="@+id/details_delete_task"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:layout_marginStart="25dp"
+            android:layout_marginEnd="30dp"
             android:layout_above="@+id/details_add_new_task"
             android:layout_toEndOf="@+id/details_add_new_task"
             android:textColor="#FFFFFF"
             android:text="@string/delete_task"
             android:onClick="deleteTask"
-
-            android:paddingStart="10dp"
             android:elevation="20dp"
-            android:paddingEnd="10dp"
-            android:backgroundTint="#EF1212"
+            android:backgroundTint="#FB545A"
             android:textAllCaps="false"
             android:textSize="16sp" />
 <!--        <Button-->
@@ -208,20 +206,17 @@
         <Button
             android:id="@+id/details_add_new_task"
             android:layout_width="wrap_content"
-            android:layout_height="45dp"
+            android:layout_height="40dp"
             android:layout_marginStart="30dp"
             android:elevation="20dp"
-            android:paddingStart="7dp"
-            android:paddingEnd="7dp"
             android:layout_marginEnd="40dp"
             android:layout_marginBottom="20dp"
             android:backgroundTint="#6E94F9"
             android:onClick="addNewTask"
-            android:background="@drawable/button_background"
             android:layout_alignParentBottom="true"
             android:text="@string/add_new_task"
             android:textAllCaps="false"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
     </RelativeLayout>
 
 </RelativeLayout>

@@ -93,7 +93,7 @@ public class SettingsFragment extends Fragment {
                 CropImage.activity()
                         .setGuidelines(CropImageView.Guidelines.ON)
                         .setAspectRatio(1,1)
-                        .start(Objects.requireNonNull(getContext()),SettingsFragment.this);
+                        .start(requireContext(),SettingsFragment.this);
             }
         });
 

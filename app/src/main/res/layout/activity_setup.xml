@@ -26,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:text="@string/account_setup"
-                android:fontFamily="@font/century"
+                android:fontFamily="@font/arialregular"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
                 android:textColor="#000000"
                 tools:ignore="RtlHardcoded" />
@@ -110,7 +110,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="35dp"
                             android:text="@string/username"
-                            android:fontFamily="@font/century"
+                            android:fontFamily="@font/arialregular"
                             android:textColor="#000000"
                             android:textSize="16sp"
                             android:textStyle="bold" />

@@ -5,19 +5,44 @@
     android:layout_height="match_parent"
     tools:context=".ChatActivity"
     android:background="@drawable/color_gradient">
-
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:id="@+id/swipe_layout_recycler"
-        android:layout_below="@+id/chat_app_bar"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:id="@+id/relative002"
+        android:background="#80BBF8"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:layout_marginBottom="10dp">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/messages_recycler"
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/arialregular"
+            android:text="ChatRoom"
+            android:layout_marginStart="20dp"
+            android:layout_centerVertical="true"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/relative002"
+        android:layout_marginBottom="5dp">
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/action_linear"
-            android:layout_below="@+id/chat_app_bar" />
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            android:id="@+id/swipe_layout_recycler"
+            android:layout_height="match_parent">
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/messages_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/action_linear"
+                android:layout_below="@+id/chat_app_bar" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </RelativeLayout>
 </RelativeLayout>

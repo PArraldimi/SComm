@@ -2,19 +2,20 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
-    android:background="#DAD7D7">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#FFFFFF"
+    app:cardElevation="0dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#DAD7D7"
-        android:elevation="10dp">
+        android:background="#FFFFFF"
+        android:elevation="0dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/single_user_circle_image"
-            android:layout_width="65dp"
-            android:layout_height="65dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
@@ -30,19 +31,9 @@
             android:layout_marginTop="5dp"
             android:layout_toEndOf="@+id/single_user_circle_image"
             android:padding="5dp"
-            android:text="Display Name"
             android:textColor="#000"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <ImageView
-            android:id="@+id/single_user_online"
-            android:layout_width="30dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_height="30dp"
-            android:layout_marginStart="5dp"
-            android:layout_toEndOf="@+id/single_user_tv_name"
-            android:src="@drawable/online_toggle_image" />
+            android:text="Username"
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/single_user_status"
@@ -54,14 +45,14 @@
             android:layout_toEndOf="@+id/single_user_circle_image"
             android:padding="5dp"
             android:text="User Defaulty Status"
-            android:textSize="16sp"
-            android:textStyle="italic" />
+            android:textSize="12sp" />
 
         <CheckBox
             android:id="@+id/select_check"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
             android:layout_centerHorizontal="true" />
 
 

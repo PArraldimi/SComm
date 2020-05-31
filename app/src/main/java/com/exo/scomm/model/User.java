@@ -4,6 +4,7 @@ public class User {
     private String username;
     private String image;
     private String status;
+    private String UID;
 
     public User() {
     }
@@ -36,5 +37,13 @@ public class User {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getUID() {
+        return UID;
+    }
+
+    public void setUID(String UID) {
+        this.UID = UID;
     }
 }

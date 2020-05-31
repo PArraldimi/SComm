@@ -3,6 +3,7 @@ package com.exo.scomm;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,12 +16,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.exo.scomm.adapters.CompanionsAdapter;
 import com.exo.scomm.adapters.CompanionsTasksAdapter;
 import com.exo.scomm.adapters.DataHolder;
 import com.exo.scomm.adapters.TodayTasksDetailsAdapter;
 import com.exo.scomm.model.TasksModel;
 import com.exo.scomm.model.User;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,14 +36,14 @@ import java.util.List;
 import java.util.Objects;
 
 public class TaskDetails extends AppCompatActivity {
-    Button deleteTask,  addNewTask;
+    Button deleteTask, addNewTask;
     RecyclerView myTaskCompanions, todayTasks;
     TextView taskDesc, taskTitle, taskDate, taskType, taskCreator;
     ImageView editTask;
     TodayTasksDetailsAdapter tasksDetailsAdapter;
     private String task_id, mCurrentUID, date, desc, title, type;
     private DatabaseReference taskCompRef;
-    private DatabaseReference mRootRef;
+    private DatabaseReference mRootRef, mUsersRef;
     private List<User> taskCompList = new ArrayList<>();
     private List<TasksModel> tasksModelList;
     int lastScrollPosition = 0;
@@ -73,6 +76,7 @@ public class TaskDetails extends AppCompatActivity {
 
         mCurrentUID = FirebaseAuth.getInstance().getUid();
         mRootRef = FirebaseDatabase.getInstance().getReference();
+        mUsersRef = mRootRef.child("Users");
         taskCompRef = mRootRef.child("TaskCompanions").child(mCurrentUID);
         tasksModelList = DataHolder.getTodayTasks();
 
@@ -85,33 +89,31 @@ public class TaskDetails extends AppCompatActivity {
         taskCompRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child(task_id).exists()) {
-                    String taskOwner = Objects.requireNonNull(dataSnapshot.child(task_id).child("taskOwner").getValue()).toString();
-                    mRootRef.child("Companions").child(taskOwner).addValueEventListener(new ValueEventListener() {
+                for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+                    final String uid = childDataSnapshot.getKey();
+                    Log.e("User Key", uid);
+                    mUsersRef.child(uid).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             String name = Objects.requireNonNull(dataSnapshot.child("username").getValue()).toString();
                             String status = Objects.requireNonNull(dataSnapshot.child("status").getValue()).toString();
                             String image = Objects.requireNonNull(dataSnapshot.child("image").getValue()).toString();
-                            taskCreator.setText(name);
+
                             User user = new User();
+                            user.setUID(uid);
                             user.setUsername(name);
                             user.setImage(image);
                             user.setStatus(status);
 
                             taskCompList.add(user);
                             populateTaskCompanionsAdapter(TaskDetails.this, taskCompList);
-
                         }
-
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
 
                         }
                     });
-                } else {
-                    Toast.makeText(TaskDetails.this, "You have no task companions yet", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -120,7 +122,10 @@ public class TaskDetails extends AppCompatActivity {
 
             }
         });
+
+
     }
+
 
     @Override
     protected void onStart() {

@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.exo.scomm.adapters.DataHolder;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -25,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +41,7 @@ public class OtpVerifyActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private EditText editText;
     private DatabaseReference mUsersDBRef;
+    String mPhone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +55,10 @@ public class OtpVerifyActivity extends AppCompatActivity {
         editText = findViewById(R.id.editTextCode);
         TextView changeNo = findViewById(R.id.change_number);
 
-        String phonenumber = getIntent().getStringExtra("phonenumber");
-        sendVerificationCode(phonenumber);
+        mPhone = getIntent().getStringExtra("phonenumber");
+        sendVerificationCode(mPhone);
+
+        DataHolder.setPhone(mPhone);
 
 
         findViewById(R.id.buttonVerify).setOnClickListener(new View.OnClickListener() {
@@ -100,19 +105,29 @@ public class OtpVerifyActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(InstanceIdResult instanceIdResult) {
                                     String mToken = instanceIdResult.getToken();
-                                    mUsersDBRef.child(uid).child("device_token").setValue(mToken).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    HashMap<String, String> hashMap = new HashMap<>();
+                                    hashMap.put("device_token", mToken);
+                                    hashMap.put("phone", mPhone);
+
+                                    mUsersDBRef.child(uid).setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()){
+                                            if (task.isSuccessful()) {
+                                                task.isSuccessful();
                                                 Intent intent = new Intent(OtpVerifyActivity.this, HomeActivity.class);
                                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                                 startActivity(intent);
-                                            }else {
+                                            }
+                                            else {
                                                 Toast.makeText(OtpVerifyActivity.this, "Cannot get device token. Please try again.",
                                                         Toast.LENGTH_SHORT).show();
                                             }
                                         }
                                     });
+
+
+
+
                                 }
                             });
 

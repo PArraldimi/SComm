@@ -3,46 +3,89 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ChatActivity"
-    android:background="@drawable/color_gradient">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#cccccc"
+    tools:context=".ChatActivity">
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/relative002"
+        android:id="@+id/toolbar_layout"
         android:background="#80BBF8"
-        android:paddingBottom="8dp"
-        android:paddingTop="8dp"
-        android:layout_marginBottom="10dp">
+        android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/custom_title_bar_user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/arialregular"
-            android:text="ChatRoom"
-            android:layout_marginStart="20dp"
-            android:layout_centerVertical="true"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"/>
+            android:textSize="20sp" />
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/chat_profile_image"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="5dp"
+            android:layout_marginTop="1dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/profile_image"
+            app:civ_border_color="#FF000000"
+            app:civ_border_width=".5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/custom_title_bar_last_seen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/custom_title_bar_user_name"
+            android:text="The Last Seen"
+            android:textSize="12sp" />
     </RelativeLayout>
 
-    <RelativeLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_layout_recycler"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/relative002"
-        android:layout_marginBottom="5dp">
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:layout_width="match_parent"
-            android:id="@+id/swipe_layout_recycler"
-            android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_above="@+id/action_linear"
+        android:layout_below="@+id/toolbar_layout">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/messages_recycler"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_above="@+id/action_linear"
-                android:layout_below="@+id/chat_app_bar" />
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-    </RelativeLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/messages_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/action_linear"
+            android:layout_below="@+id/chat_app_bar" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <LinearLayout
+        android:id="@+id/action_linear"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="2dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/chat_message_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:background="#fff"
+            android:hint="@string/type_message"
+            android:paddingStart="10dp"
+            android:paddingEnd="12dp" />
+
+        <ImageButton
+            android:id="@+id/chat_send_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="3dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1"
+            android:background="#fff"
+            android:padding="2dp"
+            android:src="@drawable/baseline_send_black" />
+
+    </LinearLayout>
+
 </RelativeLayout>

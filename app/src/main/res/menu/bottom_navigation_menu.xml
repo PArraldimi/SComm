@@ -4,20 +4,20 @@
     <item
         android:id="@+id/bottom_home"
         android:icon="@drawable/ic_button_home"
-        android:title="Home"/>
+        android:title="@string/home"/>
 
     <item
         android:id="@+id/bottom_notification"
         android:icon="@drawable/ic_button_notifications"
-        android:title="Notifications"/>
+        android:title="@string/notifications"/>
 
     <item
-        android:id="@+id/bottom_Chatroom"
+        android:id="@+id/bottom_chat_room"
         android:icon="@drawable/ic_button_chatroom"
-        android:title="Chatroom"/>
+        android:title="@string/chatroom"/>
 
     <item
         android:id="@+id/bottom_settings"
         android:icon="@drawable/ic_button_settings"
-        android:title="Settings"/>
+        android:title="@string/settings"/>
 </menu>

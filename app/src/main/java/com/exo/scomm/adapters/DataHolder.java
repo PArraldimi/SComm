@@ -6,6 +6,7 @@ import com.exo.scomm.model.User;
 import java.util.List;
 
 public class DataHolder {
+    private static String UID;
     private static String taskId;
     private static TasksModel task;
     private static String phone;
@@ -59,5 +60,13 @@ public class DataHolder {
 
     public static void setTask(TasksModel task) {
         DataHolder.task = task;
+    }
+
+    public static String getUID() {
+        return UID;
+    }
+
+    public static void setUID(String UID) {
+        DataHolder.UID = UID;
     }
 }

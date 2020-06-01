@@ -84,7 +84,6 @@ public class CompanionsTasksAdapter extends RecyclerView.Adapter<CompanionsTasks
                                 intent.putExtra("username", user.getUsername());
                                 intent.putExtra("userId", user.getUID());
                                 mCtxt.startActivity(intent);
-
                             }
                         }
                     });

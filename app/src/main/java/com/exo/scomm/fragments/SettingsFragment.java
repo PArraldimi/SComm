@@ -38,8 +38,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class SettingsFragment extends Fragment {
-
-    private Context context;
     private FirebaseAuth firebaseAuth;
     private String currentUserID;
     private DatabaseReference RootRef;
@@ -177,7 +175,6 @@ public class SettingsFragment extends Fragment {
     }
 
     private void logout (Context context) {
-
         firebaseAuth.signOut();
         startActivity(new Intent(context, MainActivity.class));
     }

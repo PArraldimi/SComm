@@ -1,6 +1,7 @@
 package com.exo.scomm.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.exo.scomm.AddTaskActivity;
+import com.exo.scomm.AllUsersActivity;
+import com.exo.scomm.Companions;
 import com.exo.scomm.R;
 import com.exo.scomm.adapters.CompanionsAdapter;
 import com.exo.scomm.adapters.DataHolder;
@@ -49,7 +53,7 @@ public class HomeFragment extends Fragment {
   private DatabaseReference taskRef;
   private DatabaseReference companionRef;
   private DatabaseReference mUsersRef;
-  private TextView textViewDate;
+  private TextView textViewDate, seeAllUsers;
   private String currentUid;
   private int lastScrollPosition = 0;
   private LinearLayoutManager linearLayoutManager;
@@ -99,6 +103,8 @@ public class HomeFragment extends Fragment {
     seeAllCompanions.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        Intent usersIntent = new Intent(getActivity(), Companions.class);
+        startActivity(usersIntent);
       }
     });
 

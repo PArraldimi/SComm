@@ -4,8 +4,10 @@ import com.exo.scomm.model.TasksModel;
 import com.exo.scomm.model.User;
 
 import java.util.List;
+import java.util.Set;
 
 public class DataHolder {
+    private static Set<User> selectedUsers;
     private static String UID;
     private static String taskId;
     private static TasksModel task;
@@ -68,5 +70,13 @@ public class DataHolder {
 
     public static void setUID(String UID) {
         DataHolder.UID = UID;
+    }
+
+    public static Set<User> getSelectedUsers() {
+        return selectedUsers;
+    }
+
+    public static void setSelectedUsers(Set<User> selectedUsers) {
+        DataHolder.selectedUsers = selectedUsers;
     }
 }

@@ -1,6 +1,8 @@
 package com.exo.scomm.model;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private String username;
     private String image;
     private String status;
@@ -42,7 +44,6 @@ public class User {
     public String getUID() {
         return UID;
     }
-
     public void setUID(String UID) {
         this.UID = UID;
     }

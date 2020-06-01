@@ -65,5 +65,6 @@
     <string name="chat">Chat</string>
     <string name="accept">Accept</string>
     <string name="type_message">"Type a message "</string>
+    <string name="invites">Invites:</string>
 
 </resources>

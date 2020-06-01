@@ -116,16 +116,12 @@ public class TaskDetails extends AppCompatActivity {
                     });
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
-
-
     }
-
 
     @Override
     protected void onStart() {

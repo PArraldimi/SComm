@@ -38,14 +38,11 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SettingsActivity extends AppCompatActivity {
-
-    private Context context;
     private FirebaseAuth firebaseAuth;
     private String currentUserID;
     private DatabaseReference RootRef;
     private FirebaseUser mCurrentUSer;
 
-    private Button UpdateAccountSettings;
     private EditText userName;
     private CircleImageView userProfileImage;
 
@@ -64,12 +61,12 @@ public class SettingsActivity extends AppCompatActivity {
         RootRef = FirebaseDatabase.getInstance().getReference();
         UserProfileImagesRef = FirebaseStorage.getInstance().getReference().child("image");
 
-        UpdateAccountSettings = (Button) findViewById(R.id.btn_update_profile);
+        Button updateAccountSettings = (Button) findViewById(R.id.btn_update_profile);
         userName = (EditText) findViewById(R.id.edit_username);
         userProfileImage = (CircleImageView) findViewById(R.id.profile_image);
 
 
-        UpdateAccountSettings.setOnClickListener(new View.OnClickListener() {
+        updateAccountSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 UpdateSettings();

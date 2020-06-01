@@ -328,8 +328,6 @@ public class SetupActivity extends AppCompatActivity {
                 final StorageReference filePath = storageReference.child("profile_images").child(currentUserId + ".jpg");
 
                 //Bitmap compressedImageFile = new Compressor(this).compressToBitmap(filePath);
-
-
                 filePath.putFile(mainImageURI).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {

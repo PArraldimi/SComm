@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import java.util.Objects;
+
 public class Utils {
 
 
@@ -21,14 +23,19 @@ public class Utils {
 
   public static User retrieveUser(Context context) {
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-    String uid = preferences.getString("uid", "");
-    String name = preferences.getString("name", "");
-    String image = preferences.getString("image", "");
+    String uid = preferences.getString("uid", null);
+    String name = preferences.getString("name", null);
+    String image = preferences.getString("image", null);
 
+    if (uid == null && name == null){
+      return null;
+    }
     User user = new User();
     user.setUsername(name);
     user.setUID(uid);
     user.setImage(image);
     return user;
   }
+
+
 }

@@ -10,19 +10,25 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.exo.scomm.adapters.DataHolder;
+import com.exo.scomm.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.kunzisoft.switchdatetime.SwitchDateTimeDialogFragment;
@@ -32,16 +38,20 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TimeZone;
 
 public class AddTaskActivity extends AppCompatActivity {
 
-    private Button mBtnAddTask;
+    public Set<User> mSelectedUsers;
     private TextInputEditText mTitle;
     private EditText mDescription;
     private RadioButton mPrivate, mPublic;
+    RelativeLayout mInviteLayout;
     private RadioGroup type;
     private DatabaseReference mDatabase;
     private FirebaseUser mCurrentUser;
@@ -49,7 +59,7 @@ public class AddTaskActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private ProgressDialog mProgressDialog;
     private Button mdateButton, mInvite;
-    private TextView mViewDate;
+    private TextView mViewDate, mInvites,invitesLabel;
     private Date CurrentDate;
     private String userId;
     private String task_id;
@@ -57,6 +67,8 @@ public class AddTaskActivity extends AppCompatActivity {
     private static final String TAG = "Sample";
     private static final String TAG_DATETIME_FRAGMENT = "TAG_DATETIME_FRAGMENT";
     private static final String STATE_TEXTVIEW = "STATE_TEXTVIEW";
+    private static final String STATE_TITLE = "title";
+    private static final String STATE_DESC = "description";
 
     private SwitchDateTimeDialogFragment dateTimeFragment;
 
@@ -77,6 +89,10 @@ public class AddTaskActivity extends AppCompatActivity {
         mViewDate = findViewById(R.id.view_date);
         mProgressDialog = new ProgressDialog(this);
         mInvite.setVisibility(View.GONE);
+        mInvites  = findViewById(R.id.taskInvites);
+        invitesLabel = findViewById(R.id.invitesLabel);
+        mInvites.setVisibility(View.GONE);
+        invitesLabel.setVisibility(View.GONE);
 
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
         mRootRef = FirebaseDatabase.getInstance().getReference();
@@ -90,6 +106,9 @@ public class AddTaskActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             // Restore value from saved state
             mdateButton.setText(savedInstanceState.getCharSequence(STATE_TEXTVIEW));
+            mDescription.setText(savedInstanceState.getString(STATE_TEXTVIEW));
+            mTitle.setText(savedInstanceState.getString(STATE_TITLE));
+
         }
 
         type.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -97,12 +116,35 @@ public class AddTaskActivity extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.private_radio) {
                     mInvite.setVisibility(View.GONE);
+                    mInvites.setVisibility(View.GONE);
+                    invitesLabel.setVisibility(View.GONE);
                 } else if (checkedId == R.id.public_radio) {
                     mInvite.setVisibility(View.VISIBLE);
+                    mInvites.setVisibility(View.VISIBLE);
+                    invitesLabel.setVisibility(View.VISIBLE);
+
                 }
             }
         });
         setUpDateChooser();
+
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        mSelectedUsers  = DataHolder.getSelectedUsers();
+        if (mSelectedUsers != null){
+            Set<String > inviteNames = new HashSet<>();
+            for (User u : mSelectedUsers
+            ) {
+                inviteNames.add(u.getUsername());
+            }
+            mInvites.setText(inviteNames.toString());
+        }
 
     }
 
@@ -189,6 +231,8 @@ public class AddTaskActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save the current textView
         savedInstanceState.putCharSequence(STATE_TEXTVIEW, mViewDate.getText());
+        savedInstanceState.putCharSequence(STATE_TITLE, mTitle.getText());
+        savedInstanceState.putCharSequence(STATE_DESC, mDescription.getText());
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -225,28 +269,66 @@ public class AddTaskActivity extends AppCompatActivity {
                 }
             });
         } else if (selectedItem.equals("Public")) {
-
-//            DatabaseReference newNotificationRef = mRootRef.child("notifications").child(user_id).push();
-//            String newNotificationId = newNotificationRef.getKey();
-//
-//            HashMap<String, String> notificationData = new HashMap<>();
-//            notificationData.put("from", mCurrentUser.getUid());
-//            notificationData.put("type", "request");
-//            notificationData.put("task_id", newTask_id);
-//            notificationData.put("to_user", user_id);
-
-
             mDatabase = FirebaseDatabase.getInstance().getReference().child("Tasks").child(userId).child(task_id);
-
             mDatabase.setValue(userMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
-                        mProgressDialog.dismiss();
+                        Log.e("TAGGGGGG", mSelectedUsers.toString());
+                        if (mSelectedUsers== null ){
+                            Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(AddTaskActivity.this, HomeActivity.class));
+                            finish();
+                        }else {
+                            for (User user: mSelectedUsers
+                            ) {
+                                String userId = user.getUID();
+                                Log.e("TAAAG", ""+userId);
+                                DatabaseReference newNotificationRef = mRootRef.child("Notifications").child(userId).push();
+                                String newNotificationId = newNotificationRef.getKey();
 
-                        Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(AddTaskActivity.this, HomeActivity.class));
-                        finish();
+                                HashMap<String, String> recipientNote = new HashMap<>();
+                                recipientNote.put("from", mCurrentUser.getUid());
+                                recipientNote.put("type", "request_received");
+                                recipientNote.put("task_id", task_id);
+
+                                HashMap<String, String> senderNote = new HashMap<>();
+                                senderNote.put("to", userId);
+                                senderNote.put("type", "request_sent");
+                                senderNote.put("task_id", task_id);
+
+                                Map requestSentData = new HashMap();
+                                requestSentData.put("request_type", "sent");
+                                requestSentData.put("date", ServerValue.TIMESTAMP);
+                                requestSentData.put("accepted", "false");
+
+                                Map requestReceivedData = new HashMap();
+                                requestReceivedData.put("request_type", "received");
+                                requestReceivedData.put("date", ServerValue.TIMESTAMP);
+                                requestReceivedData.put("accepted", "false");
+
+                                Map requestMap = new HashMap<>();
+                                requestMap.put("TaskInviteRequests/" + mCurrentUser.getUid() + "/" + userId + "/" + task_id, requestSentData);
+                                requestMap.put("TaskInviteRequests/" + userId + "/" + mCurrentUser.getUid() + "/" + task_id, requestReceivedData);
+                                requestMap.put("Notifications/" + mCurrentUser.getUid() + "/" + newNotificationId, senderNote);
+                                requestMap.put("Notifications/" + userId + "/" + newNotificationId, recipientNote);
+
+                                mRootRef.updateChildren(requestMap, new DatabaseReference.CompletionListener() {
+                                    @Override
+                                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                        if (databaseError != null) {
+                                            Toast.makeText(getApplicationContext(), "There was some error in sending request", Toast.LENGTH_SHORT).show();
+                                        }else {
+                                            Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
+                                            startActivity(new Intent(AddTaskActivity.this, HomeActivity.class));
+                                            finish();
+                                        }
+                                    }
+                                });
+                            }
+                        }
+
+
                     } else {
                         Log.e("Error", Objects.requireNonNull(task.getResult()).toString());
                     }
@@ -269,7 +351,20 @@ public class AddTaskActivity extends AppCompatActivity {
 
     public void inviteCompanions(View view) {
         Intent usersIntent = new Intent(AddTaskActivity.this, AllUsersActivity.class);
-        usersIntent.putExtra("task_id", task_id);
         startActivity(usersIntent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Intent i = getIntent();
+        String data = i.getStringExtra("fromUsersActivity");
+        if (data != null && data.contentEquals("1")) {
+            Set<User> users = (Set<User>) i.getSerializableExtra("users");
+
+            assert users != null;
+            Log.e("HomeResume", "" + users.size() );
+        }
+
     }
 }

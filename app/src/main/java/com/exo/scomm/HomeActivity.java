@@ -211,6 +211,7 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.OnDa
     super.onResume();
     Intent i = getIntent();
     String data = i.getStringExtra("fromTaskDetails");
+    String data1 = i.getStringExtra("fromCompanions");
 
     if (data != null && data.contentEquals("1")) {
       username = i.getStringExtra("username");
@@ -223,7 +224,17 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.OnDa
       add_task.setVisibility(View.GONE);
 
     }
+    if (data1 != null && data1.contentEquals("1")) {
+      username = i.getStringExtra("username");
+      uid = i.getStringExtra("uid");
 
+      Log.e("HomeResume", "" + username + " " + uid);
+
+      replaceFragment(chatroomFragment);
+      mainBottomNav.setSelectedItemId(R.id.bottom_chat_room);
+      add_task.setVisibility(View.GONE);
+
+    }
   }
 
   private void sendToLogin() {

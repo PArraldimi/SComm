@@ -47,7 +47,7 @@ public class Profile extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        mUsersRef.child("online").setValue("true");
+        mRootRef.child("Users").child(mCurrentUser.getUid()).child("status").setValue("online");
     }
 
     @Override
@@ -211,7 +211,6 @@ public class Profile extends AppCompatActivity {
                             if (databaseError != null) {
                                 Toast.makeText(Profile.this, "There was some error in sending request", Toast.LENGTH_SHORT).show();
                             }
-
                             mSendInviteReq.setEnabled(true);
                             mSendInviteReq.setVisibility(View.VISIBLE);
                             mSendInviteReq.setText("Cancel Invite Request");

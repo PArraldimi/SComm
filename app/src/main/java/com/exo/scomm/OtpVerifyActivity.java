@@ -114,6 +114,7 @@ public class OtpVerifyActivity extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
                                                 task.isSuccessful();
+                                                DataHolder.setPhone(mPhone);
                                                 Intent intent = new Intent(OtpVerifyActivity.this, HomeActivity.class);
                                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                                 startActivity(intent);
@@ -125,14 +126,8 @@ public class OtpVerifyActivity extends AppCompatActivity {
                                         }
                                     });
 
-
-
-
                                 }
                             });
-
-
-
                         } else {
                             Toast.makeText(OtpVerifyActivity.this, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_LONG).show();
                         }

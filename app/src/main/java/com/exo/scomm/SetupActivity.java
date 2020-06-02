@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.exo.scomm.adapters.DataHolder;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -255,6 +256,7 @@ public class SetupActivity extends AppCompatActivity {
                             hashMap.put("status", "offline");
                             hashMap.put("search", user_name.toLowerCase());
                             hashMap.put("image", download_uri.toString());
+                            hashMap.put("phone", DataHolder.getPhone());
 
                             reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override

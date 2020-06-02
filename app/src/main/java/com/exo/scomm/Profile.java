@@ -2,6 +2,7 @@ package com.exo.scomm;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -31,6 +32,7 @@ import java.util.Objects;
 
 public class Profile extends AppCompatActivity {
     ImageView imageView;
+    private final static String LOG_TAG = Profile.class.getSimpleName();
     TextView mDisplayName, mDisplayStatus, mFriendsCount;
     Button  mSendInviteReq, mDeclineInviteReq;
     private DatabaseReference mDatabaseRef;
@@ -58,6 +60,7 @@ public class Profile extends AppCompatActivity {
         final String user_id = getIntent().getStringExtra("uid");
         task_id = getIntent().getStringExtra("task_id");
         assert user_id != null;
+       Log.e(LOG_TAG, "UserI"+user_id);
         mDatabaseRef = FirebaseDatabase.getInstance().getReference().child("Users").child(user_id);
         mInvitesReqDBRef = FirebaseDatabase.getInstance().getReference().child("TaskInviteRequests");
         mUsersRef = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -70,7 +73,6 @@ public class Profile extends AppCompatActivity {
         imageView = findViewById(R.id.profile_image_view);
         mDisplayName = findViewById(R.id.profile_displayName);
         mDisplayStatus = findViewById(R.id.profile_displayStatus);
-       // mFriendsCount = findViewById(R.id.profile_friendsCount);
 
         mDeclineInviteReq = findViewById(R.id.decline_inviteReq);
         mSendInviteReq = findViewById(R.id.send_inviteReq);
@@ -106,11 +108,11 @@ public class Profile extends AppCompatActivity {
                 Picasso.get().load(image).placeholder(R.drawable.profile_image_placeholder).into(imageView);
 
 //                <-------------------------FRIENDS LIST / REQUEST FEATURE-------------->
-                mInvitesReqDBRef.child(mCurrentUser.getUid()).child(user_id).addListenerForSingleValueEvent(new ValueEventListener() {
+                mInvitesReqDBRef.child(mCurrentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (task_id != null) {
-                        if (dataSnapshot.hasChild(task_id)) {
+                        if (dataSnapshot.hasChild(user_id)) {
                             String req_type = Objects.requireNonNull(dataSnapshot.child(task_id).child("request_type").getValue()).toString();
                             if (req_type.equals("received")) {
                                 mCompanionsState = 2;
@@ -122,7 +124,7 @@ public class Profile extends AppCompatActivity {
                                 mDeclineInviteReq.setVisibility(View.VISIBLE);
                                 mDeclineInviteReq.setEnabled(true);
 
-                            } else if (req_type.equals("sent")) {
+                            } else if (req_type.equals("request_sent")) {
                                 mCompanionsState = 1;
                                 mSendInviteReq.setText("Cancel Invite Request");
                                 mSendInviteReq.setVisibility(View.VISIBLE);
@@ -178,26 +180,33 @@ public class Profile extends AppCompatActivity {
                 if (mCompanionsState == 0) {
                     String recipientNoteKey = mRootRef.child("Notifications").child(user_id).push().getKey();
                     String senderNoteKey = mRootRef.child("Notifications").child(mCurrentUser.getUid()).push().getKey();
+                    final String currentDate = DateFormat.getDateInstance().format(new Date());
+
 
                     HashMap<String, String> recipientNote = new HashMap<>();
-                    recipientNote.put("from", mCurrentUser.getUid());
-                    recipientNote.put("type", "request_received");
+                    recipientNote.put("fromUser", mCurrentUser.getUid());
+                    recipientNote.put("type", "received");
                     recipientNote.put("task_id", task_id);
+                    recipientNote.put("date", currentDate);
+
 
                     HashMap<String, String> senderNote = new HashMap<>();
-                    senderNote.put("to", user_id);
-                    senderNote.put("type", "request_sent");
+                    senderNote.put("toUser", user_id);
+                    senderNote.put("type", "sent");
                     senderNote.put("task_id", task_id);
+                    senderNote.put("date", currentDate);
 
                     Map requestSentData = new HashMap();
                     requestSentData.put("request_type", "sent");
-                    requestSentData.put("date", ServerValue.TIMESTAMP);
+                   requestSentData.put("task_id", task_id);
+                   requestSentData.put("date", ServerValue.TIMESTAMP);
                     requestSentData.put("accepted", "false");
 
                     Map requestReceivedData = new HashMap();
                     requestReceivedData.put("request_type", "received");
                     requestReceivedData.put("date", ServerValue.TIMESTAMP);
-                    requestReceivedData.put("accepted", "false");
+                   requestReceivedData.put("task_id", task_id);
+                   requestReceivedData.put("accepted", "false");
 
                     Map requestMap = new HashMap<>();
                     requestMap.put("TaskInviteRequests/" + mCurrentUser.getUid() + "/" + user_id + "/" + task_id, requestSentData);
@@ -252,20 +261,22 @@ public class Profile extends AppCompatActivity {
                 if (mCompanionsState == 2) {
 
                     final String currentDate = DateFormat.getDateInstance().format(new Date());
-                    String recipientNoteKey = mRootRef.child("Notifications").child(user_id).push().getKey();
-                    String senderNoteKey = mRootRef.child("Notifications").child(mCurrentUser.getUid()).push().getKey();
+                    String noteId = mRootRef.child("Notifications").child(user_id).push().getKey();
+
+                    HashMap<String, String> recipientNote = new HashMap<>();
+                    recipientNote.put("fromUser", mCurrentUser.getUid());
+                    recipientNote.put("type", "request_accepted");
+                    recipientNote.put("task_id", task_id);
+                    recipientNote.put("date", currentDate);
+                    recipientNote.put("toUser", user_id);
 
 
                     HashMap<String, String> senderNote = new HashMap<>();
+                    senderNote.put("toUser", user_id);
                     senderNote.put("type", "request_accepted");
-                    senderNote.put("user", mCurrentUser.getUid());
                     senderNote.put("task_id", task_id);
-
-
-                    HashMap<String, String> recipientNote = new HashMap<>();
-                    recipientNote.put("user", user_id);
-                    recipientNote.put("type", "request_accepted");
-                    recipientNote.put("task_id", task_id);
+                    senderNote.put("date", currentDate);
+                    senderNote.put("fromUser", mCurrentUser.getUid());
 
 
                     Map companionsMap = new HashMap();
@@ -273,8 +284,8 @@ public class Profile extends AppCompatActivity {
                     companionsMap.put("TaskCompanions/" + user_id + "/"+ mCurrentUser.getUid()+"/"+"task_id",task_id);
                     companionsMap.put("TaskInviteRequests/" + mCurrentUser.getUid() + "/" + user_id + "/" + task_id, null);
                     companionsMap.put("TaskInviteRequests/" + user_id + "/" + mCurrentUser.getUid() + "/" + task_id, null);
-                    companionsMap.put("Notifications/" + user_id + "/" + senderNoteKey, senderNote);
-                    companionsMap.put("Notifications/" + mCurrentUser.getUid() + "/" + recipientNoteKey, recipientNote);
+                    companionsMap.put("Notifications/" + user_id + "/" + noteId, senderNote);
+                    companionsMap.put("Notifications/" + mCurrentUser.getUid() + "/" + noteId, recipientNote);
 
                     mRootRef.updateChildren(companionsMap, new DatabaseReference.CompletionListener() {
                         @Override
@@ -305,7 +316,6 @@ public class Profile extends AppCompatActivity {
                         @Override
                         public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                             if (databaseError == null) {
-
                                 mCompanionsState = 0;
                                 mSendInviteReq.setText("Send  Invitation Request");
                                 mSendInviteReq.setVisibility(View.VISIBLE);
@@ -327,8 +337,6 @@ public class Profile extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (mCurrentUser != null) {
-            mUsersRef.child("online").setValue(ServerValue.TIMESTAMP);
-        }
+        mRootRef.child("Users").child(mCurrentUser.getUid()).child("online").setValue(ServerValue.TIMESTAMP);
     }
 }

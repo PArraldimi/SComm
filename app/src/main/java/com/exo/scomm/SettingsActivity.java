@@ -219,7 +219,6 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void logout (Context context) {
-
         firebaseAuth.signOut();
         startActivity(new Intent(SettingsActivity.this, MainActivity.class));
     }

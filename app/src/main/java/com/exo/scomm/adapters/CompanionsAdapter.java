@@ -84,7 +84,6 @@ public class CompanionsAdapter extends RecyclerView.Adapter<CompanionsAdapter.My
               } else if (i == 1) {
                 Log.e("User Key", user.getUID());
                 final HomeActivity activity = (HomeActivity) mCtxt;
-//                Utils.storeUser(mCtxt, user.getUsername(),user.getUID(),user.getImage() );
                 activity.uid = user.getUID();
                 activity.username = user.getUsername();
                 activity.mainBottomNav.setSelectedItemId(R.id.bottom_chat_room);

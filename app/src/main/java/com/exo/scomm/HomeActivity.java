@@ -177,7 +177,6 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.OnDa
     FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
     if (currentUser == null) {
-
       sendToLogin();
     } else {
 
@@ -192,7 +191,6 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.OnDa
               Intent setupIntent = new Intent(HomeActivity.this, SetupActivity.class);
               startActivity(setupIntent);
               finish();
-
             }
 
           } else {

@@ -47,324 +47,328 @@ import java.util.TimeZone;
 
 public class AddTaskActivity extends AppCompatActivity {
 
-    public Set<User> mSelectedUsers;
-    private TextInputEditText mTitle;
-    private EditText mDescription;
-    private RadioButton mPrivate, mPublic;
-    RelativeLayout mInviteLayout;
-    private RadioGroup type;
-    private DatabaseReference mDatabase;
-    private FirebaseUser mCurrentUser;
-    private StorageReference mStorage;
-    private FirebaseAuth mAuth;
-    private ProgressDialog mProgressDialog;
-    private Button mdateButton, mInvite;
-    private TextView mViewDate, mInvites,invitesLabel;
-    private Date CurrentDate;
-    private String userId;
-    private String task_id;
+   public Set<User> mSelectedUsers;
+   private TextInputEditText mTitle;
+   private EditText mDescription;
+   private RadioButton mPrivate, mPublic;
+   RelativeLayout mInviteLayout;
+   private RadioGroup type;
+   private DatabaseReference mDatabase;
+   private FirebaseUser mCurrentUser;
+   private StorageReference mStorage;
+   private FirebaseAuth mAuth;
+   private ProgressDialog mProgressDialog;
+   private Button mdateButton, mInvite;
+   private TextView mViewDate, mInvites, invitesLabel;
+   private Date CurrentDate;
+   private String userId;
+   private String task_id;
 
-    private static final String TAG = "Sample";
-    private static final String TAG_DATETIME_FRAGMENT = "TAG_DATETIME_FRAGMENT";
-    private static final String STATE_TEXTVIEW = "STATE_TEXTVIEW";
-    private static final String STATE_TITLE = "title";
-    private static final String STATE_DESC = "description";
+   private static final String TAG = "Sample";
+   private static final String TAG_DATETIME_FRAGMENT = "TAG_DATETIME_FRAGMENT";
+   private static final String STATE_TEXTVIEW = "STATE_TEXTVIEW";
+   private static final String STATE_TITLE = "title";
+   private static final String STATE_DESC = "description";
 
-    private SwitchDateTimeDialogFragment dateTimeFragment;
+   private SwitchDateTimeDialogFragment dateTimeFragment;
 
-    private Calendar calendar = Calendar.getInstance();
+   private Calendar calendar = Calendar.getInstance();
 
-    private DatabaseReference mRootRef;
+   private DatabaseReference mRootRef;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_task);
-        mTitle = findViewById(R.id.ed_task_title);
-        mDescription = findViewById(R.id.ed_task_description);
-        type = findViewById(R.id.radio_group);
-        mInvite = findViewById(R.id.btn_invite);
-        mPrivate = findViewById(R.id.private_radio);
-        mPublic = findViewById(R.id.public_radio);
-        mViewDate = findViewById(R.id.view_date);
-        mProgressDialog = new ProgressDialog(this);
-        mInvite.setVisibility(View.GONE);
-        mInvites  = findViewById(R.id.taskInvites);
-        invitesLabel = findViewById(R.id.invitesLabel);
-        mInvites.setVisibility(View.GONE);
-        invitesLabel.setVisibility(View.GONE);
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_add_task);
+      mTitle = findViewById(R.id.ed_task_title);
+      mDescription = findViewById(R.id.ed_task_description);
+      type = findViewById(R.id.radio_group);
+      mInvite = findViewById(R.id.btn_invite);
+      mPrivate = findViewById(R.id.private_radio);
+      mPublic = findViewById(R.id.public_radio);
+      mViewDate = findViewById(R.id.view_date);
+      mProgressDialog = new ProgressDialog(this);
+      mInvite.setVisibility(View.GONE);
+      mInvites = findViewById(R.id.taskInvites);
+      invitesLabel = findViewById(R.id.invitesLabel);
+      mInvites.setVisibility(View.GONE);
+      invitesLabel.setVisibility(View.GONE);
 
-        mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
-        mRootRef = FirebaseDatabase.getInstance().getReference();
-        mStorage = FirebaseStorage.getInstance().getReference();
-        CurrentDate = calendar.getTime();
+      mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
+      mRootRef = FirebaseDatabase.getInstance().getReference();
+      mStorage = FirebaseStorage.getInstance().getReference();
+      CurrentDate = calendar.getTime();
 
-        userId = mCurrentUser.getUid();
-        task_id = FirebaseDatabase.getInstance().getReference().child("Tasks").child(userId).push().getKey();
+      userId = mCurrentUser.getUid();
+      task_id = FirebaseDatabase.getInstance().getReference().child("Tasks").child(userId).push().getKey();
 
 
-        if (savedInstanceState != null) {
-            // Restore value from saved state
-            mdateButton.setText(savedInstanceState.getCharSequence(STATE_TEXTVIEW));
-            mDescription.setText(savedInstanceState.getString(STATE_TEXTVIEW));
-            mTitle.setText(savedInstanceState.getString(STATE_TITLE));
+      if (savedInstanceState != null) {
+         // Restore value from saved state
+         mdateButton.setText(savedInstanceState.getCharSequence(STATE_TEXTVIEW));
+         mDescription.setText(savedInstanceState.getString(STATE_TEXTVIEW));
+         mTitle.setText(savedInstanceState.getString(STATE_TITLE));
 
-        }
+      }
 
-        type.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+      type.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+         @Override
+         public void onCheckedChanged(RadioGroup group, int checkedId) {
+            if (checkedId == R.id.private_radio) {
+               mInvite.setVisibility(View.GONE);
+               mInvites.setVisibility(View.GONE);
+               invitesLabel.setVisibility(View.GONE);
+            } else if (checkedId == R.id.public_radio) {
+               mInvite.setVisibility(View.VISIBLE);
+               mInvites.setVisibility(View.VISIBLE);
+               invitesLabel.setVisibility(View.VISIBLE);
+
+            }
+         }
+      });
+      setUpDateChooser();
+
+
+   }
+
+   @Override
+   protected void onStart() {
+      super.onStart();
+
+      mSelectedUsers = DataHolder.getSelectedUsers();
+      if (mSelectedUsers != null) {
+         Set<String> inviteNames = new HashSet<>();
+         for (User u : mSelectedUsers
+         ) {
+            inviteNames.add(u.getUsername());
+         }
+         mInvites.setText(inviteNames.toString());
+      }
+
+   }
+
+   private void setUpDateChooser() {
+      dateTimeFragment = (SwitchDateTimeDialogFragment) getSupportFragmentManager().findFragmentByTag(TAG_DATETIME_FRAGMENT);
+      if (dateTimeFragment == null) {
+         dateTimeFragment = SwitchDateTimeDialogFragment.newInstance(
+                 getString(R.string.label_datetime_dialog),
+                 getString(android.R.string.ok),
+                 getString(android.R.string.cancel)
+         );
+      }
+
+      dateTimeFragment.setTimeZone(TimeZone.getDefault());
+
+      final SimpleDateFormat myDateFormat = new SimpleDateFormat("EEEE, dd MMM yyyy HH:mm", Locale.getDefault());
+
+      boolean set24HoursMode = DateFormat.is24HourFormat(this);
+
+      dateTimeFragment.set24HoursMode(set24HoursMode);
+      dateTimeFragment.setHighlightAMPMSelection(false);
+      dateTimeFragment.setMinimumDateTime(new GregorianCalendar(2020, Calendar.JANUARY, 1).getTime());
+      dateTimeFragment.setMaximumDateTime(new GregorianCalendar(2030, Calendar.DECEMBER, 31).getTime());
+
+      try {
+         dateTimeFragment.setSimpleDateMonthAndDayFormat(new SimpleDateFormat("MMMM dd", Locale.getDefault()));
+      } catch (SwitchDateTimeDialogFragment.SimpleDateMonthAndDayFormatException e) {
+         Log.e(TAG, Objects.requireNonNull(e.getMessage()));
+      }
+
+      dateTimeFragment.setOnButtonClickListener(new SwitchDateTimeDialogFragment.OnButtonWithNeutralClickListener() {
+         @Override
+         public void onPositiveButtonClick(Date date) {
+            if (date.before(CurrentDate)) {
+               Toast.makeText(getApplicationContext(), "Pick a valid time schedule", Toast.LENGTH_LONG).show();
+
+            } else {
+               mViewDate.setText(myDateFormat.format(date));
+            }
+         }
+
+         @Override
+         public void onNegativeButtonClick(Date date) {
+            // Do nothing
+         }
+
+         @Override
+         public void onNeutralButtonClick(Date date) {
+            // Optional if neutral button does'nt exists
+            mViewDate.setText("");
+         }
+      });
+   }
+
+   public void addTask(View view) {
+      prepareTask();
+   }
+
+   private void prepareTask() {
+      int SelectedId = type.getCheckedRadioButtonId();
+      String selectedItem = null;
+
+      if (SelectedId == mPrivate.getId()) {
+         selectedItem = "Private";
+      } else if (SelectedId == mPublic.getId()) {
+         selectedItem = "Public";
+      }
+      String title = Objects.requireNonNull(mTitle.getText()).toString();
+      String description = Objects.requireNonNull(mDescription.getText()).toString();
+      String date = Objects.requireNonNull(mViewDate.getText()).toString();
+
+      if (title.isEmpty()) {
+         mTitle.setError("Enter Title");
+         mTitle.requestFocus();
+      } else if (date.isEmpty()) {
+         mViewDate.setError("Pick Date");
+         mViewDate.requestFocus();
+      } else {
+         createTask(title, description, selectedItem, date);
+      }
+   }
+
+   @Override
+   public void onSaveInstanceState(Bundle savedInstanceState) {
+      // Save the current textView
+      savedInstanceState.putCharSequence(STATE_TEXTVIEW, mViewDate.getText());
+      savedInstanceState.putCharSequence(STATE_TITLE, mTitle.getText());
+      savedInstanceState.putCharSequence(STATE_DESC, mDescription.getText());
+      super.onSaveInstanceState(savedInstanceState);
+   }
+
+   private void createTask(String title, String description, String selectedItem, final String date) {
+
+      mProgressDialog.setTitle("Adding Task");
+      mProgressDialog.setMessage("Please wait while we add the task");
+      mProgressDialog.setCanceledOnTouchOutside(false);
+      mProgressDialog.show();
+
+      final HashMap<String, String> taskMap = new HashMap<>();
+      taskMap.put("taskOwner", userId);
+      taskMap.put("title", title);
+      taskMap.put("description", description);
+      taskMap.put("type", selectedItem);
+      taskMap.put("date", date);
+      taskMap.put("task_id", task_id);
+      Log.e("check", "userMap" + taskMap);
+      if (selectedItem.equals("Private")) {
+         assert task_id != null;
+         mDatabase = FirebaseDatabase.getInstance().getReference().child("Tasks").child(userId).child(task_id);
+         taskMap.put("task_id", task_id);
+         mDatabase.setValue(taskMap).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.private_radio) {
-                    mInvite.setVisibility(View.GONE);
-                    mInvites.setVisibility(View.GONE);
-                    invitesLabel.setVisibility(View.GONE);
-                } else if (checkedId == R.id.public_radio) {
-                    mInvite.setVisibility(View.VISIBLE);
-                    mInvites.setVisibility(View.VISIBLE);
-                    invitesLabel.setVisibility(View.VISIBLE);
-
-                }
+            public void onComplete(@NonNull Task<Void> task) {
+               if (task.isSuccessful()) {
+                  mProgressDialog.dismiss();
+                  Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
+                  startActivity(new Intent(AddTaskActivity.this, HomeActivity.class));
+                  finish();
+               } else {
+                  Log.e("Error", task.getResult().toString());
+               }
             }
-        });
-        setUpDateChooser();
-
-
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        mSelectedUsers  = DataHolder.getSelectedUsers();
-        if (mSelectedUsers != null){
-            Set<String > inviteNames = new HashSet<>();
-            for (User u : mSelectedUsers
-            ) {
-                inviteNames.add(u.getUsername());
-            }
-            mInvites.setText(inviteNames.toString());
-        }
-
-    }
-
-    private void setUpDateChooser() {
-        dateTimeFragment = (SwitchDateTimeDialogFragment) getSupportFragmentManager().findFragmentByTag(TAG_DATETIME_FRAGMENT);
-        if (dateTimeFragment == null) {
-            dateTimeFragment = SwitchDateTimeDialogFragment.newInstance(
-                    getString(R.string.label_datetime_dialog),
-                    getString(android.R.string.ok),
-                    getString(android.R.string.cancel)
-            );
-        }
-
-        dateTimeFragment.setTimeZone(TimeZone.getDefault());
-
-        final SimpleDateFormat myDateFormat = new SimpleDateFormat("EEEE, dd MMM yyyy HH:mm", Locale.getDefault());
-
-        boolean set24HoursMode = DateFormat.is24HourFormat(this);
-
-        dateTimeFragment.set24HoursMode(set24HoursMode);
-        dateTimeFragment.setHighlightAMPMSelection(false);
-        dateTimeFragment.setMinimumDateTime(new GregorianCalendar(2020, Calendar.JANUARY, 1).getTime());
-        dateTimeFragment.setMaximumDateTime(new GregorianCalendar(2030, Calendar.DECEMBER, 31).getTime());
-
-        try {
-            dateTimeFragment.setSimpleDateMonthAndDayFormat(new SimpleDateFormat("MMMM dd", Locale.getDefault()));
-        } catch (SwitchDateTimeDialogFragment.SimpleDateMonthAndDayFormatException e) {
-            Log.e(TAG, Objects.requireNonNull(e.getMessage()));
-        }
-
-        dateTimeFragment.setOnButtonClickListener(new SwitchDateTimeDialogFragment.OnButtonWithNeutralClickListener() {
+         });
+      } else if (selectedItem.equals("Public")) {
+         mDatabase = FirebaseDatabase.getInstance().getReference().child("Tasks").child(userId).child(task_id);
+         mDatabase.setValue(taskMap).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
-            public void onPositiveButtonClick(Date date) {
-                if (date.before(CurrentDate)) {
-                    Toast.makeText(getApplicationContext(), "Pick a valid time schedule", Toast.LENGTH_LONG).show();
+            public void onComplete(@NonNull Task<Void> task) {
+               if (task.isSuccessful()) {
+                  Log.e("TAGGGGGG", mSelectedUsers.toString());
+                  if (mSelectedUsers == null) {
+                     Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
+                     startActivity(new Intent(AddTaskActivity.this, HomeActivity.class));
+                     finish();
+                  } else {
+                     for (User user : mSelectedUsers
+                     ) {
+                        String userId = user.getUID();
+                        Log.e("TAAAG", "" + userId);
+                        DatabaseReference newNotificationRef = mRootRef.child("Notifications").child(userId).push();
+                        String newNotificationId = newNotificationRef.getKey();
 
-                } else {
-                    mViewDate.setText(myDateFormat.format(date));
-                }
+                        Map recipientNote = new HashMap<>();
+                        recipientNote.put("fromUser", mCurrentUser.getUid());
+                        recipientNote.put("type", "received");
+                        recipientNote.put("task_id", task_id);
+                        recipientNote.put("date", ServerValue.TIMESTAMP);
+
+                        Map senderNote = new HashMap<>();
+                        senderNote.put("toUser", userId);
+                        senderNote.put("type", "sent");
+                        senderNote.put("task_id", task_id);
+                        senderNote.put("date", ServerValue.TIMESTAMP);
+
+                        Map requestSentData = new HashMap();
+                        requestSentData.put("request_type", "sent");
+                        requestSentData.put("date", ServerValue.TIMESTAMP);
+                        requestSentData.put("accepted", "false");
+                        requestSentData.put("task_id", task_id);
+
+
+                        Map requestReceivedData = new HashMap();
+                        requestReceivedData.put("request_type", "received");
+                        requestReceivedData.put("date", ServerValue.TIMESTAMP);
+                        requestReceivedData.put("task_id", task_id);
+                        requestReceivedData.put("accepted", "false");
+
+                        Map requestMap = new HashMap<>();
+                        requestMap.put("Notifications/" + userId + "/" + newNotificationId, recipientNote);
+                        requestMap.put("Notifications/" + mCurrentUser.getUid() + "/" + newNotificationId, senderNote);
+                        requestMap.put("Tasks/" + mCurrentUser.getUid() + "/" + task_id + "/", taskMap);
+                        requestMap.put("TaskInviteRequests/" + mCurrentUser.getUid() + "/" + userId + "/" + task_id, requestSentData);
+                        requestMap.put("TaskInviteRequests/" + userId + "/" + mCurrentUser.getUid() + "/" + task_id, requestReceivedData);
+
+                        mRootRef.updateChildren(requestMap, new DatabaseReference.CompletionListener() {
+                           @Override
+                           public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                              if (databaseError != null) {
+                                 Toast.makeText(getApplicationContext(), "There was some error in inviting companions", Toast.LENGTH_SHORT).show();
+                                 finish();
+                              } else {
+                                 Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
+                                 startActivity(new Intent(AddTaskActivity.this, HomeActivity.class));
+                                 finish();
+                              }
+                           }
+                        });
+                     }
+                  }
+               } else {
+                  Log.e("Error", Objects.requireNonNull(task.getResult()).toString());
+               }
             }
+         });
+      }
 
-            @Override
-            public void onNegativeButtonClick(Date date) {
-                // Do nothing
-            }
+   }
 
-            @Override
-            public void onNeutralButtonClick(Date date) {
-                // Optional if neutral button does'nt exists
-                mViewDate.setText("");
-            }
-        });
-    }
+   public void onRadioButtonClicked(View view) {
 
-    public void addTask(View view) {
-        prepareTask();
-    }
+   }
 
-    private void prepareTask() {
-        int SelectedId = type.getCheckedRadioButtonId();
-        String selectedItem = null;
+   public void pickTime(View view) {
+      // Re-init each time
+      dateTimeFragment.startAtCalendarView();
+      dateTimeFragment.setDefaultDateTime(calendar.getTime());
+      dateTimeFragment.show(getSupportFragmentManager(), TAG_DATETIME_FRAGMENT);
+   }
 
-        if (SelectedId == mPrivate.getId()) {
-            selectedItem = "Private";
-        } else if (SelectedId == mPublic.getId()) {
-            selectedItem = "Public";
-        }
-        String title = Objects.requireNonNull(mTitle.getText()).toString();
-        String description = Objects.requireNonNull(mDescription.getText()).toString();
-        String date = Objects.requireNonNull(mViewDate.getText()).toString();
+   public void inviteCompanions(View view) {
+      Intent usersIntent = new Intent(AddTaskActivity.this, AllUsersActivity.class);
+      startActivity(usersIntent);
+   }
 
-        if (title.isEmpty()) {
-            mTitle.setError("Enter Title");
-            mTitle.requestFocus();
-        } else if (date.isEmpty()) {
-            mViewDate.setError("Pick Date");
-            mViewDate.requestFocus();
-        } else {
-            createTask(title, description, selectedItem, date);
-        }
-    }
+   @Override
+   protected void onResume() {
+      super.onResume();
+      Intent i = getIntent();
+      String data = i.getStringExtra("fromUsersActivity");
+      if (data != null && data.contentEquals("1")) {
+         Set<User> users = (Set<User>) i.getSerializableExtra("users");
 
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        // Save the current textView
-        savedInstanceState.putCharSequence(STATE_TEXTVIEW, mViewDate.getText());
-        savedInstanceState.putCharSequence(STATE_TITLE, mTitle.getText());
-        savedInstanceState.putCharSequence(STATE_DESC, mDescription.getText());
-        super.onSaveInstanceState(savedInstanceState);
-    }
+         assert users != null;
+         Log.e("HomeResume", "" + users.size());
+      }
 
-    private void createTask(String title, String description, String selectedItem, String date) {
-
-        mProgressDialog.setTitle("Adding Task");
-        mProgressDialog.setMessage("Please wait while we add the task");
-        mProgressDialog.setCanceledOnTouchOutside(false);
-        mProgressDialog.show();
-
-        HashMap<String, String> userMap = new HashMap<>();
-        userMap.put("taskOwner", userId);
-        userMap.put("title", title);
-        userMap.put("description", description);
-        userMap.put("type", selectedItem);
-        userMap.put("date", date);
-        userMap.put("task_id", task_id);
-        Log.e("check", "userMap" + userMap);
-        if (selectedItem.equals("Private")) {
-            assert task_id != null;
-            mDatabase = FirebaseDatabase.getInstance().getReference().child("Tasks").child(userId).child(task_id);
-            userMap.put("task_id", task_id);
-            mDatabase.setValue(userMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        mProgressDialog.dismiss();
-                        Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(AddTaskActivity.this, HomeActivity.class));
-                        finish();
-                    } else {
-                        Log.e("Error", task.getResult().toString());
-                    }
-                }
-            });
-        } else if (selectedItem.equals("Public")) {
-            mDatabase = FirebaseDatabase.getInstance().getReference().child("Tasks").child(userId).child(task_id);
-            mDatabase.setValue(userMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        Log.e("TAGGGGGG", mSelectedUsers.toString());
-                        if (mSelectedUsers== null ){
-                            Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(AddTaskActivity.this, HomeActivity.class));
-                            finish();
-                        }else {
-                            for (User user: mSelectedUsers
-                            ) {
-                                String userId = user.getUID();
-                                Log.e("TAAAG", ""+userId);
-                                DatabaseReference newNotificationRef = mRootRef.child("Notifications").child(userId).push();
-                                String newNotificationId = newNotificationRef.getKey();
-
-                                HashMap<String, String> recipientNote = new HashMap<>();
-                                recipientNote.put("from", mCurrentUser.getUid());
-                                recipientNote.put("type", "request_received");
-                                recipientNote.put("task_id", task_id);
-
-                                HashMap<String, String> senderNote = new HashMap<>();
-                                senderNote.put("to", userId);
-                                senderNote.put("type", "request_sent");
-                                senderNote.put("task_id", task_id);
-
-                                Map requestSentData = new HashMap();
-                                requestSentData.put("request_type", "sent");
-                                requestSentData.put("date", ServerValue.TIMESTAMP);
-                                requestSentData.put("accepted", "false");
-
-                                Map requestReceivedData = new HashMap();
-                                requestReceivedData.put("request_type", "received");
-                                requestReceivedData.put("date", ServerValue.TIMESTAMP);
-                                requestReceivedData.put("accepted", "false");
-
-                                Map requestMap = new HashMap<>();
-                                requestMap.put("TaskInviteRequests/" + mCurrentUser.getUid() + "/" + userId + "/" + task_id, requestSentData);
-                                requestMap.put("TaskInviteRequests/" + userId + "/" + mCurrentUser.getUid() + "/" + task_id, requestReceivedData);
-                                requestMap.put("Notifications/" + mCurrentUser.getUid() + "/" + newNotificationId, senderNote);
-                                requestMap.put("Notifications/" + userId + "/" + newNotificationId, recipientNote);
-
-                                mRootRef.updateChildren(requestMap, new DatabaseReference.CompletionListener() {
-                                    @Override
-                                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                                        if (databaseError != null) {
-                                            Toast.makeText(getApplicationContext(), "There was some error in sending request", Toast.LENGTH_SHORT).show();
-                                        }else {
-                                            Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
-                                            startActivity(new Intent(AddTaskActivity.this, HomeActivity.class));
-                                            finish();
-                                        }
-                                    }
-                                });
-                            }
-                        }
-
-
-                    } else {
-                        Log.e("Error", Objects.requireNonNull(task.getResult()).toString());
-                    }
-                }
-            });
-        }
-
-    }
-
-    public void onRadioButtonClicked(View view) {
-
-    }
-
-    public void pickTime(View view) {
-        // Re-init each time
-        dateTimeFragment.startAtCalendarView();
-        dateTimeFragment.setDefaultDateTime(calendar.getTime());
-        dateTimeFragment.show(getSupportFragmentManager(), TAG_DATETIME_FRAGMENT);
-    }
-
-    public void inviteCompanions(View view) {
-        Intent usersIntent = new Intent(AddTaskActivity.this, AllUsersActivity.class);
-        startActivity(usersIntent);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Intent i = getIntent();
-        String data = i.getStringExtra("fromUsersActivity");
-        if (data != null && data.contentEquals("1")) {
-            Set<User> users = (Set<User>) i.getSerializableExtra("users");
-
-            assert users != null;
-            Log.e("HomeResume", "" + users.size() );
-        }
-
-    }
+   }
 }

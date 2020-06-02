@@ -147,6 +147,7 @@ public class TaskDetails extends AppCompatActivity {
     public void invite(View view) {
         Intent usersIntent = new Intent(TaskDetails.this, AllUsersActivity.class);
         usersIntent.putExtra("task_id", task_id);
+        usersIntent.putExtra("fromTaskDetails", "1");
         startActivity(usersIntent);
     }
 

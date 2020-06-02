@@ -83,7 +83,7 @@ public class Companions extends AppCompatActivity {
                     holder.mView.setOnClickListener(new View.OnClickListener() {
                        @Override
                        public void onClick(View v) {
-                          CharSequence options[] = new CharSequence[]{"Open Profile", "Send Message"};
+                          CharSequence[] options = new CharSequence[]{"Open Profile", "Send Message"};
                           AlertDialog.Builder builder = new AlertDialog.Builder(Companions.this);
                           builder.setTitle("Select Options");
                           builder.setItems(options, new DialogInterface.OnClickListener() {

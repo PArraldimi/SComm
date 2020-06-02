@@ -105,6 +105,7 @@
             android:maxHeight="70dp"
             android:elevation="70dp"
             android:minHeight="70dp"
+            android:layout_marginStart="8dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/textView3">
 

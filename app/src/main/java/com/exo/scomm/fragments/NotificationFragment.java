@@ -125,7 +125,7 @@ public class NotificationFragment extends Fragment {
                                 final String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
                                 final String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
 
-                                String text = userName + " sent you a invite request to task " + taskName + " on " + taskDate + "\n " + dateString;
+                                String text = userName + " has invited you to accompany them to " + taskName + " on " + taskDate + "\n ";
                                 holder.setText(text);
 
                                 holder.accept.setOnClickListener(new View.OnClickListener() {
@@ -134,8 +134,10 @@ public class NotificationFragment extends Fragment {
                                       holder.decline.setEnabled(false);
                                       holder.accept.setEnabled(false);
                                       holder.chat.setEnabled(true);
-                                      String text = "You accepted"+ userName+ " invitation to the task " + taskName + " on " + taskDate + "\n " + dateString;
-                                    holder.setText(text);
+                                        Toast.makeText(getContext(), "Task Added successfully to Home page", Toast.LENGTH_SHORT).show();
+//                                      String text = "You accepted"+ userName+ " invitation to the task " + taskName + " on " + taskDate;
+//                                    holder.setText(text);
+
                                     final String currentDate = DateFormat.getDateInstance().format(new Date());
 
                                     mRootRef.child("Tasks").child(from).child(task_id).addValueEventListener(new ValueEventListener() {
@@ -184,6 +186,7 @@ public class NotificationFragment extends Fragment {
                                         friendsMap.put("Tasks/" + mCurrentUserId + "/" + task_id + "/", taskMap);
                                         friendsMap.put("TaskInviteRequests/" + mCurrentUserId + "/" + from + "/accepted", "true");
                                         friendsMap.put("TaskInviteRequests/" + from + "/" + mCurrentUserId + "/accepted", "true");
+
                                         mRootRef.updateChildren(friendsMap, new DatabaseReference.CompletionListener() {
                                           @Override
                                           public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
@@ -277,7 +280,7 @@ public class NotificationFragment extends Fragment {
                                 String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
                                 String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
 
-                                String text = "You sent " + userName + " an invite request to task " + taskName + " on " + taskDate + "\n " + dateString;
+                                String text = "You sent " + userName + " an invite request to task " + taskName + " on " + taskDate + "\n ";
                                 holder.setText(text);
 
 
@@ -344,14 +347,14 @@ public class NotificationFragment extends Fragment {
 
                                 Log.e("TAGG", userId);
                                 if (userId.equals(mCurrentUserId)) {
-                                  String text = userName + " accepted your invitation request to task " + taskName + " on " + taskDate + "\n " + dateString;
+                                  String text = userName + " accepted your invitation request to task " + taskName + " on " + taskDate;
                                   holder.setText(text);
                                   holder.decline.setEnabled(true);
                                   holder.decline.setText("Revoke");
 
 
                                 } else {
-                                  String text = "You accepted " + userName + "'s invitation to task " + taskName + " on " + taskDate + " \n " + dateString;
+                                  String text = "You accepted " + userName + "'s invitation to task " + taskName + " on " + taskDate;
                                   holder.setText(text);
                                   holder.decline.setEnabled(false);
 

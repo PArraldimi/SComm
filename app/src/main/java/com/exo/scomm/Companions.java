@@ -136,6 +136,7 @@ public class Companions extends AppCompatActivity {
          userStatus = mView.findViewById(R.id.single_user_status);
          profileImage = mView.findViewById(R.id.single_user_circle_image);
          selectCheck = mView.findViewById(R.id.select_check);
+         selectCheck.setVisibility(View.GONE);
 
       }
    }

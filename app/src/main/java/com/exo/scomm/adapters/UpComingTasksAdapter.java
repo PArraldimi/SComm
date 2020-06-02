@@ -49,6 +49,7 @@ public class UpComingTasksAdapter extends RecyclerView.Adapter<UpComingTasksAdap
                 detailsIntent.putExtra("date", task.getTitle());
                 detailsIntent.putExtra("type", task.getType());
                 detailsIntent.putExtra("desc", task.getDescription());
+                detailsIntent.putExtra("owner", task.getTaskOwner());
                 mCntxt.startActivity(detailsIntent);
             }
         });

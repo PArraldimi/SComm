@@ -7,7 +7,8 @@
     android:background="#fff"
     android:orientation="horizontal">
     <RelativeLayout
-        android:layout_width="280dp"
+        android:layout_width="wrap_content"
+        android:layout_weight="6"
         android:layout_height="match_parent"
         android:layout_marginStart="5dp"
         android:layout_marginEnd="10dp"
@@ -22,7 +23,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp" />
         <Button
-            android:id="@+id/view_scommers"
+            android:id="@+id/notification_view_scommers"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:layout_alignParentEnd="true"
@@ -31,12 +32,12 @@
             android:layout_marginBottom="5dp"
             android:elevation="57dp"
             android:onClick="invite"
-            android:paddingEnd="4dp"
-            android:text="  View Scommers"
+            android:padding="4dp"
+            android:text="@string/view_scommers"
             android:textAllCaps="false"
             android:textSize="12sp" />
         <TextView
-            android:id="@+id/received_date"
+            android:id="@+id/notification_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="date sent"
@@ -51,9 +52,9 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="6.5">
+        android:layout_width="wrap_content"
+        android:layout_weight="4"
+        android:layout_height="wrap_content">
 
         <Button
             android:id="@+id/notification_accept_btn"
@@ -65,14 +66,14 @@
             android:layout_marginBottom="5dp"
             android:elevation="20dp"
             android:gravity="center"
-            android:textSize="12dp"
+            android:textSize="12sp"
             android:textAllCaps="false" />
 
         <Button
             android:id="@+id/notification_decline_btn"
             android:layout_width="wrap_content"
             android:layout_height="33dp"
-            android:textSize="12dp"
+            android:textSize="12sp"
             android:layout_below="@+id/notification_accept_btn"
             android:layout_centerHorizontal="true"
             android:text="@string/decline"
@@ -85,7 +86,7 @@
             android:id="@+id/notification_chat_btn"
             android:layout_width="wrap_content"
             android:layout_height="33dp"
-            android:textSize="12dp"
+            android:textSize="12sp"
             android:layout_below="@id/notification_decline_btn"
             android:layout_centerHorizontal="true"
             android:background="@drawable/scrollviewborder"

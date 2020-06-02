@@ -211,7 +211,6 @@ public class HomeFragment extends Fragment {
   }
 
   public interface OnDataPass {
-    public void onDataPass(String data);
   }
 
 

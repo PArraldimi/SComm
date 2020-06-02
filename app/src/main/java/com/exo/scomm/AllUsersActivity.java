@@ -49,6 +49,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AllUsersActivity extends AppCompatActivity {
 
+   private static final String TAG = AllUsersActivity.class.getSimpleName();
    private RecyclerView FindFriendsRecyclerList;
    private DatabaseReference UsersRef, mRootRef, mInvitesReqDBRef, mCompanionsDatabase;
    private FirebaseUser mCurrentUser;
@@ -57,7 +58,8 @@ public class AllUsersActivity extends AppCompatActivity {
    private Set<User> selectedSet = new HashSet<>();
    TextView selectedScommers;
    private String task_id;
-   boolean invite = false;
+   boolean invite, newTask = false;
+
 
    @Override
    protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,15 +68,16 @@ public class AllUsersActivity extends AppCompatActivity {
       mRootRef = FirebaseDatabase.getInstance().getReference();
       UsersRef = mRootRef.child("Users");
       mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
-      mInvitesReqDBRef = mRootRef.child(mCurrentUser.getUid());
-      mInvitesReqDBRef = mRootRef.child("TaskInviteRequests");
+      mInvitesReqDBRef = mRootRef.child("TaskInviteRequests").child(mCurrentUser.getUid());
       mCompanionsDatabase = mRootRef.child("TaskCompanions");
 
 
       task_id = getIntent().getStringExtra("task_id");
       if (getIntent().hasExtra("fromTaskDetails")) {
          invite = true;
-
+      }
+      if (getIntent().hasExtra("newTask")) {
+         newTask = true;
       }
 
       selectedScommers = findViewById(R.id.selected_scommers);
@@ -113,37 +116,53 @@ public class AllUsersActivity extends AppCompatActivity {
                     holder.userStatus.setText(model.getStatus());
                     Picasso.get().load(model.getImage()).placeholder(R.drawable.profile_image).into(holder.profileImage);
 
-                    mRootRef.child("TaskCompanions").child(mCurrentUser.getUid()).child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
-                       @Override
-                       public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                          if (dataSnapshot.hasChild("task_id") && dataSnapshot.child("task_id").getValue().toString().equals(task_id) ) {
-                             holder.selectCheck.setChecked(true);
-                          }
-                       }
-
-                       @Override
-                       public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                       }
-                    });
-
-                    mInvitesReqDBRef.child(mCurrentUser.getUid()).child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
-                       @Override
-                       public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                          if (dataSnapshot.hasChild(task_id)) {
-                             String req_type = dataSnapshot.child(task_id).child("request_type").getValue().toString();
-                             if (req_type.equals("sent")) {
+                    if(!newTask) {
+                       mRootRef.child("TaskCompanions").child(mCurrentUser.getUid()).child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                          @Override
+                          public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                             if (dataSnapshot.hasChild("task_id") && dataSnapshot.child("task_id").getValue().toString().equals(task_id) ) {
                                 holder.selectCheck.setChecked(true);
                              }
+                          }
+
+                          @Override
+                          public void onCancelled(@NonNull DatabaseError databaseError) {
 
                           }
-                       }
+                       });
 
-                       @Override
-                       public void onCancelled(@NonNull DatabaseError databaseError) {
+                       mInvitesReqDBRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                          @Override
+                          public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                             Log.e(TAG, dataSnapshot.getKey());
+                             if (dataSnapshot.hasChild(uid)) {
+                                mInvitesReqDBRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                                   @Override
+                                   public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                      Log.e("LOGGG", ""+dataSnapshot.child(task_id).getValue().toString());
 
-                       }
-                    });
+                                      if (dataSnapshot.hasChild(task_id)) {
+                                         String req_type = dataSnapshot.child(task_id).child("request_type").getValue().toString();
+                                         if (req_type.equals("sent")) {
+                                            holder.selectCheck.setChecked(true);
+                                         }
+                                      }
+                                   }
+
+                                   @Override
+                                   public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                   }
+                                });
+                             }
+                          }
+
+                          @Override
+                          public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                          }
+                       });
+                    }
 
                     for (int i = 0; i < selectedSet.size(); i++) {
                        if (selectedUsers.contains(model.getUsername())) {

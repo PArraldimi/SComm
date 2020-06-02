@@ -28,11 +28,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class TaskDetails extends AppCompatActivity {
@@ -41,7 +43,7 @@ public class TaskDetails extends AppCompatActivity {
     TextView taskDesc, taskTitle, taskDate, taskType, taskCreator;
     ImageView editTask;
     TodayTasksDetailsAdapter tasksDetailsAdapter;
-    private String task_id, mCurrentUID, date, desc, title, type;
+    private String task_id, mCurrentUID, date, desc, title, type , owner;
     private DatabaseReference taskCompRef;
     private DatabaseReference mRootRef, mUsersRef;
     private List<User> taskCompList = new ArrayList<>();
@@ -68,6 +70,7 @@ public class TaskDetails extends AppCompatActivity {
         desc = getIntent().getStringExtra("desc");
         title = getIntent().getStringExtra("title");
         type = getIntent().getStringExtra("type");
+        owner = getIntent().getStringExtra("owner");
 
         taskType.setText(type);
         taskDate.setText(date);
@@ -75,6 +78,11 @@ public class TaskDetails extends AppCompatActivity {
         taskDesc.setText(desc);
 
         mCurrentUID = FirebaseAuth.getInstance().getUid();
+
+        if (!owner.equals(mCurrentUID)){
+            deleteTask.setEnabled(false);
+        }
+
         mRootRef = FirebaseDatabase.getInstance().getReference();
         mUsersRef = mRootRef.child("Users");
         taskCompRef = mRootRef.child("TaskCompanions").child(mCurrentUID);
@@ -86,27 +94,32 @@ public class TaskDetails extends AppCompatActivity {
 
         tasksDetailsAdapter = new TodayTasksDetailsAdapter(getApplicationContext(), tasksModelList);
 
+        getTaskCompanions();
+    }
+
+    private void getTaskCompanions() {
         taskCompRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
                     final String uid = childDataSnapshot.getKey();
-                    Log.e("User Key", uid);
-                    mUsersRef.child(uid).addValueEventListener(new ValueEventListener() {
+                    assert uid != null;
+                    taskCompRef.child(uid).child("task_id").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            String name = Objects.requireNonNull(dataSnapshot.child("username").getValue()).toString();
-                            String status = Objects.requireNonNull(dataSnapshot.child("status").getValue()).toString();
-                            String image = Objects.requireNonNull(dataSnapshot.child("image").getValue()).toString();
+                            if (Objects.requireNonNull(dataSnapshot.getValue()).toString().equals(uid)){
+                                mUsersRef.child(uid).addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        addCompanion(dataSnapshot, uid);
+                                    }
 
-                            User user = new User();
-                            user.setUID(uid);
-                            user.setUsername(name);
-                            user.setImage(image);
-                            user.setStatus(status);
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                            taskCompList.add(user);
-                            populateTaskCompanionsAdapter(TaskDetails.this, taskCompList);
+                                    }
+                                });
+                            }
                         }
 
                         @Override
@@ -114,6 +127,8 @@ public class TaskDetails extends AppCompatActivity {
 
                         }
                     });
+
+
                 }
             }
             @Override
@@ -123,26 +138,39 @@ public class TaskDetails extends AppCompatActivity {
         });
     }
 
+    private void addCompanion(@NonNull DataSnapshot dataSnapshot, String uid) {
+        String name = Objects.requireNonNull(dataSnapshot.child("username").getValue()).toString();
+        String status = Objects.requireNonNull(dataSnapshot.child("status").getValue()).toString();
+        String image = Objects.requireNonNull(dataSnapshot.child("image").getValue()).toString();
+        User user = new User();
+        user.setUID(uid);
+        user.setUsername(name);
+        user.setImage(image);
+        user.setStatus(status);
+        taskCompList.add(user);
+        CompanionsTasksAdapter adapter = new CompanionsTasksAdapter(getApplicationContext(), taskCompList);
+        myTaskCompanions.setAdapter(adapter);
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
 
     }
 
-    private void populateTaskCompanionsAdapter(Context context, List<User> taskCompanions) {
-
-        if (lastScrollPosition == 0) lastScrollPosition = taskCompanions.size() - 1;
-        CompanionsTasksAdapter adapter = new CompanionsTasksAdapter(context, taskCompanions);
-        myTaskCompanions.setAdapter(adapter);
-        myTaskCompanions.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                lastScrollPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition();
-            }
-        });
-        myTaskCompanions.scrollToPosition(lastScrollPosition);
-    }
+//    private void populateTaskCompanionsAdapter(Context context, List<User> taskCompanions) {
+//
+//        if (lastScrollPosition == 0) lastScrollPosition = taskCompanions.size() - 1;
+//
+//        myTaskCompanions.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//                lastScrollPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition();
+//            }
+//        });
+//        myTaskCompanions.scrollToPosition(lastScrollPosition);
+//    }
 
     public void invite(View view) {
         Intent usersIntent = new Intent(TaskDetails.this, AllUsersActivity.class);
@@ -152,10 +180,38 @@ public class TaskDetails extends AppCompatActivity {
     }
 
     public void deleteTask(View view) {
-        HashMap<String, Object> friendsMap = new HashMap<>();
-        friendsMap.put("TaskCompanions/" + mCurrentUID + "/" + task_id + "/", null);
-        friendsMap.put("Tasks/" + mCurrentUID + "/" + task_id + "/", null);
-        mRootRef.updateChildren(friendsMap, new DatabaseReference.CompletionListener() {
+
+        String noteKey = mRootRef.child("Notifications").child(mCurrentUID).push().getKey();
+        for (User user: taskCompList
+             ) {
+
+            String userId = user.getUID();
+            Map recipientNote = new HashMap<>();
+            recipientNote.put("user", mCurrentUID);
+            recipientNote.put("type", "deleteTask");
+            recipientNote.put("task_id", task_id);
+            recipientNote.put("date", ServerValue.TIMESTAMP);
+
+            Map senderNote = new HashMap<>();
+            senderNote.put("user", userId);
+            senderNote.put("type", "deleteTask");
+            senderNote.put("task_id", task_id);
+            senderNote.put("date", ServerValue.TIMESTAMP);
+
+            HashMap<String, Object> deleteTaskMap = new HashMap<>();
+            deleteTaskMap.put("TaskCompanions/" + mCurrentUID + "/" + userId + "/" + "task_id", null);
+            deleteTaskMap.put("TaskCompanions/" + userId + "/" + mCurrentUID + "/" + "task_id", null);
+            deleteTaskMap.put("Notifications/" + userId + "/" + noteKey, recipientNote);
+            deleteTaskMap.put("Notifications/" + mCurrentUID + "/" + noteKey, senderNote);
+            deleteTaskMap.put("Tasks/" + mCurrentUID + "/" + task_id + "/", null);
+            deleteTaskMap.put("Tasks/" + userId + "/" + task_id + "/", null);
+
+            delete(deleteTaskMap);
+        }
+    }
+
+    private void delete(HashMap<String, Object> deleteTaskMap) {
+        mRootRef.updateChildren(deleteTaskMap, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                 if (databaseError == null) {

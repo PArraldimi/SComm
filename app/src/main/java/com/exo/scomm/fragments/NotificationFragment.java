@@ -1,8 +1,8 @@
 package com.exo.scomm.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.exo.scomm.Companions;
 import com.exo.scomm.HomeActivity;
 import com.exo.scomm.R;
 import com.exo.scomm.model.Notification;
@@ -35,7 +36,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -62,11 +62,9 @@ public class NotificationFragment extends Fragment {
       mAuth = FirebaseAuth.getInstance();
       mCurrentUserId = mAuth.getCurrentUser().getUid();
       mRootRef = FirebaseDatabase.getInstance().getReference();
-
       mNotificationsRef = mRootRef.child("Notifications").child(mCurrentUserId);
       mUsersDatabase = mRootRef.child("Users");
       mTaskRef = mRootRef.child("Tasks");
-
       mFriendsRecycler.setHasFixedSize(true);
       mFriendsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -105,9 +103,17 @@ public class NotificationFragment extends Fragment {
                     final String task_id = model.getTask_id();
                     DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance();
                     final String date = dateFormat.format(model.getDate());
+                    holder.mViewSchommers.setOnClickListener(new View.OnClickListener() {
+                       @Override
+                       public void onClick(View v) {
+                          Intent usersIntent = new Intent(getActivity(), Companions.class);
+                          startActivity(usersIntent);
+                       }
+                    });
 
                     switch (req_type) {
                        case "received": {
+                          assert noteKey != null;
                           mNotificationsRef.child(noteKey).addValueEventListener(new ValueEventListener() {
                              @Override
                              public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -115,11 +121,11 @@ public class NotificationFragment extends Fragment {
                                 mRootRef.child("TaskCompanions").child(mCurrentUserId).child(user_id).addListenerForSingleValueEvent(new ValueEventListener() {
                                    @Override
                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                      if (dataSnapshot.child("task_id").getValue().toString().equals(task_id)){
+                                      if (dataSnapshot.child("task_id").getValue().toString().equals(task_id)) {
                                          holder.decline.setEnabled(false);
                                          holder.accept.setEnabled(false);
                                          holder.chat.setEnabled(true);
-                                      }else {
+                                      } else {
                                          holder.decline.setEnabled(true);
                                          holder.accept.setEnabled(true);
                                          holder.chat.setEnabled(false);
@@ -141,112 +147,22 @@ public class NotificationFragment extends Fragment {
                                          public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                             final String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
                                             final String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
-                                            String text = userName + " sent you a invite request to task " + taskName + " on " + taskDate + "\n " + date;
+                                            String text = userName + " sent you a invite request to task " + taskName + " on " + taskDate;
                                             holder.setText(text);
-                                            holder.accept.setOnClickListener(new View.OnClickListener() {
-                                               @Override
-                                               public void onClick(View v) {
-                                                  mRootRef.child("Tasks").child(user_id).child(task_id).addValueEventListener(new ValueEventListener() {
-                                                     @Override
-                                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                        if (dataSnapshot.getChildren().equals("")) {
-                                                           Toast.makeText(getContext(), "Unable to complete request", Toast.LENGTH_SHORT).show();
-                                                        }
-
-                                                        String title = dataSnapshot.child("title").getValue().toString();
-                                                        String description = dataSnapshot.child("description").getValue().toString();
-                                                        String type = dataSnapshot.child("type").getValue().toString();
-                                                        String date = dataSnapshot.child("date").getValue().toString();
-                                                        String taskOwn = dataSnapshot.child("taskOwner").getValue().toString();
-
-                                                        final Map<String, String> taskMap = new HashMap<>();
-                                                        taskMap.put("taskOwner", taskOwn);
-                                                        taskMap.put("title", title);
-                                                        taskMap.put("description", description);
-                                                        taskMap.put("type", type);
-                                                        taskMap.put("task_id", task_id);
-                                                        taskMap.put("date", date);
-
-                                                        Map taskCompMap = new HashMap();
-                                                        taskCompMap.put("taskOwner", taskOwn);
-                                                        taskCompMap.put("task_id", task_id);
-                                                        taskCompMap.put("date", date);
-
-                                                        String noteKey = mRootRef.child("Notifications").child(mCurrentUserId).push().getKey();
-
-                                                        Map recipientNote = new HashMap<>();
-                                                        recipientNote.put("user", mCurrentUserId);
-                                                        recipientNote.put("type", "accepted");
-                                                        recipientNote.put("task_id", task_id);
-                                                        recipientNote.put("date", ServerValue.TIMESTAMP);
-
-                                                        Map senderNote = new HashMap<>();
-                                                        senderNote.put("user", user_id);
-                                                        senderNote.put("type", "accepted");
-                                                        senderNote.put("task_id", task_id);
-                                                        senderNote.put("date", ServerValue.TIMESTAMP);
-
-                                                        Map companionsMap = new HashMap();
-                                                        companionsMap.put("TaskCompanions/" + mCurrentUserId + "/" + user_id + "/" + "task_id", task_id);
-                                                        companionsMap.put("TaskCompanions/" + user_id + "/" + mCurrentUserId + "/" + "task_id", task_id);
-                                                        companionsMap.put("Notifications/" + user_id + "/" + noteKey, recipientNote);
-                                                        companionsMap.put("Notifications/" + mCurrentUserId + "/" + noteKey, senderNote);
-                                                        companionsMap.put("Tasks/" + mCurrentUserId + "/" + task_id + "/", taskMap);
-                                                        companionsMap.put("TaskInviteRequests/" + mCurrentUserId + "/" + user_id + "/" + task_id + "/" + "accepted", "true");
-                                                        companionsMap.put("TaskInviteRequests/" + user_id + "/" + mCurrentUserId + "/" + task_id + "/" + "accepted", "true");
-                                                        mRootRef.updateChildren(companionsMap, new DatabaseReference.CompletionListener() {
-                                                           @Override
-                                                           public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                                                              if (databaseError == null) {
-                                                                 holder.decline.setEnabled(false);
-                                                                 holder.accept.setEnabled(false);
-                                                                 holder.chat.setEnabled(true);
-                                                              } else {
-                                                                 String error = databaseError.getMessage();
-                                                                 Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
-                                                              }
-                                                           }
-
-                                                        });
-                                                     }
-
-                                                     @Override
-                                                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                     }
-                                                  });
-                                               }
-                                            });
+                                            holder.setDate(date);
+                                            acceptInvite(holder, user_id, task_id);
                                             holder.chat.setOnClickListener(new View.OnClickListener() {
                                                @Override
                                                public void onClick(View v) {
-                                                  FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                                                  FragmentTransaction transaction = fragmentManager.beginTransaction();
-                                                  transaction.addToBackStack(null).add(R.id.main_container, ChatroomFragment.newInstance(user_id)).commit();
-
+                                                  openChat(user_id);
                                                }
                                             });
-//                                      holder.decline.setOnClickListener(new View.OnClickListener() {
-//                                         @Override
-//                                         public void onClick(View v) {
-//                                            Map unfriendsMap = new HashMap();
-//                                            unfriendsMap.put("TaskCompanions/" + mCurrentUserId + "/" + from, null);
-//                                            unfriendsMap.put("TaskCompanions/" + from + "/" + mCurrentUserId, null);
-//                                            mRootRef.updateChildren(unfriendsMap, new DatabaseReference.CompletionListener() {
-//                                               @Override
-//                                               public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-//                                                  if (databaseError == null) {
-//                                                     holder.decline.setEnabled(false);
-//                                                     holder.accept.setEnabled(false);
-//                                                     holder.chat.setEnabled(false);
-//                                                  } else {
-//                                                     String error = databaseError.getMessage();
-//                                                     Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
-//                                                  }
-//                                               }
-//                                            });
-//                                         }
-//                                      });
+                                            holder.decline.setOnClickListener(new View.OnClickListener() {
+                                               @Override
+                                               public void onClick(View v) {
+                                                  revokeInvite(user_id, task_id, holder);
+                                               }
+                                            });
                                          }
 
                                          @Override
@@ -254,8 +170,6 @@ public class NotificationFragment extends Fragment {
 
                                          }
                                       });
-
-
                                    }
 
                                    @Override
@@ -290,32 +204,16 @@ public class NotificationFragment extends Fragment {
                                             String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
                                             String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
 
-                                            String text = "You sent " + userName + " an invite request to task " + taskName + " on " + taskDate + "\n " + date;
+                                            String text = "You sent " + userName + " an invite request to task " + taskName + " on " + taskDate;
                                             holder.setText(text);
+                                            holder.setDate(date);
                                             holder.decline.setEnabled(true);
                                             holder.accept.setEnabled(false);
                                             holder.chat.setEnabled(false);
                                             holder.decline.setOnClickListener(new View.OnClickListener() {
                                                @Override
                                                public void onClick(View v) {
-                                                  Map declineInviteMap = new HashMap();
-
-                                                  declineInviteMap.put("TaskCompanions/" + mCurrentUserId + "/" + user_id + "/" + "task_id", null);
-                                                  declineInviteMap.put("TaskCompanions/" + user_id + "/" + mCurrentUserId + "/" + "task_id", null);
-
-                                                  mRootRef.updateChildren(declineInviteMap, new DatabaseReference.CompletionListener() {
-                                                     @Override
-                                                     public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                                                        if (databaseError == null) {
-                                                           holder.decline.setEnabled(true);
-                                                           holder.accept.setEnabled(false);
-                                                           holder.chat.setEnabled(false);
-                                                        } else {
-                                                           String error = databaseError.getMessage();
-                                                           Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
-                                                        }
-                                                     }
-                                                  });
+                                                  declineInvite(user_id, holder);
                                                }
                                             });
 
@@ -348,6 +246,7 @@ public class NotificationFragment extends Fragment {
                        case "accepted":
                           holder.accept.setEnabled(false);
                           holder.chat.setEnabled(true);
+                          assert noteKey != null;
                           mNotificationsRef.child(noteKey).addValueEventListener(new ValueEventListener() {
                              @Override
                              public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -364,12 +263,14 @@ public class NotificationFragment extends Fragment {
                                             if (user_id.equals(mCurrentUserId)) {
                                                holder.decline.setEnabled(true);
                                                holder.decline.setText("Revoke");
-                                               String text = userName + " accepted your invitation request to task " + taskName + " on " + taskDate + "\n " + date;
+                                               String text = userName + " accepted your invitation request to task " + taskName + " on " + taskDate;
                                                holder.setText(text);
-                                            }else {
+                                               holder.setDate(date);
+                                            } else {
                                                holder.decline.setEnabled(false);
-                                               String text = "You accepted " + userName + "'s invitation to task " + taskName + " on " + taskDate + " \n " + date;
+                                               String text = "You accepted " + userName + "'s invitation to task " + taskName + " on " + taskDate;
                                                holder.setText(text);
+                                               holder.setDate(date);
                                             }
 
                                             holder.chat.setOnClickListener(new View.OnClickListener() {
@@ -408,6 +309,43 @@ public class NotificationFragment extends Fragment {
                           });
 
                           break;
+                       case "deleteTask":
+                          holder.decline.setEnabled(false);
+                          holder.accept.setEnabled(false);
+                          holder.chat.setEnabled(false);
+                          mNotificationsRef.child(noteKey).addValueEventListener(new ValueEventListener() {
+                             @Override
+                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                final String user_id = Objects.requireNonNull(dataSnapshot.child("user").getValue()).toString();
+                                mUsersDatabase.child(user_id).addValueEventListener(new ValueEventListener() {
+                                   @Override
+                                   public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                      final String userName = dataSnapshot.child("username").getValue().toString();
+                                      if (user_id.equals(mCurrentUserId)) {
+                                         holder.decline.setEnabled(true);
+                                         holder.decline.setText("Revoke");
+                                         String text = userName + " deleted a your were in task ";
+                                         holder.setText(text);
+                                         holder.setDate(date);
+                                      } else {
+                                         holder.decline.setEnabled(false);
+                                         String text = "You deleted task successfully" ;
+                                         holder.setDate(date);
+                                      }
+                                   }
+
+                                   @Override
+                                   public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                   }
+                                });
+                             }
+
+                             @Override
+                             public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                             }
+                          });
                     }
                  }
 
@@ -422,9 +360,128 @@ public class NotificationFragment extends Fragment {
       adapter.startListening();
    }
 
+   private void declineInvite(String user_id, @NonNull final FriendsReqViewHolder holder) {
+      Map declineInviteMap = new HashMap();
+      declineInviteMap.put("TaskCompanions/" + mCurrentUserId + "/" + user_id + "/" + "task_id", null);
+      declineInviteMap.put("TaskCompanions/" + user_id + "/" + mCurrentUserId + "/" + "task_id", null);
+
+      mRootRef.updateChildren(declineInviteMap, new DatabaseReference.CompletionListener() {
+         @Override
+         public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+            if (databaseError == null) {
+               holder.decline.setEnabled(true);
+               holder.accept.setEnabled(false);
+               holder.chat.setEnabled(false);
+            } else {
+               String error = databaseError.getMessage();
+               Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+            }
+         }
+      });
+   }
+
+   private void revokeInvite(String user_id, String task_id, @NonNull final FriendsReqViewHolder holder) {
+      Map unfriendsMap = new HashMap();
+      unfriendsMap.put("TaskInviteRequests/" + mCurrentUserId + "/" + user_id + "/" + task_id, null);
+      unfriendsMap.put("TaskInviteRequests/" + user_id + "/" + mCurrentUserId + "/" + task_id, null);
+      unfriendsMap.put("TaskCompanions/" + mCurrentUserId + "/" + user_id + "/" + "task_id", null);
+      unfriendsMap.put("TaskCompanions/" + user_id + "/" + mCurrentUserId + "/" + "task_id", null);
+      mRootRef.updateChildren(unfriendsMap, new DatabaseReference.CompletionListener() {
+         @Override
+         public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+            if (databaseError == null) {
+               holder.decline.setEnabled(false);
+               holder.accept.setEnabled(false);
+               holder.chat.setEnabled(false);
+            } else {
+               String error = databaseError.getMessage();
+               Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+            }
+         }
+      });
+   }
+
+   private void openChat(String user_id) {
+      FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+      FragmentTransaction transaction = fragmentManager.beginTransaction();
+      transaction.addToBackStack(null).add(R.id.main_container, ChatroomFragment.newInstance(user_id)).commit();
+   }
+
+   private void acceptInvite(@NonNull final FriendsReqViewHolder holder, final String user_id, final String task_id) {
+      holder.accept.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+            mRootRef.child("Tasks").child(user_id).child(task_id).addValueEventListener(new ValueEventListener() {
+               @Override
+               public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                  if (dataSnapshot.getChildren().equals("")) {
+                     Toast.makeText(getContext(), "Unable to complete request", Toast.LENGTH_SHORT).show();
+                  }
+                  String title = dataSnapshot.child("title").getValue().toString();
+                  String description = dataSnapshot.child("description").getValue().toString();
+                  String type = dataSnapshot.child("type").getValue().toString();
+                  String date = dataSnapshot.child("date").getValue().toString();
+                  String taskOwn = dataSnapshot.child("taskOwner").getValue().toString();
+
+                  final Map<String, String> taskMap = new HashMap<>();
+                  taskMap.put("taskOwner", taskOwn);
+                  taskMap.put("title", title);
+                  taskMap.put("description", description);
+                  taskMap.put("type", type);
+                  taskMap.put("task_id", task_id);
+                  taskMap.put("date", date);
+
+                  String noteKey = mRootRef.child("Notifications").child(mCurrentUserId).push().getKey();
+
+                  Map recipientNote = new HashMap<>();
+                  recipientNote.put("user", mCurrentUserId);
+                  recipientNote.put("type", "accepted");
+                  recipientNote.put("task_id", task_id);
+                  recipientNote.put("date", ServerValue.TIMESTAMP);
+
+                  Map senderNote = new HashMap<>();
+                  senderNote.put("user", user_id);
+                  senderNote.put("type", "accepted");
+                  senderNote.put("task_id", task_id);
+                  senderNote.put("date", ServerValue.TIMESTAMP);
+
+                  Map companionsMap = new HashMap();
+                  companionsMap.put("TaskCompanions/" + mCurrentUserId + "/" + user_id + "/" + "task_id", task_id);
+                  companionsMap.put("TaskCompanions/" + user_id + "/" + mCurrentUserId + "/" + "task_id", task_id);
+                  companionsMap.put("Notifications/" + user_id + "/" + noteKey, recipientNote);
+                  companionsMap.put("Notifications/" + mCurrentUserId + "/" + noteKey, senderNote);
+                  companionsMap.put("Tasks/" + mCurrentUserId + "/" + task_id + "/", taskMap);
+                  companionsMap.put("TaskInviteRequests/" + mCurrentUserId + "/" + user_id + "/" + task_id + "/" + "accepted", "true");
+                  companionsMap.put("TaskInviteRequests/" + user_id + "/" + mCurrentUserId + "/" + task_id + "/" + "accepted", "true");
+                  mRootRef.updateChildren(companionsMap, new DatabaseReference.CompletionListener() {
+                     @Override
+                     public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                        if (databaseError == null) {
+                           holder.decline.setEnabled(false);
+                           holder.accept.setEnabled(false);
+                           holder.chat.setEnabled(true);
+                        } else {
+                           String error = databaseError.getMessage();
+                           Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+                        }
+                     }
+
+                  });
+               }
+
+               @Override
+               public void onCancelled(@NonNull DatabaseError databaseError) {
+
+               }
+            });
+         }
+      });
+   }
+
    public static class FriendsReqViewHolder extends RecyclerView.ViewHolder {
       View mView;
-      Button accept, decline, chat;
+      TextView mDate;
+      Button accept, decline, chat, mViewSchommers;
 
       FriendsReqViewHolder(@NonNull View itemView) {
          super(itemView);
@@ -432,11 +489,19 @@ public class NotificationFragment extends Fragment {
          chat = mView.findViewById(R.id.notification_chat_btn);
          accept = mView.findViewById(R.id.notification_accept_btn);
          decline = mView.findViewById(R.id.notification_decline_btn);
+         mDate = mView.findViewById(R.id.notification_date);
+         mViewSchommers = mView.findViewById(R.id.notification_view_scommers);
+
       }
 
       void setText(String text) {
          TextView user_name = mView.findViewById(R.id.notification_text_message);
          user_name.setText(text);
+      }
+
+      void setDate(String text) {
+         TextView date = mView.findViewById(R.id.notification_date);
+         date.setText(text);
       }
    }
 

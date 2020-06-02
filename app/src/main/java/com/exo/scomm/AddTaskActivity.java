@@ -355,6 +355,7 @@ public class AddTaskActivity extends AppCompatActivity {
 
    public void inviteCompanions(View view) {
       Intent usersIntent = new Intent(AddTaskActivity.this, AllUsersActivity.class);
+      usersIntent.putExtra("newTask", "1");
       startActivity(usersIntent);
    }
 

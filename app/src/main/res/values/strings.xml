@@ -67,5 +67,6 @@
     <string name="type_message">"Type a message "</string>
     <string name="invites">Invites:</string>
     <string name="scommin">Scommin</string>
+    <string name="view_scommers">View Scommers</string>
 
 </resources>

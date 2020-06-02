@@ -57,18 +57,14 @@ public class HomeFragment extends Fragment {
   private String currentUid;
   private int lastScrollPosition = 0;
   private LinearLayoutManager linearLayoutManager;
-  OnDataPass dataPasser;
+
 
   private Calendar calendar;
 
   public HomeFragment() {
   }
 
-  @Override
-  public void onAttach(Context context) {
-    super.onAttach(context);
-    dataPasser = (OnDataPass) context;
-  }
+
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -134,7 +130,7 @@ public class HomeFragment extends Fragment {
               user.setUID(uid);
               user.setStatus(status);
               companionsList.add(user);
-              CompanionsAdapter adapter = new CompanionsAdapter(getContext(), companionsList,dataPasser);
+              CompanionsAdapter adapter = new CompanionsAdapter(getContext(), companionsList);
               companionsRecycler.setAdapter(adapter);
             }
 
@@ -210,8 +206,6 @@ public class HomeFragment extends Fragment {
     return dateObject1.isSameDayAs(dateObject2);
   }
 
-  public interface OnDataPass {
-  }
 
 
 }

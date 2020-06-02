@@ -29,12 +29,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CompanionsAdapter extends RecyclerView.Adapter<CompanionsAdapter.MyViewHolder> {
   private Context mCtxt;
-  HomeFragment.OnDataPass dataPasser;
   private List<User> companionsList;
 
-  public CompanionsAdapter(Context context, List<User> companionsList, HomeFragment.OnDataPass dataPasser) {
+  public CompanionsAdapter(Context context, List<User> companionsList) {
     this.mCtxt = context;
-    this.dataPasser = dataPasser;
     this.companionsList = companionsList;
 
   }
@@ -121,5 +119,4 @@ public class CompanionsAdapter extends RecyclerView.Adapter<CompanionsAdapter.My
       button = (Button) view.findViewById(R.id.companion_button);
     }
   }
-
 }

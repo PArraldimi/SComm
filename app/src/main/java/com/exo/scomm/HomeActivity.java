@@ -27,7 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
 
-public class HomeActivity extends AppCompatActivity implements HomeFragment.OnDataPass {
+public class HomeActivity extends AppCompatActivity  {
   private FirebaseAuth firebaseAuth;
   private FirebaseFirestore firebaseFirestore;
   public FloatingActionButton add_task;
@@ -241,11 +241,5 @@ public class HomeActivity extends AppCompatActivity implements HomeFragment.OnDa
 
   }
 
-  @Override
-  public void onDataPass(String data) {
-      getMyData(data);
-  }
-    public String getMyData(String data)  {
-        return data ;
-    }
+
 }

@@ -139,10 +139,10 @@ public class AllUsersActivity extends AppCompatActivity {
                                 mInvitesReqDBRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                                    @Override
                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                      Log.e("LOGGG", ""+dataSnapshot.child(task_id).getValue().toString());
+//                                      Log.e("LOGGG", ""+ Objects.requireNonNull(dataSnapshot.child(task_id).getValue()).toString());
 
                                       if (dataSnapshot.hasChild(task_id)) {
-                                         String req_type = dataSnapshot.child(task_id).child("request_type").getValue().toString();
+                                         String req_type = Objects.requireNonNull(dataSnapshot.child(task_id).child("request_type").getValue()).toString();
                                          if (req_type.equals("sent")) {
                                             holder.selectCheck.setChecked(true);
                                          }

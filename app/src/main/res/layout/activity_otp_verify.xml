@@ -40,7 +40,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="70dp"
         android:fontFamily="@font/century"
-        android:text="@string/enter_code_sent_to_your_phone_below"
+        android:text="Enter Code Sent To Your Phone:"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
         android:textColor="#000000" />
 

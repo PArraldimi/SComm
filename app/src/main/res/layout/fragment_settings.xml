@@ -5,33 +5,33 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/color_gradient">
-    <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/relative003"
-            android:background="#80BBF8"
-            android:paddingBottom="8dp"
-            android:paddingTop="8dp"
-            android:layout_marginBottom="10dp"
-            tools:ignore="MissingConstraints">
+    <androidx.appcompat.widget.Toolbar
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/settings_app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginBottom="10dp"
+        android:background="#80BBF8"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
 
-            <TextView
-                android:id="@+id/textView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/arialregular"
-                android:text="Account Settings"
-                android:layout_marginStart="20dp"
-                android:layout_centerVertical="true"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="#FFFFFF"/>
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/arialregular"
+            android:text="Account Settings"
+            android:layout_marginTop="5dp"
+            android:layout_toEndOf="@+id/back_button"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"/>
+
+    </androidx.appcompat.widget.Toolbar>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/relative003">
+        android:layout_below="@+id/settings_app_bar">
 
         <RelativeLayout
             android:id="@+id/relative004"

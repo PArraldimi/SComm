@@ -3,6 +3,6 @@
     android:id="@+id/main_app_bar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#6C8EF1"
+    android:background="#80BBF8"
     android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
 </androidx.appcompat.widget.Toolbar>

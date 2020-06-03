@@ -2,12 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:elevation="5dp"
+    android:elevation="0dp"
     android:padding="5dp"
     android:background="#fff"
     android:orientation="horizontal">
     <RelativeLayout
-        android:layout_width="wrap_content"
+        android:layout_width="260dp"
         android:layout_weight="6"
         android:layout_height="match_parent"
         android:layout_marginStart="5dp"
@@ -32,15 +32,18 @@
             android:layout_marginBottom="5dp"
             android:elevation="57dp"
             android:onClick="invite"
-            android:padding="4dp"
             android:text="@string/view_scommers"
+            android:gravity="center_vertical"
             android:textAllCaps="false"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"/>
         <TextView
             android:id="@+id/notification_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="date sent"
+            android:textSize="11dp"
             android:textColor="#000"
             android:layout_marginEnd="10dp"
             android:layout_marginStart="5dp"

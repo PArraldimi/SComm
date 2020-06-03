@@ -265,7 +265,7 @@ public class Profile extends AppCompatActivity {
 
                     HashMap<String, String> recipientNote = new HashMap<>();
                     recipientNote.put("fromUser", mCurrentUser.getUid());
-                    recipientNote.put("type", "request_accepted");
+                    recipientNote.put("type", "accepted");
                     recipientNote.put("task_id", task_id);
                     recipientNote.put("date", currentDate);
                     recipientNote.put("toUser", user_id);
@@ -273,15 +273,15 @@ public class Profile extends AppCompatActivity {
 
                     HashMap<String, String> senderNote = new HashMap<>();
                     senderNote.put("toUser", user_id);
-                    senderNote.put("type", "request_accepted");
+                    senderNote.put("type", "accepted");
                     senderNote.put("task_id", task_id);
                     senderNote.put("date", currentDate);
                     senderNote.put("fromUser", mCurrentUser.getUid());
 
 
                     Map companionsMap = new HashMap();
-                    companionsMap.put("TaskCompanions/" + mCurrentUser.getUid()+"/"+ user_id+"/"+"task_id",task_id);
-                    companionsMap.put("TaskCompanions/" + user_id + "/"+ mCurrentUser.getUid()+"/"+"task_id",task_id);
+                    companionsMap.put("TaskCompanions/"+task_id+"/"+mCurrentUser.getUid(), ServerValue.TIMESTAMP);
+                    companionsMap.put("TaskCompanions/" +task_id+"/"+user_id, ServerValue.TIMESTAMP);
                     companionsMap.put("TaskInviteRequests/" + mCurrentUser.getUid() + "/" + user_id + "/" + task_id, null);
                     companionsMap.put("TaskInviteRequests/" + user_id + "/" + mCurrentUser.getUid() + "/" + task_id, null);
                     companionsMap.put("Notifications/" + user_id + "/" + noteId, senderNote);
@@ -310,8 +310,8 @@ public class Profile extends AppCompatActivity {
 //  < ----------------------------REVOKE COMPANION-------------------------------->
                 if (mCompanionsState == 3) {
                     Map revokeMap = new HashMap();
-                    revokeMap.put("TaskCompanions/" + mCurrentUser.getUid()  + "/"+user_id, null);
-                    revokeMap.put("TaskCompanions/" + user_id  + "/"+mCurrentUser.getUid(), null);
+                   revokeMap.put("TaskCompanions/"+task_id+"/"+mCurrentUser.getUid(),null);
+                   revokeMap.put("TaskCompanions/" +task_id+"/"+user_id, null);
                     mRootRef.updateChildren(revokeMap, new DatabaseReference.CompletionListener() {
                         @Override
                         public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {

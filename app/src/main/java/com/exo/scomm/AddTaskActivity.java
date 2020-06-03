@@ -249,19 +249,23 @@ public class AddTaskActivity extends AppCompatActivity {
       taskMap.put("type", selectedItem);
       taskMap.put("date", date);
       taskMap.put("task_id", task_id);
-      Log.e("check", "userMap" + taskMap);
       if (selectedItem.equals("Private")) {
          assert task_id != null;
          mDatabase = FirebaseDatabase.getInstance().getReference().child("Tasks").child(userId).child(task_id);
-         taskMap.put("task_id", task_id);
          mDatabase.setValue(taskMap).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                if (task.isSuccessful()) {
-                  mProgressDialog.dismiss();
-                  Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
-                  startActivity(new Intent(AddTaskActivity.this, HomeActivity.class));
-                  finish();
+                  mRootRef.child("TaskSupers").child(task_id).child(mCurrentUser.getUid()).setValue(ServerValue.TIMESTAMP).addOnCompleteListener(new OnCompleteListener<Void>() {
+                     @Override
+                     public void onComplete(@NonNull Task<Void> task) {
+                        mProgressDialog.dismiss();
+                        Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(AddTaskActivity.this, HomeActivity.class));
+                        finish();
+                     }
+                  });
+
                } else {
                   Log.e("Error", task.getResult().toString());
                }
@@ -273,7 +277,6 @@ public class AddTaskActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                if (task.isSuccessful()) {
-                  Log.e("TAGGGGGG", mSelectedUsers.toString());
                   if (mSelectedUsers == null) {
                      Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
                      startActivity(new Intent(AddTaskActivity.this, HomeActivity.class));
@@ -282,7 +285,6 @@ public class AddTaskActivity extends AppCompatActivity {
                      for (User user : mSelectedUsers
                      ) {
                         String userId = user.getUID();
-                        Log.e("TAAAG", "" + userId);
                         DatabaseReference newNotificationRef = mRootRef.child("Notifications").child(userId).push();
                         String newNotificationId = newNotificationRef.getKey();
 
@@ -317,6 +319,7 @@ public class AddTaskActivity extends AppCompatActivity {
                         requestMap.put("Tasks/" + mCurrentUser.getUid() + "/" + task_id + "/", taskMap);
                         requestMap.put("TaskInviteRequests/" + mCurrentUser.getUid() + "/" + userId + "/" + task_id, requestSentData);
                         requestMap.put("TaskInviteRequests/" + userId + "/" + mCurrentUser.getUid() + "/" + task_id, requestReceivedData);
+                        requestMap.put("TaskSupers/" + task_id + "/" + mCurrentUser.getUid() + "/", ServerValue.TIMESTAMP);
 
                         mRootRef.updateChildren(requestMap, new DatabaseReference.CompletionListener() {
                            @Override

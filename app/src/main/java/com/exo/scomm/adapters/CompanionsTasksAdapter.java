@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +22,11 @@ import com.exo.scomm.R;
 import com.exo.scomm.AllUsersActivity;
 import com.exo.scomm.fragments.ChatroomFragment;
 import com.exo.scomm.model.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -30,9 +36,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class CompanionsTasksAdapter extends RecyclerView.Adapter<CompanionsTasksAdapter.MyViewHolder> {
     private List<User> companionsList;
     private Context mCtxt;
-    public CompanionsTasksAdapter(Context taskDetails, List<User> taskCompList) {
+    String taskId;
+    public CompanionsTasksAdapter(Context taskDetails, List<User> taskCompList, String taskId) {
         this.mCtxt = taskDetails;
         this.companionsList = taskCompList;
+        this.taskId = taskId;
     }
 
     @NonNull
@@ -66,11 +74,10 @@ public class CompanionsTasksAdapter extends RecyclerView.Adapter<CompanionsTasks
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    CharSequence[] options = new CharSequence[]{"Open Profile", "Send Message"};
+                    CharSequence[] options = new CharSequence[]{"Open Profile", "Send Message", "Make Super Scommer"};
                     AlertDialog.Builder builder = new AlertDialog.Builder(mCtxt);
                     builder.setTitle("Select Options");
                     builder.setItems(options, new DialogInterface.OnClickListener() {
-
                         @Override
                         public void onClick(DialogInterface dialog, int i) {
                             if (i == 0) {
@@ -84,6 +91,15 @@ public class CompanionsTasksAdapter extends RecyclerView.Adapter<CompanionsTasks
                                 intent.putExtra("username", user.getUsername());
                                 intent.putExtra("userId", user.getUID());
                                 mCtxt.startActivity(intent);
+                            }else if (i == 2){
+                                FirebaseDatabase.getInstance().getReference().child("TaskSupers").child(taskId).child(user.getUID()).setValue(ServerValue.TIMESTAMP).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                       if (task.isSuccessful()){
+                                           Toast.makeText(mCtxt, "User is now a super Schommer", Toast.LENGTH_SHORT).show();
+                                       }
+                                    }
+                                });
                             }
                         }
                     });

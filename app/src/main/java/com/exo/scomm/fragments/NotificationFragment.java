@@ -1,9 +1,9 @@
 package com.exo.scomm.fragments;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -113,17 +113,69 @@ public class NotificationFragment extends Fragment {
                     });
 
                     switch (req_type) {
+                       case "sent": {
+                          assert noteKey != null;
+                          mNotificationsRef.child(noteKey).addValueEventListener(new ValueEventListener() {
+                             @Override
+                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                final String user_id = dataSnapshot.child("toUser").getValue().toString();
+                                mUsersDatabase.child(user_id).addValueEventListener(new ValueEventListener() {
+                                   @Override
+                                   public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                      final String userName = Objects.requireNonNull(dataSnapshot.child("username").getValue()).toString();
+                                      mTaskRef.child(mCurrentUserId).child(task_id).addValueEventListener(new ValueEventListener() {
+                                         @Override
+                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
+                                            String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
+
+                                            String text = "You sent " + userName + " an invite request to task " + taskName + " on " + taskDate;
+                                            holder.setText(text);
+                                            holder.setDate(date);
+                                            holder.decline.setEnabled(true);
+                                            holder.accept.setEnabled(false);
+                                            holder.chat.setEnabled(false);
+                                            holder.decline.setOnClickListener(new View.OnClickListener() {
+                                               @Override
+                                               public void onClick(View v) {
+                                                  declineInvite(user_id, holder);
+                                               }
+                                            });
+                                         }
+
+                                         @Override
+                                         public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                         }
+                                      });
+                                   }
+
+                                   @Override
+                                   public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                   }
+                                });
+                             }
+
+                             @Override
+                             public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                             }
+                          });
+
+                          break;
+                       }
                        case "received": {
                           assert noteKey != null;
                           mNotificationsRef.child(noteKey).addValueEventListener(new ValueEventListener() {
                              @Override
                              public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                final String user_id = Objects.requireNonNull(dataSnapshot.child("fromUser").getValue()).toString();
+                                final String user_id = dataSnapshot.child("fromUser").getValue().toString();
                                 mRootRef.child("TaskInviteRequests").child(mCurrentUserId).child(user_id).child(task_id).addValueEventListener(new ValueEventListener() {
                                    @Override
                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                      String accepted = Objects.requireNonNull(dataSnapshot.child("accepted").getValue()).toString();
-                                      if (accepted.equals("true")){
+                                      String accepted = dataSnapshot.child("accepted").getValue().toString();
+                                      if (accepted.equals("true")) {
                                          holder.decline.setEnabled(false);
                                          holder.accept.setEnabled(false);
                                          holder.chat.setEnabled(true);
@@ -143,13 +195,13 @@ public class NotificationFragment extends Fragment {
                                 mUsersDatabase.child(user_id).addValueEventListener(new ValueEventListener() {
                                    @Override
                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                      final String userName = Objects.requireNonNull(dataSnapshot.child("username").getValue()).toString();
+                                      final String userName = dataSnapshot.child("username").getValue().toString();
                                       mTaskRef.child(user_id).child(task_id).addValueEventListener(new ValueEventListener() {
                                          @Override
                                          public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                             final String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
                                             final String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
-                                            String text = userName + " invited you to accompany them to " + taskName + " on " + taskDate;
+                                            String text = userName + " sent you a invite request to task " + taskName + " on " + taskDate;
                                             holder.setText(text);
                                             holder.setDate(date);
                                             acceptInvite(holder, user_id, task_id);
@@ -186,65 +238,6 @@ public class NotificationFragment extends Fragment {
 
                              }
                           });
-
-
-                          break;
-                       }
-                       case "sent": {
-                          assert noteKey != null;
-                          mNotificationsRef.child(noteKey).addValueEventListener(new ValueEventListener() {
-                             @Override
-                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                final String user_id = Objects.requireNonNull(Objects.requireNonNull(dataSnapshot.child("toUser").getValue())).toString();
-                                mUsersDatabase.child(user_id).addValueEventListener(new ValueEventListener() {
-                                   @Override
-                                   public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                      final String userName = Objects.requireNonNull(dataSnapshot.child("username").getValue()).toString();
-                                      mTaskRef.child(mCurrentUserId).child(task_id).addValueEventListener(new ValueEventListener() {
-                                         @SuppressLint("SetTextI18n")
-                                         @Override
-                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
-                                            String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
-
-                                            String text = "You sent " + userName + " an invite request to task " + taskName + " to be performed on " + taskDate;
-                                            holder.setText(text);
-                                            holder.setDate(date);
-                                            holder.decline.setEnabled(true);
-                                            holder.decline.setText("Revoke");
-                                            holder.accept.setEnabled(false);
-                                            holder.chat.setEnabled(false);
-                                            holder.decline.setOnClickListener(new View.OnClickListener() {
-                                               @Override
-                                               public void onClick(View v) {
-                                                  declineInvite(user_id, holder);
-                                               }
-                                            });
-
-                                         }
-
-                                         @Override
-                                         public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                         }
-                                      });
-
-
-                                   }
-
-                                   @Override
-                                   public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                   }
-                                });
-                             }
-
-                             @Override
-                             public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                             }
-                          });
-
                           break;
                        }
                        case "accepted":
@@ -254,11 +247,11 @@ public class NotificationFragment extends Fragment {
                           mNotificationsRef.child(noteKey).addValueEventListener(new ValueEventListener() {
                              @Override
                              public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                final String user_id = Objects.requireNonNull(dataSnapshot.child("user").getValue()).toString();
+                                final String user_id = dataSnapshot.child("user").getValue().toString();
                                 mUsersDatabase.child(user_id).addValueEventListener(new ValueEventListener() {
                                    @Override
                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                      final String userName = Objects.requireNonNull(dataSnapshot.child("username").getValue()).toString();
+                                      final String userName = dataSnapshot.child("username").getValue().toString();
                                       mTaskRef.child(mCurrentUserId).child(task_id).addValueEventListener(new ValueEventListener() {
                                          @Override
                                          public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -267,12 +260,12 @@ public class NotificationFragment extends Fragment {
                                             if (user_id.equals(mCurrentUserId)) {
                                                holder.decline.setEnabled(true);
                                                holder.decline.setText("Revoke");
-                                               String text = userName + " accepted to accompany you to " + taskName + " on " + taskDate;
+                                               String text = userName + " accepted your invitation request to task " + taskName + " on " + taskDate;
                                                holder.setText(text);
                                                holder.setDate(date);
                                             } else {
                                                holder.decline.setEnabled(false);
-                                               String text = "You accepted " + userName + "'s invitation to task " + taskName + " on " + taskDate + ". " + "The task has been copied to your schedule.";
+                                               String text = "You accepted " + userName + "'s invitation to task " + taskName + " on " + taskDate;
                                                holder.setText(text);
                                                holder.setDate(date);
                                             }
@@ -286,10 +279,8 @@ public class NotificationFragment extends Fragment {
                                                   activity.username = userName;
                                                   activity.mainBottomNav.setSelectedItemId(R.id.bottom_chat_room);
                                                   activity.add_task.setVisibility(View.GONE);
-
                                                }
                                             });
-
                                          }
 
                                          @Override
@@ -317,7 +308,6 @@ public class NotificationFragment extends Fragment {
                           holder.decline.setEnabled(false);
                           holder.accept.setEnabled(false);
                           holder.chat.setEnabled(false);
-                          assert noteKey != null;
                           mNotificationsRef.child(noteKey).addValueEventListener(new ValueEventListener() {
                              @Override
                              public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -325,7 +315,7 @@ public class NotificationFragment extends Fragment {
                                 mUsersDatabase.child(user_id).addValueEventListener(new ValueEventListener() {
                                    @Override
                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                      final String userName = Objects.requireNonNull(dataSnapshot.child("username").getValue()).toString();
+                                      final String userName = dataSnapshot.child("username").getValue().toString();
                                       if (user_id.equals(mCurrentUserId)) {
                                          holder.decline.setEnabled(true);
                                          holder.decline.setText("Revoke");
@@ -334,7 +324,7 @@ public class NotificationFragment extends Fragment {
                                          holder.setDate(date);
                                       } else {
                                          holder.decline.setEnabled(false);
-                                         String text = "You deleted task successfully" ;
+                                         String text = "You deleted task successfully";
                                          holder.setDate(date);
                                       }
                                    }
@@ -451,8 +441,8 @@ public class NotificationFragment extends Fragment {
                   senderNote.put("date", ServerValue.TIMESTAMP);
 
                   Map companionsMap = new HashMap();
-                  companionsMap.put("TaskCompanions/" + mCurrentUserId + "/" + user_id + "/" + "task_id", task_id);
-                  companionsMap.put("TaskCompanions/" + user_id + "/" + mCurrentUserId + "/" + "task_id", task_id);
+                  companionsMap.put("TaskCompanions/" + task_id + "/" + mCurrentUserId, ServerValue.TIMESTAMP);
+                  companionsMap.put("TaskCompanions/" + task_id + "/" + user_id, ServerValue.TIMESTAMP);
                   companionsMap.put("Notifications/" + user_id + "/" + noteKey, recipientNote);
                   companionsMap.put("Notifications/" + mCurrentUserId + "/" + noteKey, senderNote);
                   companionsMap.put("Tasks/" + mCurrentUserId + "/" + task_id + "/", taskMap);

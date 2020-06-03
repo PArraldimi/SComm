@@ -189,7 +189,6 @@
             android:layout_toEndOf="@+id/details_add_new_task"
             android:textColor="#FFFFFF"
             android:text="@string/delete_task"
-            android:onClick="deleteTask"
             android:elevation="20dp"
             android:backgroundTint="#FB545A"
             android:textAllCaps="false"

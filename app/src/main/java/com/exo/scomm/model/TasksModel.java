@@ -11,14 +11,15 @@ public class TasksModel {
     public TasksModel() {
     }
 
-    public TasksModel(String date, String description, String taskOwner, String title, String type, String task_id) {
+    public TasksModel(String task_id, String date, String desc, String title, String type, String owner) {
+        this.task_id = task_id;
         this.date = date;
-        this.description = description;
-        this.taskOwner = taskOwner;
+        this.description = desc;
         this.title = title;
         this.type = type;
-        this.task_id = task_id;
+        this.taskOwner = owner;
     }
+
 
     public String getDate() {
         return date;

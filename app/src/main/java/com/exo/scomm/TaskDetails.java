@@ -1,9 +1,7 @@
 package com.exo.scomm;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -13,19 +11,19 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.exo.scomm.adapters.CompanionsAdapter;
 import com.exo.scomm.adapters.CompanionsTasksAdapter;
 import com.exo.scomm.adapters.DataHolder;
 import com.exo.scomm.adapters.TodayTasksDetailsAdapter;
+import com.exo.scomm.fragments.EditTaskDialog;
 import com.exo.scomm.model.TasksModel;
 import com.exo.scomm.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,7 +41,7 @@ public class TaskDetails extends AppCompatActivity {
    Button deleteTask, addNewTask, mInvite;
    RecyclerView myTaskCompanions, todayTasks;
    TextView taskDesc, taskTitle, taskDate, taskType, taskCreator;
-   ImageView editTask;
+   ImageView editTask, taskDescEdit;
    TodayTasksDetailsAdapter tasksDetailsAdapter;
    private String task_id, mCurrentUID, date, desc, title, type, owner;
    private DatabaseReference taskCompRef;
@@ -58,10 +56,10 @@ public class TaskDetails extends AppCompatActivity {
    @Override
    protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-      setContentView(R.layout.activity_t_ask_details);
+      setContentView(R.layout.activity_task_details);
       deleteTask = this.findViewById(R.id.details_delete_task);
       addNewTask = this.findViewById(R.id.details_add_new_task);
-      mInvite = this.findViewById(R.id.btn_invite);
+      mInvite = this.findViewById(R.id.details_invite);
       taskDesc = this.findViewById(R.id.details_task_desc);
       taskTitle = findViewById(R.id.detail_task_item_title);
       taskDate = findViewById(R.id.detail_task_item_time);
@@ -69,6 +67,7 @@ public class TaskDetails extends AppCompatActivity {
       taskCreator = findViewById(R.id.details_task_item_creator);
       myTaskCompanions = this.findViewById(R.id.task_details_companions_recycler);
       editTask = this.findViewById(R.id.task_details_edit);
+      taskDescEdit = this.findViewById(R.id.task_details_desc_edit);
 
       task_id = getIntent().getStringExtra("task_id");
       date = getIntent().getStringExtra("date");
@@ -79,28 +78,39 @@ public class TaskDetails extends AppCompatActivity {
       task = new TasksModel(task_id, date, desc, title, type, owner);
       tasksModelList = DataHolder.getTodayTasks();
       mDeleteBnState = 0;
-
+      mRootRef = FirebaseDatabase.getInstance().getReference();
+      mUsersRef = mRootRef.child("Users");
+      taskCompRef = mRootRef.child("TaskCompanions");
+      linearLayoutManager = new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false);
+      linearLayoutManager.setStackFromEnd(true);
+      myTaskCompanions.setLayoutManager(linearLayoutManager);
+      tasksDetailsAdapter = new TodayTasksDetailsAdapter(getApplicationContext(), tasksModelList);
+      mCurrentUID = FirebaseAuth.getInstance().getUid();
 
       taskType.setText(type);
       taskDate.setText(date);
       taskTitle.setText(title);
       taskDesc.setText(desc);
-
-      mCurrentUID = FirebaseAuth.getInstance().getUid();
+      getTaskOwner(owner);
 
       if (!owner.equals(mCurrentUID)) {
          deleteTask.setText("SchommOut");
          mDeleteBnState = 1;
+         taskDescEdit.setVisibility(View.GONE);
+         editTask.setVisibility(View.GONE);
       }
-
-      mRootRef = FirebaseDatabase.getInstance().getReference();
-      mUsersRef = mRootRef.child("Users");
-      taskCompRef = mRootRef.child("TaskCompanions");
-
-      linearLayoutManager = new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false);
-      linearLayoutManager.setStackFromEnd(true);
-      myTaskCompanions.setLayoutManager(linearLayoutManager);
-      tasksDetailsAdapter = new TodayTasksDetailsAdapter(getApplicationContext(), tasksModelList);
+      editTask.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+            editTask(task_id, owner);
+         }
+      });
+      taskDescEdit.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+            editTaskDescription(task_id, owner);
+         }
+      });
 
       mRootRef.child("TaskSupers").child(task_id).addListenerForSingleValueEvent(new ValueEventListener() {
          @Override
@@ -127,11 +137,36 @@ public class TaskDetails extends AppCompatActivity {
          public void onClick(View v) {
 
             if (mDeleteBnState == 0) {
+               Toast.makeText(TaskDetails.this, "Deleting the task", Toast.LENGTH_SHORT).show();
                deleteTask();
             }
             if (mDeleteBnState == 1) {
                schommeOut();
             }
+         }
+      });
+   }
+
+   private void editTask(String task_id, String owner) {
+      FragmentManager fm = getSupportFragmentManager();
+      EditTaskDialog editNameDialogFragment = EditTaskDialog.newInstance("Change Task Details");
+      editNameDialogFragment.show(fm, "fragment_edit_task");
+   }
+
+   private void editTaskDescription(String task_id, String owner) {
+   }
+
+   private void getTaskOwner(String owner) {
+      mUsersRef.child(owner).addValueEventListener(new ValueEventListener() {
+         @Override
+         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            String username = dataSnapshot.child("username").getValue().toString();
+            taskCreator.setText(String.format("Created By %s", username));
+         }
+
+         @Override
+         public void onCancelled(@NonNull DatabaseError databaseError) {
+
          }
       });
    }

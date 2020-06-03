@@ -52,6 +52,7 @@
             android:layout_height="wrap_content"
             android:text="Created By Paul"
             android:layout_marginBottom="2dp"
+            android:layout_marginTop="7dp"
             android:layout_marginStart="15dp"
             android:fontFamily="@font/arialregular"
             android:textStyle="italic"

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/edit_name"
+    android:layout_width="match_parent"
+    android:layout_margin="10dp"
+    android:padding="10dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical"  >
+
+
+    <EditText
+        android:id="@+id/edit_task_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter task title"
+        android:inputType="text"
+        android:imeOptions="actionDone" />
+
+    <Button
+        android:id="@+id/edit_task_time"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="Change Task Time"
+        android:textAllCaps="false"
+        android:layout_marginBottom="10dp"
+        android:onClick="pickTime"
+        android:background="@drawable/button_grey"
+        android:contentDescription="@string/select_date"
+        android:layout_gravity ="center_horizontal"/>
+
+    <Button
+        android:id="@+id/edit_task_submit"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="Submit"
+        android:textAllCaps="false"
+        android:layout_marginBottom="10dp"
+        android:onClick="pickTime"
+        android:background="@drawable/button_grey"
+        android:contentDescription="@string/select_date"
+        android:layout_gravity ="center_horizontal"/>
+    <Button
+        android:id="@+id/edit_task_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="Cancel"
+        android:textAllCaps="false"
+        android:layout_marginBottom="10dp"
+        android:onClick="pickTime"
+        android:background="@drawable/button_grey"
+        android:contentDescription="@string/select_date"
+        android:layout_gravity ="center_horizontal"/>
+
+</LinearLayout>

@@ -46,7 +46,8 @@ public class UpComingTasksAdapter extends RecyclerView.Adapter<UpComingTasksAdap
             public void onClick(View view) {
                 Intent detailsIntent = new Intent(mCntxt, TaskDetails.class);
                 detailsIntent.putExtra("task_id", task_id);
-                detailsIntent.putExtra("date", task.getTitle());
+                detailsIntent.putExtra("date", task.getDate());
+                detailsIntent.putExtra("title", task.getTitle());
                 detailsIntent.putExtra("type", task.getType());
                 detailsIntent.putExtra("desc", task.getDescription());
                 detailsIntent.putExtra("owner", task.getTaskOwner());

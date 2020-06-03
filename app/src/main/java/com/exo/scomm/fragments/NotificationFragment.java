@@ -118,43 +118,45 @@ public class NotificationFragment extends Fragment {
                           mNotificationsRef.child(noteKey).addValueEventListener(new ValueEventListener() {
                              @Override
                              public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                final String user_id = dataSnapshot.child("toUser").getValue().toString();
-                                mUsersDatabase.child(user_id).addValueEventListener(new ValueEventListener() {
-                                   @Override
-                                   public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                      final String userName = Objects.requireNonNull(dataSnapshot.child("username").getValue()).toString();
-                                      mTaskRef.child(mCurrentUserId).child(task_id).addValueEventListener(new ValueEventListener() {
-                                         @Override
-                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
-                                            String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
+                                if (dataSnapshot.hasChildren()){
+                                   final String user_id = Objects.requireNonNull(dataSnapshot.child("toUser").getValue()).toString();
+                                   mUsersDatabase.child(user_id).addValueEventListener(new ValueEventListener() {
+                                      @Override
+                                      public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                         final String userName = Objects.requireNonNull(dataSnapshot.child("username").getValue()).toString();
+                                         mTaskRef.child(mCurrentUserId).child(task_id).addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                               String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
+                                               String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
 
-                                            String text = "You sent " + userName + " an invite request to task " + taskName + " on " + taskDate;
-                                            holder.setText(text);
-                                            holder.setDate(date);
-                                            holder.decline.setEnabled(true);
-                                            holder.accept.setEnabled(false);
-                                            holder.chat.setEnabled(false);
-                                            holder.decline.setOnClickListener(new View.OnClickListener() {
-                                               @Override
-                                               public void onClick(View v) {
-                                                  declineInvite(user_id, holder);
-                                               }
-                                            });
-                                         }
+                                               String text = "You sent " + userName + " an invite request to task " + taskName + " on " + taskDate;
+                                               holder.setText(text);
+                                               holder.setDate(date);
+                                               holder.decline.setEnabled(true);
+                                               holder.accept.setEnabled(false);
+                                               holder.chat.setEnabled(false);
+                                               holder.decline.setOnClickListener(new View.OnClickListener() {
+                                                  @Override
+                                                  public void onClick(View v) {
+                                                     declineInvite(user_id, holder);
+                                                  }
+                                               });
+                                            }
 
-                                         @Override
-                                         public void onCancelled(@NonNull DatabaseError databaseError) {
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                         }
-                                      });
-                                   }
+                                            }
+                                         });
+                                      }
 
-                                   @Override
-                                   public void onCancelled(@NonNull DatabaseError databaseError) {
+                                      @Override
+                                      public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                   }
-                                });
+                                      }
+                                   });
+                                }
                              }
 
                              @Override

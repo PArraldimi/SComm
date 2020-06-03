@@ -156,7 +156,7 @@
                 android:textStyle="bold" />
 
         <ImageView
-            android:id="@+id/task_details_edit"
+            android:id="@+id/task_details_desc_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@+id/details_about_task"
@@ -193,21 +193,7 @@
             android:backgroundTint="#FB545A"
             android:textAllCaps="false"
             android:textSize="16sp" />
-<!--        <Button-->
-<!--            android:id="@+id/scommout"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="40dp"-->
-<!--            android:layout_marginStart="10dp"-->
-<!--            android:layout_above="@+id/details_add_new_task"-->
-<!--            android:layout_toEndOf="@+id/details_add_new_task"-->
-<!--            android:text="Scommout"-->
-<!--            android:paddingStart="10dp"-->
-<!--            android:elevation="15dp"-->
-<!--            android:layout_marginEnd="10dp"-->
-<!--            android:paddingEnd="10dp"-->
-<!--            android:backgroundTint="#6E94F9"-->
-<!--            android:textAllCaps="false"-->
-<!--            android:textSize="16sp" />-->
+
 
         <Button
             android:id="@+id/details_add_new_task"

@@ -378,8 +378,6 @@ public class ChatroomFragment extends Fragment {
          loadUser();
          loadMessages();
       }
-
-
    }
 
 

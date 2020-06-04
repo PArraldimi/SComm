@@ -118,7 +118,7 @@ public class NotificationFragment extends Fragment {
                           mNotificationsRef.child(noteKey).addValueEventListener(new ValueEventListener() {
                              @Override
                              public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                if (dataSnapshot.hasChildren()){
+                                if (dataSnapshot.hasChildren()) {
                                    final String user_id = Objects.requireNonNull(dataSnapshot.child("toUser").getValue()).toString();
                                    mUsersDatabase.child(user_id).addValueEventListener(new ValueEventListener() {
                                       @Override
@@ -176,15 +176,18 @@ public class NotificationFragment extends Fragment {
                                 mRootRef.child("TaskInviteRequests").child(mCurrentUserId).child(user_id).child(task_id).addValueEventListener(new ValueEventListener() {
                                    @Override
                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                      String accepted = dataSnapshot.child("accepted").getValue().toString();
-                                      if (accepted.equals("true")) {
-                                         holder.decline.setEnabled(true);
-                                         holder.accept.setEnabled(true);
-                                         holder.chat.setEnabled(false);
-                                      } else {
-                                         holder.decline.setEnabled(false);
-                                         holder.accept.setEnabled(false);
-                                         holder.chat.setEnabled(true);
+
+                                      if (dataSnapshot.hasChild("accepted")) {
+                                         String accepted = dataSnapshot.child("accepted").getValue().toString();
+                                         if (accepted.equals("true")) {
+                                            holder.decline.setEnabled(false);
+                                            holder.accept.setEnabled(false);
+                                            holder.chat.setEnabled(true);
+                                         } else {
+                                            holder.decline.setEnabled(true);
+                                            holder.accept.setEnabled(true);
+                                            holder.chat.setEnabled(false);
+                                         }
                                       }
 
                                    }

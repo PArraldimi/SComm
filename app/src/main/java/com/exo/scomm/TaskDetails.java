@@ -190,9 +190,6 @@ public class TaskDetails extends AppCompatActivity {
                      user.setImage(image);
                      user.setStatus(status);
                      taskCompList.add(user);
-                     CompanionsTasksAdapter adapter = new CompanionsTasksAdapter(getApplicationContext(), taskCompList, task_id);
-                     myTaskCompanions.setAdapter(adapter);
-
                   }
 
                   @Override
@@ -200,9 +197,11 @@ public class TaskDetails extends AppCompatActivity {
 
                   }
                });
-
+               CompanionsTasksAdapter adapter = new CompanionsTasksAdapter(TaskDetails.this, taskCompList, task_id);
+               myTaskCompanions.setAdapter(adapter);
 
             }
+
          }
 
          @Override

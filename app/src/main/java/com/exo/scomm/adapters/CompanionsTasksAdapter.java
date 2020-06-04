@@ -20,6 +20,7 @@ import com.exo.scomm.HomeActivity;
 import com.exo.scomm.Profile;
 import com.exo.scomm.R;
 import com.exo.scomm.AllUsersActivity;
+import com.exo.scomm.TaskDetails;
 import com.exo.scomm.fragments.ChatroomFragment;
 import com.exo.scomm.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,9 +36,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CompanionsTasksAdapter extends RecyclerView.Adapter<CompanionsTasksAdapter.MyViewHolder> {
     private List<User> companionsList;
-    private Context mCtxt;
+    private TaskDetails mCtxt;
     String taskId;
-    public CompanionsTasksAdapter(Context taskDetails, List<User> taskCompList, String taskId) {
+    public CompanionsTasksAdapter(TaskDetails taskDetails, List<User> taskCompList, String taskId) {
         this.mCtxt = taskDetails;
         this.companionsList = taskCompList;
         this.taskId = taskId;
@@ -96,7 +97,7 @@ public class CompanionsTasksAdapter extends RecyclerView.Adapter<CompanionsTasks
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                        if (task.isSuccessful()){
-                                           Toast.makeText(mCtxt, "User is now a super Schommer", Toast.LENGTH_SHORT).show();
+                                           Toast.makeText(mCtxt.getApplicationContext(), "User is now a super Schommer", Toast.LENGTH_SHORT).show();
                                        }
                                     }
                                 });

@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#E0E4F1">
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/task_title"
         app:endIconMode="clear_text"
@@ -161,33 +162,42 @@
                     android:text="@string/remind_me_at"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
                     android:textColor="#000000" />
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/linear_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/textView02"
                     android:layout_margin="20dp">
 
-                    <Button
-                        android:id="@+id/date_picker"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:text="@string/pick_time"
-                        android:textAllCaps="false"
-                        android:layout_marginBottom="10dp"
-                        android:onClick="pickTime"
-                        android:background="@drawable/button_grey"
-                        android:contentDescription="@string/select_date"
-                        android:layout_gravity ="center_horizontal"/>
                     <TextView
                         android:id="@+id/view_date"
-                        android:layout_width="wrap_content"
+                        android:layout_width="300dp"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/century"
-                        android:textSize="20sp"
-                        android:textColor="@color/cool_blue"
-                        />
-                </LinearLayout>
+                        android:background="@drawable/notificationborder"
+                        android:textSize="18sp"
+                        android:layout_marginTop="15dp"
+                        android:paddingStart="5dp"
+                        android:paddingEnd="5dp"
+                        android:textColor="@color/ocean_blue"
+                        tools:ignore="RtlSymmetry" />
+
+                    <Button
+                        android:id="@+id/date_picker"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="5dp"
+                        android:elevation="0dp"
+                        android:textAllCaps="false"
+                        android:layout_below="@+id/view_date"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginEnd="40dp"
+                        android:layout_alignParentEnd="true"
+                        android:onClick="pickTime"
+                        android:background="@drawable/ic_alarm_black_24dp"
+                        android:contentDescription="@string/select_date"
+                        android:layout_gravity ="center_horizontal"/>
+                </RelativeLayout>
 
             </RelativeLayout>
 
@@ -198,6 +208,7 @@
                 android:background="@drawable/button_background"
                 android:imeOptions="actionSend"
                 android:layout_marginTop="30dp"
+                android:layout_marginBottom="20dp"
                 android:text="@string/add_task"
                 android:textStyle="bold"
                 android:fontFamily="@font/segoeui"

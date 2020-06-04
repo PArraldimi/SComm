@@ -178,13 +178,13 @@ public class NotificationFragment extends Fragment {
                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                       String accepted = dataSnapshot.child("accepted").getValue().toString();
                                       if (accepted.equals("true")) {
-                                         holder.decline.setEnabled(false);
-                                         holder.accept.setEnabled(false);
-                                         holder.chat.setEnabled(true);
-                                      } else {
                                          holder.decline.setEnabled(true);
                                          holder.accept.setEnabled(true);
                                          holder.chat.setEnabled(false);
+                                      } else {
+                                         holder.decline.setEnabled(false);
+                                         holder.accept.setEnabled(false);
+                                         holder.chat.setEnabled(true);
                                       }
 
                                    }

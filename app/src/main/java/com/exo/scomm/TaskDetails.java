@@ -38,10 +38,9 @@ import java.util.Map;
 import java.util.Objects;
 
 public class TaskDetails extends AppCompatActivity {
-   Button deleteTask, addNewTask, mInvite;
+   Button deleteTask, addNewTask, mInvite, editTask;
    RecyclerView myTaskCompanions, todayTasks;
    TextView taskDesc, taskTitle, taskDate, taskType, taskCreator;
-   ImageView editTask, taskDescEdit;
    TodayTasksDetailsAdapter tasksDetailsAdapter;
    private String task_id, mCurrentUID, date, desc, title, type, owner;
    private DatabaseReference taskCompRef;
@@ -67,8 +66,6 @@ public class TaskDetails extends AppCompatActivity {
       taskCreator = findViewById(R.id.details_task_item_creator);
       myTaskCompanions = this.findViewById(R.id.task_details_companions_recycler);
       editTask = this.findViewById(R.id.task_details_edit);
-      taskDescEdit = this.findViewById(R.id.task_details_desc_edit);
-
       task_id = getIntent().getStringExtra("task_id");
       date = getIntent().getStringExtra("date");
       desc = getIntent().getStringExtra("desc");
@@ -96,19 +93,12 @@ public class TaskDetails extends AppCompatActivity {
       if (!owner.equals(mCurrentUID)) {
          deleteTask.setText("SchommOut");
          mDeleteBnState = 1;
-         taskDescEdit.setVisibility(View.GONE);
          editTask.setVisibility(View.GONE);
       }
       editTask.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View v) {
             editTask(task_id, owner);
-         }
-      });
-      taskDescEdit.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View v) {
-            editTaskDescription(task_id, owner);
          }
       });
 

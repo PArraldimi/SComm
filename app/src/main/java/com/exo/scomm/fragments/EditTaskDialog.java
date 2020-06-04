@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -16,7 +17,8 @@ import com.exo.scomm.R;
 public class EditTaskDialog extends DialogFragment {
 
    private EditText mTitleEditText;
-   private Button mCancel,mChangeDate, mSubmit;
+   private Button mChangeDate;
+   private TextView mSubmit, mCancel, mViewdate;
 
    public EditTaskDialog() {
       // Empty constructor is required for DialogFragment
@@ -42,7 +44,8 @@ public class EditTaskDialog extends DialogFragment {
       // Get field from view
       mTitleEditText = (EditText) view.findViewById(R.id.edit_task_title);
       mChangeDate = view.findViewById(R.id.edit_task_time);
-      mSubmit = (Button) view.findViewById(R.id.edit_task_submit);
+      mViewdate = view.findViewById(R.id.view_date);
+      mSubmit = view.findViewById(R.id.edit_task_submit);
       mCancel = view.findViewById(R.id.edit_task_cancel);
       // Fetch arguments from bundle and set title
       String title = getArguments().getString("title", "Please Enter Task Details");

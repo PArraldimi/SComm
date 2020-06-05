@@ -51,12 +51,10 @@ public class AddTaskActivity extends AppCompatActivity {
    private TextInputEditText mTitle;
    private EditText mDescription;
    private RadioButton mPrivate, mPublic;
-   RelativeLayout mInviteLayout;
    private RadioGroup type;
    private DatabaseReference mDatabase;
    private FirebaseUser mCurrentUser;
    private StorageReference mStorage;
-   private FirebaseAuth mAuth;
    private ProgressDialog mProgressDialog;
    private Button mdateButton, mInvite;
    private TextView mViewDate, mInvites, invitesLabel;

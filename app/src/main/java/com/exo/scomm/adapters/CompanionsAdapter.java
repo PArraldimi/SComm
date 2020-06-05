@@ -23,17 +23,19 @@ import com.exo.scomm.model.User;
 import com.exo.scomm.model.Utils;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CompanionsAdapter extends RecyclerView.Adapter<CompanionsAdapter.MyViewHolder> {
   private Context mCtxt;
-  private List<User> companionsList;
+  private Set<User> companionsSet;
 
-  public CompanionsAdapter(Context context, List<User> companionsList) {
+  public CompanionsAdapter(Context context, Set<User> companionsList) {
     this.mCtxt = context;
-    this.companionsList = companionsList;
+    this.companionsSet = companionsList;
 
   }
 
@@ -53,7 +55,9 @@ public class CompanionsAdapter extends RecyclerView.Adapter<CompanionsAdapter.My
 
   @Override
   public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-    if (position == companionsList.size()) {
+    List<User> usersList = new ArrayList<>(companionsSet);
+
+    if (position == usersList.size()) {
       holder.button.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -61,7 +65,7 @@ public class CompanionsAdapter extends RecyclerView.Adapter<CompanionsAdapter.My
         }
       });
     } else {
-      final User user = companionsList.get(position);
+      final User user = usersList.get(position);
       holder.username.setText(user.getUsername());
       Picasso.get().load(user.getImage()).placeholder(R.drawable.profile_image).into(holder.profile);
 
@@ -99,12 +103,12 @@ public class CompanionsAdapter extends RecyclerView.Adapter<CompanionsAdapter.My
 
   @Override
   public int getItemViewType(int position) {
-    return (position == companionsList.size()) ? R.layout.button : R.layout.companion_item;
+    return (position == companionsSet.size()) ? R.layout.button : R.layout.companion_item;
   }
 
   @Override
   public int getItemCount() {
-    return companionsList.size() + 1;
+    return companionsSet.size() + 1;
   }
 
   public static class MyViewHolder extends RecyclerView.ViewHolder {

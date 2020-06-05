@@ -18,7 +18,9 @@ import com.exo.scomm.AddTaskActivity;
 import com.exo.scomm.AllUsersActivity;
 import com.exo.scomm.Companions;
 import com.exo.scomm.R;
+import com.exo.scomm.TaskDetails;
 import com.exo.scomm.adapters.CompanionsAdapter;
+import com.exo.scomm.adapters.CompanionsTasksAdapter;
 import com.exo.scomm.adapters.DataHolder;
 import com.exo.scomm.adapters.TodayTasksAdapter;
 import com.exo.scomm.adapters.UpComingTasksAdapter;
@@ -36,176 +38,177 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TimeZone;
 
 import hirondelle.date4j.DateTime;
 
 
 public class HomeFragment extends Fragment {
-  private TodayTasksAdapter todayTasksAdapter;
-  private UpComingTasksAdapter upComingTasksAdapter;
-  private List<TasksModel> todayTasks;
-  private List<TasksModel> upcomingTasks;
-  private List<User> companionsList;
-  private RecyclerView todayTasksRecycler, companionsRecycler, upComingRecycler;
-  private DatabaseReference taskRef;
-  private DatabaseReference companionRef;
-  private DatabaseReference mUsersRef;
-  private TextView textViewDate, seeAllUsers;
-  private String currentUid;
-  private int lastScrollPosition = 0;
-  private LinearLayoutManager linearLayoutManager;
+   private TodayTasksAdapter todayTasksAdapter;
+   private UpComingTasksAdapter upComingTasksAdapter;
+   private Set<TasksModel> todayTasks;
+   private Set<TasksModel> upcomingTasks;
+   private Set<User> companionsList;
+   private RecyclerView todayTasksRecycler, companionsRecycler, upComingRecycler;
+   private DatabaseReference taskRef;
+   private DatabaseReference companionRef;
+   private DatabaseReference mUsersRef;
+   private TextView textViewDate, seeAllCompanions;
+   private String currentUid;
+   private Calendar calendar;
+
+   public HomeFragment() {
+   }
 
 
-  private Calendar calendar;
+   @Override
+   public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                            Bundle savedInstanceState) {
+      View view = inflater.inflate(R.layout.fragment_home, container, false);
+      calendar = Calendar.getInstance();
+      todayTasksRecycler = view.findViewById(R.id.task_recycler);
+      companionsRecycler = view.findViewById(R.id.companions_recycler);
+      upComingRecycler = view.findViewById(R.id.upcoming_recycler);
+      textViewDate = view.findViewById(R.id.text_view_date);
+      seeAllCompanions = view.findViewById(R.id.see_all_users);
+      todayTasks = new HashSet<>();
+      upcomingTasks = new HashSet<>();
+      companionsList = new HashSet<>();
 
-  public HomeFragment() {
-  }
+      LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
+      linearLayoutManager.setStackFromEnd(false);
+      companionsRecycler.setLayoutManager(linearLayoutManager);
+
+      FirebaseUser mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
+      assert mCurrentUser != null;
+      currentUid = mCurrentUser.getUid();
+      DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
+      taskRef = mRootRef.child("Tasks").child(currentUid);
+      mUsersRef = mRootRef.child("Users");
+      companionRef = mRootRef.child("TaskCompanions");
+      setUpLayouts();
+
+      getTaskCompanions();
 
 
 
-  @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                           Bundle savedInstanceState) {
-    View view = inflater.inflate(R.layout.fragment_home, container, false);
-    calendar = Calendar.getInstance();
-    todayTasksRecycler = view.findViewById(R.id.task_recycler);
-    companionsRecycler = view.findViewById(R.id.companions_recycler);
-    upComingRecycler = view.findViewById(R.id.upcoming_recycler);
-    textViewDate = view.findViewById(R.id.text_view_date);
-    List<TasksModel> taskList = new ArrayList<>();
-    TextView seeAllCompanions = view.findViewById(R.id.see_all_users);
-    todayTasks = new ArrayList<>();
-    upcomingTasks = new ArrayList<>();
-    companionsList = new ArrayList<>();
+      return view;
+   }
 
-    linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
-    linearLayoutManager.setStackFromEnd(false);
-    companionsRecycler.setLayoutManager(linearLayoutManager);
+   private void getTaskCompanions() {
+     final DatabaseReference companionsRef = companionRef.child(currentUid);
+      companionsRef.addValueEventListener(new ValueEventListener() {
+         @Override
+         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+           if (dataSnapshot.exists()) {
+             for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+               final String task_id = childDataSnapshot.getKey();
+               companionsRef.child(task_id).addValueEventListener(new ValueEventListener() {
+                 @Override
+                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                   if (dataSnapshot.exists()) {
+                     for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+                       final String userId = childDataSnapshot.getKey();
+                       mUsersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                         @Override
+                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                           if (dataSnapshot.hasChild(userId)) {
+                             User user = dataSnapshot.child(userId).getValue(User.class);
+                             user.setUID(userId);
+                             companionsList.add(user);
+                             CompanionsAdapter adapter = new CompanionsAdapter(getContext(), companionsList);
+                             companionsRecycler.setAdapter(adapter);
+                           }
+                         }
 
-    FirebaseUser mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
-    assert mCurrentUser != null;
-    currentUid = mCurrentUser.getUid();
-    DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
-    taskRef = mRootRef.child("Tasks").child(currentUid);
-    mUsersRef = mRootRef.child("Users");
-    companionRef = mRootRef.child("TaskCompanions");
-    setUpLayouts();
+                         @Override
+                         public void onCancelled(@NonNull DatabaseError databaseError) {
 
-    getTaskCompanions();
+                         }
+                       });
+                     }
+                   }
+                 }
 
-    seeAllCompanions.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        Intent usersIntent = new Intent(getActivity(), Companions.class);
-        startActivity(usersIntent);
-      }
-    });
+                 @Override
+                 public void onCancelled(@NonNull DatabaseError databaseError) {
 
-    getAllTasks();
+                 }
+               });
+             }
+           }
+         }
 
-    return view;
-  }
+         @Override
+         public void onCancelled(@NonNull DatabaseError databaseError) {
 
-  private void getTaskCompanions() {
-    companionRef.child(currentUid).addValueEventListener(new ValueEventListener() {
-      @Override
-      public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-          final String uid = childDataSnapshot.getKey();
-          Log.e("User Key", uid);
+         }
+      });
+   }
 
-          mUsersRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-              String name = Objects.requireNonNull(dataSnapshot.child("username").getValue()).toString();
-              String status = Objects.requireNonNull(dataSnapshot.child("status").getValue()).toString();
-              String image = Objects.requireNonNull(dataSnapshot.child("image").getValue()).toString();
+   @Override
+   public void onStart() {
+      super.onStart();
+      String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
+      textViewDate.setText(currentDate);
 
-              User user = new User();
-              user.setUsername(name);
-              user.setImage(image);
-              user.setUID(uid);
-              user.setStatus(status);
-              companionsList.add(user);
-              CompanionsAdapter adapter = new CompanionsAdapter(getContext(), companionsList);
-              companionsRecycler.setAdapter(adapter);
+
+
+      seeAllCompanions.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View view) {
+            Intent usersIntent = new Intent(getActivity(), Companions.class);
+            startActivity(usersIntent);
+         }
+      });
+
+      getAllTasks();
+   }
+
+   private void setUpLayouts() {
+      todayTasksRecycler.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
+      upComingRecycler.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
+   }
+
+   private void getAllTasks() {
+      final String today = new Date().toString();
+      taskRef.addValueEventListener(new ValueEventListener() {
+         @Override
+         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            if (dataSnapshot.exists()) {
+               for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+                  String taskId = childDataSnapshot.getKey().toString();
+                  TasksModel task = childDataSnapshot.getValue(TasksModel.class);
+                  assert task != null;
+                  task.setTask_id(taskId);
+                  String taskDate = task.getDate();
+                  if (isSameDay(new Date(today), new Date(taskDate))) {
+                     todayTasks.add(task);
+                  } else if (new Date(taskDate).after(new Date(today))) {
+                     upcomingTasks.add(task);
+                  }
+                  todayTasksAdapter = new TodayTasksAdapter(getContext(), todayTasks);
+                  upComingTasksAdapter = new UpComingTasksAdapter(getContext(), upcomingTasks);
+                  todayTasksRecycler.setAdapter(todayTasksAdapter);
+                  upComingRecycler.setAdapter(upComingTasksAdapter);
+               }
             }
+         }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+         @Override
+         public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-          });
-        }
-      }
+         }
+      });
+   }
 
-      @Override
-      public void onCancelled(@NonNull DatabaseError databaseError) {
-
-      }
-    });
-  }
-
-  @Override
-  public void onStart() {
-    super.onStart();
-    String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
-    textViewDate.setText(currentDate);
-  }
-
-  private void setUpLayouts() {
-    todayTasksRecycler.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
-    upComingRecycler.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
-  }
-
-  private void getAllTasks() {
-    final String today = new Date().toString();
-    taskRef.addValueEventListener(new ValueEventListener() {
-      @Override
-      public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-        if (dataSnapshot.exists()) {
-          for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-            String taskId = childDataSnapshot.getKey().toString();
-            TasksModel task = childDataSnapshot.getValue(TasksModel.class);
-            assert task != null;
-            TasksModel tasksModel = new TasksModel();
-            tasksModel.setDate(task.getDate());
-            tasksModel.setTitle(task.getTitle());
-            tasksModel.setType(task.getType());
-            tasksModel.setDescription(task.getDescription());
-            tasksModel.setTaskOwner(task.getTaskOwner());
-            tasksModel.setTask_id(taskId);
-            String taskDate = task.getDate();
-            if (isSameDay(new Date(today), new Date(taskDate))) {
-              todayTasks.add(tasksModel);
-            } else if (new Date(taskDate).after(new Date(today))) {
-              upcomingTasks.add(tasksModel);
-            }
-            todayTasksAdapter = new TodayTasksAdapter(getContext(), todayTasks);
-            upComingTasksAdapter = new UpComingTasksAdapter(getContext(), upcomingTasks);
-            todayTasksRecycler.setAdapter(todayTasksAdapter);
-            upComingRecycler.setAdapter(upComingTasksAdapter);
-          }
-        }
-        DataHolder.setTodayTasks(todayTasks);
-      }
-
-      @Override
-      public void onCancelled(@NonNull DatabaseError databaseError) {
-
-      }
-    });
-  }
-
-  private static boolean isSameDay(Date date1, Date date2) {
-    DateTime dateObject1 = DateTime.forInstant(date1.getTime(), TimeZone.getDefault());
-    DateTime dateObject2 = DateTime.forInstant(date2.getTime(), TimeZone.getDefault());
-    return dateObject1.isSameDayAs(dateObject2);
-  }
-
-
-
+   private static boolean isSameDay(Date date1, Date date2) {
+      DateTime dateObject1 = DateTime.forInstant(date1.getTime(), TimeZone.getDefault());
+      DateTime dateObject2 = DateTime.forInstant(date2.getTime(), TimeZone.getDefault());
+      return dateObject1.isSameDayAs(dateObject2);
+   }
 }

@@ -13,17 +13,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.exo.scomm.R;
 import com.exo.scomm.TaskDetails;
 import com.exo.scomm.model.TasksModel;
+import com.exo.scomm.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class TodayTasksAdapter extends RecyclerView.Adapter<TodayTasksAdapter.MyViewHolder> {
-   private List<TasksModel> taskList;
+   private Set<TasksModel> taskSet;
    private Context mCntxt;
 
-   public TodayTasksAdapter(Context mCntxt, List<TasksModel> taskList) {
+   public TodayTasksAdapter(Context mCntxt, Set<TasksModel> taskList) {
       super();
       this.mCntxt = mCntxt;
-      this.taskList = taskList;
+      this.taskSet = taskList;
    }
 
    @NonNull
@@ -38,7 +41,9 @@ public class TodayTasksAdapter extends RecyclerView.Adapter<TodayTasksAdapter.My
 
    @Override
    public void onBindViewHolder(@NonNull final TodayTasksAdapter.MyViewHolder holder, int position) {
-      final TasksModel task = taskList.get(position);
+      final List<TasksModel> tasksList = new ArrayList<>(taskSet);
+
+      final TasksModel task = tasksList.get(position);
       final String task_id = task.getTask_id();
       holder.title.setText(task.getTitle());
       holder.type.setText(task.getType());
@@ -54,7 +59,7 @@ public class TodayTasksAdapter extends RecyclerView.Adapter<TodayTasksAdapter.My
             detailsIntent.putExtra("desc", task.getDescription());
             detailsIntent.putExtra("date", task.getDate());
             detailsIntent.putExtra("owner", task.getTaskOwner());
-            DataHolder.setTodayTasks(taskList);
+            DataHolder.setTodayTasks(tasksList);
             mCntxt.startActivity(detailsIntent);
          }
       });
@@ -63,7 +68,7 @@ public class TodayTasksAdapter extends RecyclerView.Adapter<TodayTasksAdapter.My
 
    @Override
    public int getItemCount() {
-      return taskList.size();
+      return taskSet.size();
    }
 
    public static class MyViewHolder extends RecyclerView.ViewHolder {

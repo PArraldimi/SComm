@@ -4,43 +4,43 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/edit_name"
     android:layout_width="380dp"
-    android:layout_margin="10dp"
-    android:background="#E0E4F1"
-    android:padding="10dp"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:orientation="vertical">
+    android:layout_margin="10dp"
+    android:background="#E0E4F1"
+    android:orientation="vertical"
+    android:padding="10dp">
 
     <TextView
-        android:id="@+id/textView02"
+        android:id="@+id/task_edit_heading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/century"
-        android:text="Title:"
-        android:textSize="15dp"
+        android:text="@string/title"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-        android:textColor="#000000" />
+        android:textColor="#000000"
+        android:textSize="15sp" />
 
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/task_title"
-        app:endIconMode="clear_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp">
+        android:padding="5dp"
+        app:endIconMode="clear_text">
 
-<<<<<<< HEAD
+
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_task_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/i_want_to"
+            android:backgroundTint="@color/ocean_blue"
             android:fontFamily="@font/century"
-            android:textColor="@color/ocean_blue"
-            android:singleLine="true"
+            android:hint="@string/i_want_to"
             android:maxLength="20"
-            android:textCursorDrawable = "@null"
-            android:backgroundTint="@color/ocean_blue" />
+            android:singleLine="true"
+            android:textColor="@color/ocean_blue"
+            android:textCursorDrawable="@null" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -56,11 +56,11 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="5dp"
-            android:textSize="15dp"
             android:fontFamily="@font/century"
             android:text="@string/task_description"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-            android:textColor="#000000" />
+            android:textColor="#000000"
+            android:textSize="15sp" />
 
 
         <ScrollView
@@ -77,8 +77,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:backgroundTint="@color/ocean_blue"
-                android:hint="Describe your task"
                 android:fontFamily="@font/century"
+                android:hint="@string/describe_your_task"
                 android:singleLine="false"
                 android:textColor="@color/ocean_blue"
                 android:textCursorDrawable="@null"
@@ -97,19 +97,18 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="5dp"
-            android:textSize="15dp"
             android:fontFamily="@font/century"
-            android:text="Change Date &amp; Time:"
+            android:text="@string/change_date_amp_time"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-            android:textColor="#000000" />
+            android:textColor="#000000"
+            android:textSize="15sp" />
 
         <TextView
-            android:id="@+id/view_date"
+            android:id="@+id/task_edit_view_date"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/textView04"
             android:layout_alignParentStart="true"
-            android:layout_toEndOf="@+id/edit_task_time"
             android:background="@drawable/notificationborder"
             android:fontFamily="@font/century"
             android:paddingStart="5dp"
@@ -118,18 +117,17 @@
             android:textSize="18sp" />
 
         <Button
-            android:id="@+id/edit_task_time"
+            android:id="@+id/edit_task_date_time"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_below="@+id/view_date"
+            android:layout_below="@+id/task_edit_view_date"
             android:layout_alignParentEnd="true"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="10dp"
             android:layout_marginEnd="55dp"
+            android:layout_marginBottom="10dp"
             android:background="@drawable/ic_alarm_black_24dp"
             android:contentDescription="@string/select_date"
             android:elevation="0dp"
-            android:onClick="pickTime"
             android:textAllCaps="false" />
 
 
@@ -138,66 +136,32 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-            <TextView
+
+        <TextView
             android:id="@+id/edit_task_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancel"
-            android:textSize="20dp"
-            android:textColor="#FB545A"
-            android:textAllCaps="false"
-            android:layout_marginBottom="10dp"
             android:layout_marginTop="30dp"
-            android:onClick="pickTime"
-            android:contentDescription="@string/select_date" />
+            android:layout_marginBottom="10dp"
+            android:contentDescription="@string/select_date"
+            android:text="@string/cancel"
+            android:textAllCaps="false"
+            android:textColor="#FB545A"
+            android:textSize="20sp" />
 
-            <TextView
+        <TextView
             android:id="@+id/edit_task_submit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Submit"
-            android:textSize="20dp"
-            android:textColor="@color/ocean_blue"
             android:layout_alignParentEnd="true"
-            android:textAllCaps="false"
-            android:layout_marginBottom="10dp"
             android:layout_marginTop="30dp"
-            android:onClick="pickTime"
-            android:contentDescription="@string/select_date" />
+            android:layout_marginBottom="10dp"
+            android:contentDescription="@string/select_date"
+            android:text="@string/submit"
+            android:textAllCaps="false"
+            android:textColor="@color/ocean_blue"
+            android:textSize="20sp" />
 
     </RelativeLayout>
-=======
-    <Button
-        android:id="@+id/edit_task_time"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:text="Change Task Time"
-        android:textAllCaps="false"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/button_grey"
-        android:contentDescription="@string/select_date"
-        android:layout_gravity ="center_horizontal"/>
-
-    <Button
-        android:id="@+id/edit_task_submit"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:text="Submit"
-        android:textAllCaps="false"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/button_grey"
-        android:contentDescription="@string/select_date"
-        android:layout_gravity ="center_horizontal"/>
-    <Button
-        android:id="@+id/edit_task_cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:text="Cancel"
-        android:textAllCaps="false"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/button_grey"
-        android:contentDescription="@string/select_date"
-        android:layout_gravity ="center_horizontal"/>
->>>>>>> master
 
 </LinearLayout>

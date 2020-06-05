@@ -1,6 +1,8 @@
 package com.exo.scomm.model;
 
-public class TasksModel {
+import java.io.Serializable;
+
+public class TasksModel implements Serializable {
     private String date;
     private String description;
     private String taskOwner;

@@ -1,52 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/user_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".TaskListActivity">
-    <androidx.appcompat.widget.Toolbar
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/companions_app_bar"
+    tools:context=".Companions">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/companions_app_par"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginBottom="10dp"
-        android:background="#80BBF8"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
+        android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/back_button"
-            android:layout_width="50dp"
-            android:layout_height="40dp"
-            android:layout_centerVertical="true"
-            android:background="@drawable/ic_chevron_left_black_24dp" />
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/all_companions_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#80BBF8"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:navigationIcon="@drawable/ic_chevron_left_black_24dp">
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/arialregular"
-            android:text="My Scommers"
-            android:layout_marginTop="5dp"
-            android:layout_toEndOf="@+id/back_button"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"/>
 
-    </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.MaterialToolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
 
     <RelativeLayout
         android:id="@+id/relative003"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/companions_app_bar"
         android:layout_above="@+id/relative004"
+        android:layout_below="@+id/companions_app_par"
         android:layout_marginBottom="5dp">
+
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:layout_width="match_parent"
             android:id="@+id/swipe_layout_recycler"
+            android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <androidx.recyclerview.widget.RecyclerView
@@ -57,7 +48,6 @@
                 android:layout_below="@+id/chat_app_bar" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </RelativeLayout>
-
 
 
 </RelativeLayout>

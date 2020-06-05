@@ -14,14 +14,16 @@ import com.exo.scomm.R;
 import com.exo.scomm.TaskDetails;
 import com.exo.scomm.model.TasksModel;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class UpComingTasksAdapter extends RecyclerView.Adapter<UpComingTasksAdapter.MyViewHolder>{
-    private List<TasksModel> tasksModels;
+    private Set<TasksModel> tasksSet;
     Context mCntxt;
 
-    public UpComingTasksAdapter(Context context, List<TasksModel> upcomingTasks) {
-        this.tasksModels = upcomingTasks;
+    public UpComingTasksAdapter(Context context, Set<TasksModel> upcomingTasks) {
+        this.tasksSet = upcomingTasks;
         this.mCntxt = context;
     }
 
@@ -36,7 +38,9 @@ public class UpComingTasksAdapter extends RecyclerView.Adapter<UpComingTasksAdap
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        final TasksModel task = tasksModels.get(position);
+        final List<TasksModel> tasksList = new ArrayList<>(tasksSet);
+
+        final TasksModel task = tasksList.get(position);
         final String task_id = task.getTask_id();
         holder.title.setText(task.getTitle());
         holder.type.setText(task.getType());
@@ -58,7 +62,7 @@ public class UpComingTasksAdapter extends RecyclerView.Adapter<UpComingTasksAdap
 
     @Override
     public int getItemCount() {
-        return tasksModels.size();
+        return tasksSet.size();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {

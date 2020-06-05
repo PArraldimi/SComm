@@ -97,7 +97,6 @@ public class ChatroomFragment extends Fragment {
       super.onCreate(savedInstanceState);
       if (getArguments() != null) {
          mUserId = getArguments().getString("uid");
-         Log.e("TAG", "" + mUserId);
       }
 
    }
@@ -116,7 +115,7 @@ public class ChatroomFragment extends Fragment {
       mRefreshLayout = view.findViewById(R.id.swipe_layout_recycler);
       mProfile = view.findViewById(R.id.chat_profile_image);
       homeActivity = (HomeActivity) requireActivity();
-      mCurrentUserId = mAuth.getCurrentUser().getUid();
+      mCurrentUserId = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
       mRootRef = FirebaseDatabase.getInstance().getReference();
       mFriendsDatabase = FirebaseDatabase.getInstance().getReference().child("Companions").child(mCurrentUserId);
       mUsersDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
@@ -368,7 +367,6 @@ public class ChatroomFragment extends Fragment {
       if (mUid != null) {
          mRootRef.child("Users").child(mUid).child("online").setValue("true");
       }
-      Log.e(getTag(), "Start Called");
 
       final HomeActivity activity = (HomeActivity) getContext();
       assert activity != null;
@@ -384,8 +382,6 @@ public class ChatroomFragment extends Fragment {
    @Override
    public void onResume() {
       super.onResume();
-      Log.e("getTag()", "Start Called");
-
    }
 
    @Override

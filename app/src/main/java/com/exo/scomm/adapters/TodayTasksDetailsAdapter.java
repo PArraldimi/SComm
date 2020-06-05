@@ -12,14 +12,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.exo.scomm.R;
 import com.exo.scomm.model.TasksModel;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class TodayTasksDetailsAdapter extends RecyclerView.Adapter<TodayTasksDetailsAdapter.MyViewHolder>{
-    private List<TasksModel> tasksModels;
+    private Set<TasksModel> tasksSet;
     private Context context;
-    public TodayTasksDetailsAdapter(Context context, List<TasksModel> tasksModelList) {
+    public TodayTasksDetailsAdapter(Context context, Set<TasksModel> tasksModelList) {
         this.context = context;
-        this.tasksModels = tasksModelList;
+        this.tasksSet = tasksModelList;
     }
     @Override
     public int getItemViewType(int position) {
@@ -38,8 +40,10 @@ public class TodayTasksDetailsAdapter extends RecyclerView.Adapter<TodayTasksDet
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        TasksModel task = tasksModels.get(position);
-        TasksModel testTask = tasksModels.get(holder.getAdapterPosition());
+        final List<TasksModel> tasksList = new ArrayList<>(tasksSet);
+
+        TasksModel task = tasksList.get(position);
+        TasksModel testTask = tasksList.get(holder.getAdapterPosition());
         DataHolder.setTask(testTask);
         holder.title.setText(task.getTitle());
         holder.type.setText(task.getType());
@@ -50,7 +54,7 @@ public class TodayTasksDetailsAdapter extends RecyclerView.Adapter<TodayTasksDet
 
     @Override
     public int getItemCount() {
-        return tasksModels.size();
+        return tasksSet.size();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {

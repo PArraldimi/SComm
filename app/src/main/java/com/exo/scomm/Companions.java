@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,6 +25,7 @@ import com.exo.scomm.adapters.DataHolder;
 import com.exo.scomm.model.User;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -45,6 +48,18 @@ public class Companions extends AppCompatActivity {
    protected void onCreate(@Nullable Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_companions);
+
+      MaterialToolbar toolbar = findViewById(R.id.all_companions_toolbar);
+      toolbar.setTitle("All Companions");
+      setSupportActionBar(toolbar);
+      toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+            onBackPressed();  // byDefault provided backPressed method, or handle your own way
+         }
+      });
+
+
       TaskCompanionsRef = FirebaseDatabase.getInstance().getReference().child("Users");
 
       FindFriendsRecyclerList = findViewById(R.id.find_friends_recycler_list);
@@ -54,7 +69,7 @@ public class Companions extends AppCompatActivity {
    }
 
    private void goBack(Set<User> selectedSet) {
-      Log.e(Companions.class.getSimpleName(), ""+selectedSet.toString());
+      Log.e(Companions.class.getSimpleName(), "" + selectedSet.toString());
       DataHolder.setSelectedUsers(selectedSet);
       AddTaskActivity taskActivity = new AddTaskActivity();
       taskActivity.mSelectedUsers = selectedSet;
@@ -121,6 +136,16 @@ public class Companions extends AppCompatActivity {
       adapter.startListening();
    }
 
+   @Override
+   public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+      switch (item.getItemId()) {
+         // Respond to the action bar's Up/Home button
+         case android.R.id.home:
+            return true;
+      }
+
+      return super.onOptionsItemSelected(item);
+   }
 
 
    static class FindFriendViewHolder extends RecyclerView.ViewHolder {

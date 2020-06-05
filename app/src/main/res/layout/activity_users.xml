@@ -7,41 +7,24 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     tools:context=".TaskListActivity">
-    <androidx.appcompat.widget.Toolbar
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/users_app_bar"
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/all_users_app_bar"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationIcon="@drawable/ic_chevron_left_black_24dp"
         android:layout_marginBottom="10dp"
         android:background="#80BBF8"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
 
-        <ImageView
-            android:id="@+id/back_button"
-            android:layout_width="50dp"
-            android:layout_height="40dp"
-            android:layout_centerVertical="true"
-            android:background="@drawable/ic_chevron_left_black_24dp" />
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/arialregular"
-            android:text="Select Scommer(s)"
-            android:layout_marginTop="5dp"
-            android:layout_toEndOf="@+id/back_button"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"/>
-
-    </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.MaterialToolbar>
 
     <RelativeLayout
         android:id="@+id/relative003"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/users_app_bar"
+        android:layout_below="@+id/all_users_app_bar"
         android:layout_above="@+id/relative004"
         android:layout_marginBottom="5dp">
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout

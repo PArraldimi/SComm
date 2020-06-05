@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +24,7 @@ import com.exo.scomm.adapters.DataHolder;
 import com.exo.scomm.model.User;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -51,12 +54,14 @@ public class AllUsersActivity extends AppCompatActivity {
 
    private static final String TAG = AllUsersActivity.class.getSimpleName();
    private RecyclerView FindFriendsRecyclerList;
-   private DatabaseReference UsersRef, mRootRef, mInvitesReqDBRef, mCompanionsDatabase;
+   private DatabaseReference UsersRef;
+   private DatabaseReference mRootRef;
+   private DatabaseReference mInvitesReqDBRef;
    private FirebaseUser mCurrentUser;
    private FloatingActionButton selectedUsersFab;
-   Set<String> selectedUsers = new HashSet<>();
+   private Set<String> selectedUsers = new HashSet<>();
    private Set<User> selectedSet = new HashSet<>();
-   TextView selectedScommers;
+   private TextView selectedScommers;
    private String task_id;
    boolean invite, newTask = false;
 
@@ -65,11 +70,21 @@ public class AllUsersActivity extends AppCompatActivity {
    protected void onCreate(@Nullable Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_users);
+      MaterialToolbar toolbar = findViewById(R.id.all_users_app_bar);
+      toolbar.setTitle("All Users");
+      setSupportActionBar(toolbar);
+      toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+            onBackPressed();  // byDefault provided backPressed method, or handle your own way
+         }
+      });
+
       mRootRef = FirebaseDatabase.getInstance().getReference();
       UsersRef = mRootRef.child("Users");
       mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
       mInvitesReqDBRef = mRootRef.child("TaskInviteRequests").child(mCurrentUser.getUid());
-      mCompanionsDatabase = mRootRef.child("TaskCompanions");
+      DatabaseReference mCompanionsDatabase = mRootRef.child("TaskCompanions");
 
 
       task_id = getIntent().getStringExtra("task_id");
@@ -82,7 +97,6 @@ public class AllUsersActivity extends AppCompatActivity {
 
       selectedScommers = findViewById(R.id.selected_scommers);
       selectedUsersFab = findViewById(R.id.selectedUsersFab);
-
       FindFriendsRecyclerList = findViewById(R.id.find_friends_recycler_list);
       FindFriendsRecyclerList.setLayoutManager(new LinearLayoutManager(this));
 
@@ -114,13 +128,15 @@ public class AllUsersActivity extends AppCompatActivity {
                     model.setUID(uid);
                     holder.userName.setText(model.getUsername());
                     holder.userStatus.setText(model.getStatus());
+                    Log.e("LOG", "ImageURI"+model.getImage());
                     Picasso.get().load(model.getImage()).placeholder(R.drawable.profile_image).into(holder.profileImage);
 
                     if(!newTask) {
+                       assert uid != null;
                        mRootRef.child("TaskCompanions").child(mCurrentUser.getUid()).child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                           @Override
                           public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                             if (dataSnapshot.hasChild("task_id") && dataSnapshot.child("task_id").getValue().toString().equals(task_id) ) {
+                             if (dataSnapshot.hasChild("task_id") && Objects.requireNonNull(dataSnapshot.child("task_id").getValue()).toString().equals(task_id) ) {
                                 holder.selectCheck.setChecked(true);
                              }
                           }
@@ -134,13 +150,10 @@ public class AllUsersActivity extends AppCompatActivity {
                        mInvitesReqDBRef.addListenerForSingleValueEvent(new ValueEventListener() {
                           @Override
                           public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                             Log.e(TAG, dataSnapshot.getKey());
                              if (dataSnapshot.hasChild(uid)) {
                                 mInvitesReqDBRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                                    @Override
                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                      Log.e("LOGGG", ""+ Objects.requireNonNull(dataSnapshot.child(task_id).getValue()).toString());
-
                                       if (dataSnapshot.hasChild(task_id)) {
                                          String req_type = Objects.requireNonNull(dataSnapshot.child(task_id).child("request_type").getValue()).toString();
                                          if (req_type.equals("sent")) {
@@ -221,6 +234,7 @@ public class AllUsersActivity extends AppCompatActivity {
       FindFriendsRecyclerList.setAdapter(adapter);
       adapter.startListening();
    }
+
 
    private void sendInviteRequests(String task_id, final Set<User> selectedSet) {
       final ProgressDialog mProgressDialog = new ProgressDialog(this);

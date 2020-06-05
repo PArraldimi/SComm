@@ -50,14 +50,16 @@
             android:layout_width="match_parent"
             android:layout_height="130dp"
             android:layout_below="@+id/details_today_date_time"
+            android:layout_marginTop="12dp"
             android:maxHeight="160dp"
             android:minHeight="140dp">
 
-            <include layout="@layout/task_detail_item"
+            <include
                 android:id="@+id/details_task_item"
-                android:layout_centerInParent="true"
+                layout="@layout/task_detail_item"
+                android:layout_width="300dp"
                 android:layout_height="wrap_content"
-                android:layout_width="300dp"/>
+                android:layout_centerInParent="true" />
         </RelativeLayout>
 
     </RelativeLayout>
@@ -67,7 +69,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/relative02"
-        android:layout_marginBottom="20dp">
+        android:layout_marginBottom="15dp">
 
         <TextView
             android:id="@+id/textView3"
@@ -102,7 +104,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/textView3"
-            android:layout_marginTop="-7dp"
             android:elevation="70dp"
             android:maxHeight="70dp"
             android:minHeight="70dp">
@@ -111,7 +112,31 @@
                 android:id="@+id/task_details_companions_recycler"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="2dp" />
+                android:layout_margin="2dp"
+                android:layout_marginEnd="40dp"
+                android:layout_alignParentStart="true"/>
+
+            <RelativeLayout
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/temperature_background"
+                android:layout_marginTop="4dp"
+                android:padding="5dp"
+                android:id="@+id/scomming_details_btn">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="^^"
+                    android:textColor="@color/white"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:textStyle="bold"
+                    android:layout_gravity="center"/>
+
+            </RelativeLayout>
+
         </RelativeLayout>
 
     </RelativeLayout>

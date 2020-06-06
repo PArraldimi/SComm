@@ -135,21 +135,21 @@ public class NotificationFragment extends Fragment {
                                                   //No notification layout
 
 
-//                                                  String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
-//                                                  String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
-//
-//                                                  String text = "You sent " + userName + " an invite request to task " + taskName + " on " + taskDate;
-//                                                  holder.setText(text);
-//                                                  holder.setDate(date);
-//                                                  holder.decline.setEnabled(true);
-//                                                  holder.accept.setEnabled(false);
-//                                                  holder.chat.setEnabled(false);
-//                                                  holder.decline.setOnClickListener(new View.OnClickListener() {
-//                                                     @Override
-//                                                     public void onClick(View v) {
-//                                                        declineInvite(user_id, holder);
-//                                                     }
-//                                                  });
+                                                  String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
+                                                  String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
+
+                                                  String text = "You sent " + userName + " an invite request to task " + taskName + " to be scommed on " + taskDate;
+                                                  holder.setText(text);
+                                                  holder.setDate(date);
+                                                  holder.decline.setEnabled(true);
+                                                  holder.accept.setEnabled(false);
+                                                  holder.chat.setEnabled(false);
+                                                  holder.decline.setOnClickListener(new View.OnClickListener() {
+                                                     @Override
+                                                     public void onClick(View v) {
+                                                        declineInvite(user_id, holder);
+                                                     }
+                                                  });
                                                }
 
                                             }
@@ -220,7 +220,7 @@ public class NotificationFragment extends Fragment {
                                             if (dataSnapshot.hasChildren()) {
                                                final String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
                                                final String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
-                                               String text = userName + " has invited you accompany them to task " + taskName + " on " + taskDate;
+                                               String text = userName + " has invited you accompany them to task " + taskName + " to be scommmed on " + taskDate;
                                                holder.setText(text);
                                                holder.setDate(date);
                                                acceptInvite(holder, user_id, task_id);
@@ -281,22 +281,22 @@ public class NotificationFragment extends Fragment {
                                       mTaskRef.child(mCurrentUserId).child(task_id).addValueEventListener(new ValueEventListener() {
                                          @Override
                                          public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                             String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
+                                             String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
                                             if (dataSnapshot.hasChildren()) {
-                                               String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
-                                               String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
                                                if (user_id.equals(mCurrentUserId)) {
                                                   holder.decline.setEnabled(false);
                                                   holder.accept.setEnabled(false);
                                                   holder.chat.setEnabled(true);
                                                   holder.mViewSchommers.setEnabled(true);
-                                                  String text = userName + " accepted your invitation request to task " + taskName + " on " + taskDate;
+                                                  String text = userName + " accepted your invitation request to task " + taskName + " to be scommed on " + taskDate;
                                                   holder.setText(text);
                                                   holder.setDate(date);
                                                } else {
                                                   Toast.makeText(getContext(), " Task added successfully to your schedule", Toast.LENGTH_SHORT).show();
                                                }
                                             }else {
-                                               Toast.makeText(getContext(), " The task task was deleted by owner", Toast.LENGTH_SHORT).show();
+                                               Toast.makeText(getContext(), "The task " + taskName + " was deleted by owner", Toast.LENGTH_SHORT).show();
                                             }
 
                                             holder.chat.setOnClickListener(new View.OnClickListener() {

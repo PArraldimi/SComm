@@ -63,6 +63,7 @@ public class NotificationFragment extends Fragment {
       mFriendsRecycler = mMainView.findViewById(R.id.notification_recycler);
       clearAll = mMainView.findViewById(R.id.action_clear_all);
       mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
+      assert mCurrentUser != null;
       mCurrentUserId = mCurrentUser.getUid();
       mRootRef = FirebaseDatabase.getInstance().getReference();
       mNotificationsRef = mRootRef.child("Notifications").child(mCurrentUserId);
@@ -130,21 +131,25 @@ public class NotificationFragment extends Fragment {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                if (dataSnapshot.hasChildren()) {
-                                                  String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
-                                                  String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
 
-                                                  String text = "You sent " + userName + " an invite request to task " + taskName + " on " + taskDate;
-                                                  holder.setText(text);
-                                                  holder.setDate(date);
-                                                  holder.decline.setEnabled(true);
-                                                  holder.accept.setEnabled(false);
-                                                  holder.chat.setEnabled(false);
-                                                  holder.decline.setOnClickListener(new View.OnClickListener() {
-                                                     @Override
-                                                     public void onClick(View v) {
-                                                        declineInvite(user_id, holder);
-                                                     }
-                                                  });
+                                                  //No notification layout
+
+
+//                                                  String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
+//                                                  String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
+//
+//                                                  String text = "You sent " + userName + " an invite request to task " + taskName + " on " + taskDate;
+//                                                  holder.setText(text);
+//                                                  holder.setDate(date);
+//                                                  holder.decline.setEnabled(true);
+//                                                  holder.accept.setEnabled(false);
+//                                                  holder.chat.setEnabled(false);
+//                                                  holder.decline.setOnClickListener(new View.OnClickListener() {
+//                                                     @Override
+//                                                     public void onClick(View v) {
+//                                                        declineInvite(user_id, holder);
+//                                                     }
+//                                                  });
                                                }
 
                                             }
@@ -188,10 +193,12 @@ public class NotificationFragment extends Fragment {
                                             holder.decline.setEnabled(false);
                                             holder.accept.setEnabled(false);
                                             holder.chat.setEnabled(true);
+                                            holder.mViewSchommers.setEnabled(true);
                                          } else {
                                             holder.decline.setEnabled(true);
                                             holder.accept.setEnabled(true);
                                             holder.chat.setEnabled(false);
+                                            holder.mViewSchommers.setEnabled(true);
                                          }
 
                                       }
@@ -213,7 +220,7 @@ public class NotificationFragment extends Fragment {
                                             if (dataSnapshot.hasChildren()) {
                                                final String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
                                                final String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
-                                               String text = userName + " sent you a invite request to task " + taskName + " on " + taskDate;
+                                               String text = userName + " has invited you accompany them to task " + taskName + " on " + taskDate;
                                                holder.setText(text);
                                                holder.setDate(date);
                                                acceptInvite(holder, user_id, task_id);
@@ -227,6 +234,11 @@ public class NotificationFragment extends Fragment {
                                                   @Override
                                                   public void onClick(View v) {
                                                      revokeInvite(user_id, task_id, holder);
+                                                     holder.decline.setEnabled(false);
+                                                     holder.accept.setEnabled(false);
+                                                     holder.chat.setEnabled(false);
+                                                     holder.mViewSchommers.setEnabled(false);
+                                                     holder.mViewSchommers.setText("Declined");
                                                   }
                                                });
                                             }
@@ -273,20 +285,18 @@ public class NotificationFragment extends Fragment {
                                                String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
                                                String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
                                                if (user_id.equals(mCurrentUserId)) {
-                                                  holder.decline.setEnabled(true);
-                                                  holder.decline.setText("Revoke");
+                                                  holder.decline.setEnabled(false);
+                                                  holder.accept.setEnabled(false);
+                                                  holder.chat.setEnabled(true);
+                                                  holder.mViewSchommers.setEnabled(true);
                                                   String text = userName + " accepted your invitation request to task " + taskName + " on " + taskDate;
                                                   holder.setText(text);
                                                   holder.setDate(date);
                                                } else {
-                                                  holder.decline.setEnabled(false);
-                                                  String text = "You accepted " + userName + "'s invitation to task " + taskName + " on " + taskDate;
-                                                  holder.setText(text);
-                                                  holder.setDate(date);
+                                                  Toast.makeText(getContext(), " Task added successfully to your schedule", Toast.LENGTH_SHORT).show();
                                                }
                                             }else {
-                                               String text = "The task was removed by the owner ";
-                                               holder.setText(text);
+                                               Toast.makeText(getContext(), " The task task was deleted by owner", Toast.LENGTH_SHORT).show();
                                             }
 
                                             holder.chat.setOnClickListener(new View.OnClickListener() {
@@ -324,9 +334,6 @@ public class NotificationFragment extends Fragment {
 
                           break;
                        case "deleteTask":
-                          holder.decline.setEnabled(false);
-                          holder.accept.setEnabled(false);
-                          holder.chat.setEnabled(false);
                           assert noteKey != null;
                           mNotificationsRef.child(noteKey).addValueEventListener(new ValueEventListener() {
                              @Override
@@ -336,21 +343,21 @@ public class NotificationFragment extends Fragment {
                                    @Override
                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                       if (dataSnapshot.hasChildren()) {
-                                         final String userName = dataSnapshot.child("username").getValue().toString();
+                                         final String userName = Objects.requireNonNull(dataSnapshot.child("username").getValue()).toString();
                                          if (user_id.equals(mCurrentUserId)) {
-                                            holder.decline.setEnabled(false);
-                                            String text = "You deleted task successfully";
-                                            holder.setText(text);
-                                            holder.setDate(date);
+                                            //No notification layout
                                          } else {
-                                            holder.decline.setEnabled(true);
-                                            holder.decline.setText("Revoke");
-                                            String text = userName + " deleted a your were in task ";
+                                            holder.decline.setEnabled(false);
+                                            holder.accept.setEnabled(false);
+                                            holder.chat.setEnabled(false);
+                                            holder.mViewSchommers.setEnabled(false);
+                                            holder.mViewSchommers.setText("Deleted");
+                                            String text = userName + " deleted this task. ";
                                             holder.setText(text);
                                             holder.setDate(date);
                                          }
                                       }else {
-                                         Toast.makeText(getContext(), "No children", Toast.LENGTH_SHORT).show();
+                                         Toast.makeText(getContext(), "Error while performing task", Toast.LENGTH_SHORT).show();
                                       }
 
                                    }

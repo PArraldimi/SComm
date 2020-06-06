@@ -3,10 +3,12 @@ package com.exo.scomm;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,11 +25,13 @@ import com.exo.scomm.adapters.CompanionsTasksAdapter;
 import com.exo.scomm.adapters.DataHolder;
 import com.exo.scomm.adapters.TodayTasksDetailsAdapter;
 import com.exo.scomm.fragments.EditTaskDialog;
+import com.exo.scomm.fragments.HomeFragment;
 import com.exo.scomm.model.TasksModel;
 import com.exo.scomm.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -51,6 +55,7 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
    Button deleteTask, addNewTask, mInvite, editTask;
    RecyclerView myTaskCompanions;
    TextView taskDesc, taskTitle, taskDate, taskType, taskCreator, mTextViewDate;
+   ImageView mScommingDetails;
    private String task_id, mCurrentUID, mDate, mDesc, mTitle, mType, owner;
    private DatabaseReference taskCompRef, mTaskRef;
    private DatabaseReference mRootRef, mUsersRef;
@@ -74,6 +79,8 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
             onBackPressed();  // byDefault provided backPressed method, or handle your own way
          }
       });
+
+
 
       deleteTask = this.findViewById(R.id.details_delete_task);
       calendar = Calendar.getInstance();
@@ -139,10 +146,29 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
             if (mDeleteBnState == 0) {
                Toast.makeText(TaskDetails.this, "Deleting the task", Toast.LENGTH_SHORT).show();
                deleteTask(task);
+               Toast.makeText(TaskDetails.this, " Task deleted successfully", Toast.LENGTH_SHORT).show();
             }
             if (mDeleteBnState == 1) {
                schommeOut();
             }
+         }
+      });
+
+      mScommingDetails = this.findViewById(R.id.scomming_details);
+      mScommingDetails.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(
+                    TaskDetails.this, R.style.BottomSheetDialogTheme
+            );
+            View bottomSheetView = LayoutInflater.from(getApplicationContext())
+                    .inflate(
+                            R.layout.scomming_details_layout,
+                            (LinearLayout)findViewById(R.id.scomming_detail)
+                    );
+//            Functionality of bottomSheetView(Listing Scommers)
+            bottomSheetDialog.setContentView(bottomSheetView);
+            bottomSheetDialog.show();
          }
       });
    }

@@ -79,7 +79,7 @@ public class EditTaskDialog extends DialogFragment {
       super.onViewCreated(view, savedInstanceState);
       // Get field from view
       mTitleEditText =  view.findViewById(R.id.edit_task_title);
-      mViewdate = view.findViewById(R.id.task_edit_view_date);
+      mViewdate = view.findViewById(R.id.edit_task_date_time);
       mDesc = view.findViewById(R.id.ed_task_description);
       mSubmit = view.findViewById(R.id.edit_task_submit);
       mRootRef = FirebaseDatabase.getInstance().getReference();
@@ -101,8 +101,8 @@ public class EditTaskDialog extends DialogFragment {
       Objects.requireNonNull(getDialog().getWindow()).setSoftInputMode(
               WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
-      Button changeDateTime = view.findViewById(R.id.edit_task_date_time);
-      changeDateTime.setOnClickListener(new View.OnClickListener() {
+
+      mViewdate.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View v) {
             pickTime();

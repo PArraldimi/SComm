@@ -3,11 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/edit_task"
-    android:layout_width="380dp"
-    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:layout_margin="10dp"
-    android:background="#E0E4F1"
+    android:background="@drawable/bottom_sheet_background"
     android:orientation="vertical"
     android:padding="10dp">
 
@@ -104,8 +103,8 @@
             android:textSize="15sp" />
 
         <TextView
-            android:id="@+id/task_edit_view_date"
-            android:layout_width="300dp"
+            android:id="@+id/edit_task_date_time"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/textView04"
             android:layout_alignParentStart="true"
@@ -116,19 +115,19 @@
             android:textColor="@color/ocean_blue"
             android:textSize="18sp" />
 
-        <Button
-            android:id="@+id/edit_task_date_time"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_below="@+id/task_edit_view_date"
-            android:layout_alignParentEnd="true"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginEnd="55dp"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/ic_alarm_black_24dp"
-            android:contentDescription="@string/select_date"
-            android:elevation="0dp"
-            android:textAllCaps="false" />
+<!--        <Button-->
+<!--            android:id="@+id/edit_task_date_time"-->
+<!--            android:layout_width="30dp"-->
+<!--            android:layout_height="30dp"-->
+<!--            android:layout_below="@+id/task_edit_view_date"-->
+<!--            android:layout_alignParentEnd="true"-->
+<!--            android:layout_gravity="center_horizontal"-->
+<!--            android:layout_marginEnd="55dp"-->
+<!--            android:layout_marginBottom="10dp"-->
+<!--            android:background="@drawable/ic_alarm_black_24dp"-->
+<!--            android:contentDescription="@string/select_date"-->
+<!--            android:elevation="10dp"-->
+<!--            android:textAllCaps="false" />-->
 
 
     </RelativeLayout>

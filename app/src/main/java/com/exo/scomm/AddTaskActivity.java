@@ -323,7 +323,7 @@ public class AddTaskActivity extends AppCompatActivity {
                            @Override
                            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                               if (databaseError != null) {
-                                 Toast.makeText(getApplicationContext(), "There was some error in inviting companions", Toast.LENGTH_SHORT).show();
+                                 Toast.makeText(getApplicationContext(), "Error in sending invite request", Toast.LENGTH_SHORT).show();
                                  finish();
                               } else {
                                  Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();

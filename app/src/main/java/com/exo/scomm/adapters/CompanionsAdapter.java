@@ -14,13 +14,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.exo.scomm.AllUsersActivity;
-import com.exo.scomm.HomeActivity;
-import com.exo.scomm.Profile;
+import com.exo.scomm.ui.activities.AllUsersActivity;
+import com.exo.scomm.ui.activities.HomeActivity;
+import com.exo.scomm.ui.activities.Profile;
 import com.exo.scomm.R;
-import com.exo.scomm.fragments.HomeFragment;
-import com.exo.scomm.model.User;
-import com.exo.scomm.model.Utils;
+import com.exo.scomm.data.models.User;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

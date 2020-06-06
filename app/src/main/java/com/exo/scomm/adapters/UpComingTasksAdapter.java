@@ -11,18 +11,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.exo.scomm.R;
-import com.exo.scomm.TaskDetails;
-import com.exo.scomm.model.TasksModel;
+import com.exo.scomm.ui.activities.TaskDetails;
+import com.exo.scomm.data.models.Task;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 public class UpComingTasksAdapter extends RecyclerView.Adapter<UpComingTasksAdapter.MyViewHolder>{
-    private Set<TasksModel> tasksSet;
+    private Set<Task> tasksSet;
     Context mCntxt;
 
-    public UpComingTasksAdapter(Context context, Set<TasksModel> upcomingTasks) {
+    public UpComingTasksAdapter(Context context, Set<Task> upcomingTasks) {
         this.tasksSet = upcomingTasks;
         this.mCntxt = context;
     }
@@ -38,9 +38,9 @@ public class UpComingTasksAdapter extends RecyclerView.Adapter<UpComingTasksAdap
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        final List<TasksModel> tasksList = new ArrayList<>(tasksSet);
+        final List<Task> tasksList = new ArrayList<>(tasksSet);
 
-        final TasksModel task = tasksList.get(position);
+        final Task task = tasksList.get(position);
         final String task_id = task.getTask_id();
         holder.title.setText(task.getTitle());
         holder.type.setText(task.getType());

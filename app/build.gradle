@@ -52,6 +52,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation 'com.github.Kunzisoft:Android-SwitchDateTimePicker:2.0'
 
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

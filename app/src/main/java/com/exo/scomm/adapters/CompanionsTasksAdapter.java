@@ -1,7 +1,6 @@
 package com.exo.scomm.adapters;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
@@ -13,19 +12,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.exo.scomm.HomeActivity;
-import com.exo.scomm.Profile;
+import com.exo.scomm.ui.activities.HomeActivity;
+import com.exo.scomm.ui.activities.Profile;
 import com.exo.scomm.R;
-import com.exo.scomm.AllUsersActivity;
-import com.exo.scomm.TaskDetails;
-import com.exo.scomm.fragments.ChatroomFragment;
-import com.exo.scomm.model.User;
+import com.exo.scomm.ui.activities.TaskDetails;
+import com.exo.scomm.data.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.squareup.picasso.Picasso;

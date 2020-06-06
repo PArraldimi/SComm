@@ -1,7 +1,7 @@
 package com.exo.scomm.adapters;
 
-import com.exo.scomm.model.TasksModel;
-import com.exo.scomm.model.User;
+import com.exo.scomm.data.models.Task;
+import com.exo.scomm.data.models.User;
 
 import java.util.List;
 import java.util.Set;
@@ -10,10 +10,10 @@ public class DataHolder {
     private static Set<User> selectedUsers;
     private static String UID;
     private static String taskId;
-    private static TasksModel task;
+    private static Task task;
     private static String phone;
     private static String currentUID;
-    private static List<TasksModel> todayTasks;
+    private static List<Task> todayTasks;
     private static List<User>  userList;
 
     public static String getTaskId() {
@@ -40,11 +40,11 @@ public class DataHolder {
         DataHolder.currentUID = currentUID;
     }
 
-    public static List<TasksModel> getTodayTasks() {
+    public static List<Task> getTodayTasks() {
         return todayTasks;
     }
 
-    public static void setTodayTasks(List<TasksModel> todayTasks) {
+    public static void setTodayTasks(List<Task> todayTasks) {
         DataHolder.todayTasks = todayTasks;
     }
 
@@ -56,11 +56,11 @@ public class DataHolder {
         DataHolder.userList = userList;
     }
 
-    public static TasksModel getTask() {
+    public static Task getTask() {
         return task;
     }
 
-    public static void setTask(TasksModel task) {
+    public static void setTask(Task task) {
         DataHolder.task = task;
     }
 

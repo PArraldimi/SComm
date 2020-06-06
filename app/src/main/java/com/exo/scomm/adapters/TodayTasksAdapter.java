@@ -11,19 +11,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.exo.scomm.R;
-import com.exo.scomm.TaskDetails;
-import com.exo.scomm.model.TasksModel;
-import com.exo.scomm.model.User;
+import com.exo.scomm.ui.activities.TaskDetails;
+import com.exo.scomm.data.models.Task;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 public class TodayTasksAdapter extends RecyclerView.Adapter<TodayTasksAdapter.MyViewHolder> {
-   private Set<TasksModel> taskSet;
+   private Set<Task> taskSet;
    private Context mCntxt;
 
-   public TodayTasksAdapter(Context mCntxt, Set<TasksModel> taskList) {
+   public TodayTasksAdapter(Context mCntxt, Set<Task> taskList) {
       super();
       this.mCntxt = mCntxt;
       this.taskSet = taskList;
@@ -41,9 +40,9 @@ public class TodayTasksAdapter extends RecyclerView.Adapter<TodayTasksAdapter.My
 
    @Override
    public void onBindViewHolder(@NonNull final TodayTasksAdapter.MyViewHolder holder, int position) {
-      final List<TasksModel> tasksList = new ArrayList<>(taskSet);
+      final List<Task> tasksList = new ArrayList<>(taskSet);
 
-      final TasksModel task = tasksList.get(position);
+      final Task task = tasksList.get(position);
       final String task_id = task.getTask_id();
       holder.title.setText(task.getTitle());
       holder.type.setText(task.getType());

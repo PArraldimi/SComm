@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
-        android:name=".SComm"
+        android:name=".ui.activities.SComm"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -19,48 +19,48 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Companions"></activity>
+        <activity android:name=".ui.activities.Companions" />
 
         <service
-            android:name=".FirebaseMessagingService"
+            android:name=".ui.activities.FirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
-        <activity android:name=".Profile">
+        <activity android:name=".ui.activities.Profile">
             <intent-filter>
                 <action android:name="com.example.letschat_TARGET_NOTIFICATION" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".ChatActivity">
+        <activity android:name=".ui.activities.ChatActivity">
             <intent-filter>
                 <action android:name="com.example.letschat_ACCEPT_TARGET_NOTIFICATION" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".TaskDetails" />
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".TaskListActivity" />
-        <activity android:name=".AllUsersActivity" />
-        <activity android:name=".AddTaskActivity" />
-        <activity android:name=".SetupActivity" />
-        <activity android:name=".HomeActivity">
+        <activity android:name=".ui.activities.TaskDetails" />
+        <activity android:name=".ui.activities.SettingsActivity" />
+        <activity android:name=".ui.activities.TaskListActivity" />
+        <activity android:name=".ui.activities.AllUsersActivity" />
+        <activity android:name=".ui.activities.AddTaskActivity" />
+        <activity android:name=".ui.activities.SetupActivity" />
+        <activity android:name=".ui.activities.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".OtpVerifyActivity" />
+        <activity android:name=".ui.activities.OtpVerifyActivity" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".ui.activities.MainActivity" />
     </application>
 
 </manifest>

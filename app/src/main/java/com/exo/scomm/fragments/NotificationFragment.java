@@ -220,7 +220,7 @@ public class NotificationFragment extends Fragment {
                                             if (dataSnapshot.hasChildren()) {
                                                final String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
                                                final String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
-                                               String text = userName + " has invited you accompany them to task " + taskName + " to be scommmed on " + taskDate;
+                                               String text = userName + " has invited you to accompany them to task " + taskName + " to be scommed on " + taskDate;
                                                holder.setText(text);
                                                holder.setDate(date);
                                                acceptInvite(holder, user_id, task_id);

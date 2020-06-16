@@ -6,8 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -21,6 +23,7 @@ import com.exo.scomm.adapters.TodayTasksAdapter;
 import com.exo.scomm.adapters.UpComingTasksAdapter;
 import com.exo.scomm.data.models.Task;
 import com.exo.scomm.data.models.User;
+import com.exo.scomm.ui.activities.TaskDetails;
 import com.exo.scomm.utils.TasksViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,8 +34,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,11 +52,12 @@ public class HomeFragment extends Fragment {
    private static final String LOGTAG = HomeFragment.class.getSimpleName() ;
    private TodayTasksAdapter todayTasksAdapter;
    private UpComingTasksAdapter upComingTasksAdapter;
-   private Set<Task> todayTasks;
-   private Set<Task> upcomingTasks;
+   private List<Task> todayTasks = new ArrayList<>();
+   private List<Task> upcomingTasks = new ArrayList<>();
    private Set<User> companionsList;
    private RecyclerView todayTasksRecycler, companionsRecycler, upComingRecycler;
    private DatabaseReference taskRef;
+   DatabaseReference mRootRef;
    private DatabaseReference companionRef;
    private DatabaseReference mUsersRef;
    private TextView textViewDate, seeAllCompanions;
@@ -70,9 +78,8 @@ public class HomeFragment extends Fragment {
       upComingRecycler = view.findViewById(R.id.upcoming_recycler);
       textViewDate = view.findViewById(R.id.text_view_date);
       seeAllCompanions = view.findViewById(R.id.see_all_users);
-      todayTasks = new HashSet<>();
-      upcomingTasks = new HashSet<>();
       companionsList = new HashSet<>();
+      mRootRef = FirebaseDatabase.getInstance().getReference();
 
       LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
       linearLayoutManager.setStackFromEnd(false);
@@ -81,7 +88,6 @@ public class HomeFragment extends Fragment {
       FirebaseUser mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
       assert mCurrentUser != null;
       currentUid = mCurrentUser.getUid();
-      DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
       taskRef = mRootRef.child("Tasks").child(currentUid);
       mUsersRef = mRootRef.child("Users");
       companionRef = mRootRef.child("TaskCompanions");
@@ -102,17 +108,53 @@ public class HomeFragment extends Fragment {
                   todayTasks.add(t);
                } else if (new Date(taskDate).after(new Date(today))) {
                   upcomingTasks.add(t);
+               } else if (new Date(taskDate).before(new Date(today))) {
+                  deleteTask(t);
                }
-               todayTasksAdapter = new TodayTasksAdapter(getContext(), todayTasks);
-               upComingTasksAdapter = new UpComingTasksAdapter(getContext(), upcomingTasks);
-               todayTasksRecycler.setAdapter(todayTasksAdapter);
-               upComingRecycler.setAdapter(upComingTasksAdapter);
             }
+            sortTasks();
+            todayTasksAdapter = new TodayTasksAdapter(getContext(), todayTasks);
+            upComingTasksAdapter = new UpComingTasksAdapter(getContext(), upcomingTasks);
+            todayTasksRecycler.setAdapter(todayTasksAdapter);
+            upComingRecycler.setAdapter(upComingTasksAdapter);
          }
       });
 
       getTaskCompanions();
       return view;
+   }
+
+   private void deleteTask(Task t) {
+      String deleted_task_id = mRootRef.child("DeletedTask").child(currentUid).push().getKey();
+      HashMap<String, Object> deleteTaskMap = new HashMap<>();
+      deleteTaskMap.put("Tasks/" + currentUid + "/" + t.getTask_id(), null);
+      deleteTaskMap.put("DeletedTask/" + deleted_task_id + "/" + t.getTask_id() + "/", t);
+      mRootRef.updateChildren(deleteTaskMap, new DatabaseReference.CompletionListener() {
+         @Override
+         public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+            if (databaseError != null) {
+               String error = databaseError.getMessage();
+               Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show();
+            }
+         }
+      });
+   }
+
+   private void sortTasks() {
+      Collections.sort( upcomingTasks, new Comparator<Task>() {
+         @Override
+         public int compare(Task o1, Task o2) {
+
+            return new Date(o1.getDate()).compareTo(new Date(o2.getDate()));
+         }
+      });
+      Collections.sort(todayTasks, new Comparator<Task>() {
+         @Override
+         public int compare(Task o1, Task o2) {
+
+            return new Date(o1.getDate()).compareTo(new Date(o2.getDate()));
+         }
+      });
    }
 
    private void getTaskCompanions() {
@@ -123,39 +165,44 @@ public class HomeFragment extends Fragment {
            if (dataSnapshot.exists()) {
              for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
                final String task_id = childDataSnapshot.getKey();
-               companionsRef.child(task_id).addValueEventListener(new ValueEventListener() {
-                 @Override
-                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                   if (dataSnapshot.exists()) {
-                     for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-                       final String userId = childDataSnapshot.getKey();
-                       mUsersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                         @Override
-                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                           if (dataSnapshot.hasChild(userId)) {
-                             User user = dataSnapshot.child(userId).getValue(User.class);
-                             user.setUID(userId);
-                             companionsList.add(user);
-                             CompanionsAdapter adapter = new CompanionsAdapter(getContext(), companionsList);
-                             companionsRecycler.setAdapter(adapter);
-                           }
+                if (task_id != null) {
+                   companionsRef.child(task_id).addValueEventListener(new ValueEventListener() {
+                      @Override
+                      public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                         if (dataSnapshot.exists()) {
+                            for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+                               final String userId = childDataSnapshot.getKey();
+                               mUsersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                  @Override
+                                  public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                     if (userId != null) {
+                                        User user = dataSnapshot.child(userId).getValue(User.class);
+                                        if (user != null) {
+                                           user.setUID(userId);
+                                           companionsList.add(user);
+                                        }
+
+                                     }
+                                  }
+
+                                  @Override
+                                  public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                  }
+                               });
+                            }
                          }
+                      }
 
-                         @Override
-                         public void onCancelled(@NonNull DatabaseError databaseError) {
+                      @Override
+                      public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                         }
-                       });
-                     }
-                   }
-                 }
-
-                 @Override
-                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                 }
-               });
+                      }
+                   });
+                }
              }
+              CompanionsAdapter adapter = new CompanionsAdapter(getContext(), companionsList);
+              companionsRecycler.setAdapter(adapter);
            }
          }
 

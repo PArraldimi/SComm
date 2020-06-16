@@ -19,13 +19,13 @@ import java.util.List;
 import java.util.Set;
 
 public class TodayTasksAdapter extends RecyclerView.Adapter<TodayTasksAdapter.MyViewHolder> {
-   private Set<Task> taskSet;
+   private List<Task> tasksList;
    private Context mCntxt;
 
-   public TodayTasksAdapter(Context mCntxt, Set<Task> taskList) {
+   public TodayTasksAdapter(Context mCntxt, List<Task> taskList) {
       super();
       this.mCntxt = mCntxt;
-      this.taskSet = taskList;
+      this.tasksList = taskList;
    }
 
    @NonNull
@@ -40,7 +40,6 @@ public class TodayTasksAdapter extends RecyclerView.Adapter<TodayTasksAdapter.My
 
    @Override
    public void onBindViewHolder(@NonNull final TodayTasksAdapter.MyViewHolder holder, int position) {
-      final List<Task> tasksList = new ArrayList<>(taskSet);
 
       final Task task = tasksList.get(position);
       final String task_id = task.getTask_id();
@@ -67,7 +66,7 @@ public class TodayTasksAdapter extends RecyclerView.Adapter<TodayTasksAdapter.My
 
    @Override
    public int getItemCount() {
-      return taskSet.size();
+      return tasksList.size();
    }
 
    public static class MyViewHolder extends RecyclerView.ViewHolder {

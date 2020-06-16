@@ -1,6 +1,7 @@
 package com.exo.scomm.adapters;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
@@ -8,17 +9,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.exo.scomm.R;
+import com.exo.scomm.data.models.User;
 import com.exo.scomm.ui.activities.HomeActivity;
 import com.exo.scomm.ui.activities.Profile;
-import com.exo.scomm.R;
-import com.exo.scomm.ui.activities.TaskDetails;
-import com.exo.scomm.data.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.FirebaseDatabase;
@@ -31,12 +32,13 @@ import java.util.Set;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class CompanionsTasksAdapter extends RecyclerView.Adapter<CompanionsTasksAdapter.MyViewHolder> {
+public class AcceptedCompanionsAdapter extends RecyclerView.Adapter<AcceptedCompanionsAdapter.MyViewHolder> {
+
    private Set<User> companionsList;
-   private TaskDetails mCtxt;
+   private Context mCtxt;
    private String taskId;
 
-   public CompanionsTasksAdapter(TaskDetails taskDetails, Set<User> taskCompList, String taskId) {
+   public AcceptedCompanionsAdapter(Context taskDetails, Set<User> taskCompList, String taskId) {
       this.mCtxt = taskDetails;
       this.companionsList = taskCompList;
       this.taskId = taskId;
@@ -45,16 +47,16 @@ public class CompanionsTasksAdapter extends RecyclerView.Adapter<CompanionsTasks
    @NonNull
    @Override
    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-      View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.companion_item, parent, false);
-      return new CompanionsTasksAdapter.MyViewHolder(itemView);
+      View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.users_display, parent, false);
+      return new MyViewHolder(itemView);
    }
 
    @Override
    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
       List<User> usersList = new ArrayList<>(companionsList);
       final User user = usersList.get(position);
-      holder.username.setText(user.getUsername());
-      Picasso.get().load(user.getImage()).placeholder(R.drawable.profile_image).into(holder.profile);
+      holder.userName.setText(user.getUsername());
+      Picasso.get().load(user.getImage()).placeholder(R.drawable.profile_image).into(holder.profileImage);
       holder.itemView.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View v) {
@@ -80,7 +82,7 @@ public class CompanionsTasksAdapter extends RecyclerView.Adapter<CompanionsTasks
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                            if (task.isSuccessful()) {
-                              Toast.makeText(mCtxt.getApplicationContext(), "User is now a super Schommer", Toast.LENGTH_SHORT).show();
+                              Toast.makeText(mCtxt.getApplicationContext(), user.getUsername()+" is now a super Schommer", Toast.LENGTH_SHORT).show();
                            }
                         }
                      });
@@ -99,16 +101,20 @@ public class CompanionsTasksAdapter extends RecyclerView.Adapter<CompanionsTasks
       return companionsList.size();
    }
 
-   public static class MyViewHolder extends RecyclerView.ViewHolder {
-      public TextView username;
-      CircleImageView profile;
-      Button button;
+   static class MyViewHolder extends RecyclerView.ViewHolder {
+      View mView;
+      TextView userName, userStatus;
+      CircleImageView profileImage;
+      CheckBox selectCheck;
 
       MyViewHolder(View view) {
          super(view);
-         profile = (CircleImageView) view.findViewById(R.id.companion_profile_image);
-         username = (TextView) view.findViewById(R.id.companion_user_name);
-         button = (Button) view.findViewById(R.id.companion_button);
+         mView = itemView;
+         userName = mView.findViewById(R.id.single_user_tv_name);
+         userStatus = mView.findViewById(R.id.single_user_status);
+         profileImage = mView.findViewById(R.id.single_user_circle_image);
+         selectCheck = mView.findViewById(R.id.select_check);
+         selectCheck.setVisibility(View.INVISIBLE);
       }
    }
 }

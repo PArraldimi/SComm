@@ -56,9 +56,9 @@ public class AddTaskActivity extends AppCompatActivity {
    private FirebaseUser mCurrentUser;
    private StorageReference mStorage;
    private ProgressDialog mProgressDialog;
-   private Button mdateButton, mInvite;
+   private Button mdateButton,pickDate, mInvite;
    private TextView mViewDate, mInvites, invitesLabel;
-   private Date CurrentDate;
+   private Date currentDate;
    private String userId;
    private String task_id;
 
@@ -85,6 +85,7 @@ public class AddTaskActivity extends AppCompatActivity {
       mPrivate = findViewById(R.id.private_radio);
       mPublic = findViewById(R.id.public_radio);
       mViewDate = findViewById(R.id.view_date);
+       pickDate =findViewById(R.id.date_picker);
       mProgressDialog = new ProgressDialog(this);
       mInvite.setVisibility(View.GONE);
       mInvites = findViewById(R.id.taskInvites);
@@ -95,18 +96,16 @@ public class AddTaskActivity extends AppCompatActivity {
       mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
       mRootRef = FirebaseDatabase.getInstance().getReference();
       mStorage = FirebaseStorage.getInstance().getReference();
-      CurrentDate = calendar.getTime();
+      currentDate = calendar.getTime();
 
       userId = mCurrentUser.getUid();
       task_id = FirebaseDatabase.getInstance().getReference().child("Tasks").child(userId).push().getKey();
-
 
       if (savedInstanceState != null) {
          // Restore value from saved state
          mdateButton.setText(savedInstanceState.getCharSequence(STATE_TEXTVIEW));
          mDescription.setText(savedInstanceState.getString(STATE_TEXTVIEW));
          mTitle.setText(savedInstanceState.getString(STATE_TITLE));
-
       }
 
       type.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -125,14 +124,11 @@ public class AddTaskActivity extends AppCompatActivity {
          }
       });
       setUpDateChooser();
-
-
    }
 
    @Override
    protected void onStart() {
       super.onStart();
-
       mSelectedUsers = DataHolder.getSelectedUsers();
       if (mSelectedUsers != null) {
          Set<String> inviteNames = new HashSet<>();
@@ -163,6 +159,7 @@ public class AddTaskActivity extends AppCompatActivity {
 
       dateTimeFragment.set24HoursMode(set24HoursMode);
       dateTimeFragment.setHighlightAMPMSelection(false);
+      dateTimeFragment.setCancelable(false);
       dateTimeFragment.setMinimumDateTime(new GregorianCalendar(2020, Calendar.JANUARY, 1).getTime());
       dateTimeFragment.setMaximumDateTime(new GregorianCalendar(2030, Calendar.DECEMBER, 31).getTime());
 
@@ -175,23 +172,34 @@ public class AddTaskActivity extends AppCompatActivity {
       dateTimeFragment.setOnButtonClickListener(new SwitchDateTimeDialogFragment.OnButtonWithNeutralClickListener() {
          @Override
          public void onPositiveButtonClick(Date date) {
-            if (date.before(CurrentDate)) {
-               Toast.makeText(getApplicationContext(), "Pick a valid time schedule", Toast.LENGTH_LONG).show();
+            long validTime = currentDate.getTime()+900000;
 
+            if (date.before(currentDate)) {
+               pickDate.setEnabled(true);
+               Toast.makeText(getApplicationContext(), "Pick a valid time schedule", Toast.LENGTH_LONG).show();jnzxjz
+
+            } else if (date.getTime() < validTime) {
+               pickDate.setEnabled(true);
+               Toast.makeText(getApplicationContext(), "Please choose task time beyond 15 minutes", Toast.LENGTH_LONG).show();
             } else {
                mViewDate.setText(myDateFormat.format(date));
+               pickDate.setEnabled(true);
             }
          }
 
          @Override
          public void onNegativeButtonClick(Date date) {
             // Do nothing
+            pickDate.setEnabled(true);
+
          }
 
          @Override
          public void onNeutralButtonClick(Date date) {
             // Optional if neutral button does'nt exists
             mViewDate.setText("");
+            pickDate.setEnabled(true);
+
          }
       });
    }
@@ -278,7 +286,7 @@ public class AddTaskActivity extends AppCompatActivity {
                      Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
                      finish();
                   } else {
-                     for (User user : mSelectedUsers
+                     for (final User user : mSelectedUsers
                      ) {
                         String userId = user.getUID();
                         DatabaseReference newNotificationRef = mRootRef.child("Notifications").child(userId).push();
@@ -311,7 +319,6 @@ public class AddTaskActivity extends AppCompatActivity {
 
                         Map requestMap = new HashMap<>();
                         requestMap.put("Notifications/" + userId + "/" + newNotificationId, recipientNote);
-                        requestMap.put("Notifications/" + mCurrentUser.getUid() + "/" + newNotificationId, senderNote);
                         requestMap.put("Tasks/" + mCurrentUser.getUid() + "/" + task_id + "/", taskMap);
                         requestMap.put("TaskInviteRequests/" + mCurrentUser.getUid() + "/" + userId + "/" + task_id, requestSentData);
                         requestMap.put("TaskInviteRequests/" + userId + "/" + mCurrentUser.getUid() + "/" + task_id, requestReceivedData);
@@ -325,6 +332,7 @@ public class AddTaskActivity extends AppCompatActivity {
                                  finish();
                               } else {
                                  Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
+                                 Toast.makeText(AddTaskActivity.this, "Request sent to "+ user.getUsername() +" successfully", Toast.LENGTH_SHORT).show();
                                  finish();
                               }
                            }
@@ -345,6 +353,7 @@ public class AddTaskActivity extends AppCompatActivity {
    }
 
    public void pickTime(View view) {
+      view.findViewById(R.id.date_picker).setEnabled(false);
       // Re-init each time
       dateTimeFragment.startAtCalendarView();
       dateTimeFragment.setDefaultDateTime(calendar.getTime());

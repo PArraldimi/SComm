@@ -93,7 +93,6 @@
             android:layout_marginBottom="10dp"
             android:backgroundTint="#6E94F9"
             android:elevation="20dp"
-            android:onClick="invite"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
             android:text="@string/invite"

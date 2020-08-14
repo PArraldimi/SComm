@@ -5,7 +5,7 @@
     android:layout_margin="5dp"
     android:elevation="5dp"
     app:cardCornerRadius="15dp"
-    android:backgroundTint="#4E73F5"
+    android:backgroundTint="#47497a"
     app:cardElevation="15dp"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -37,7 +37,7 @@
             android:fontFamily="@font/arialregular"
             android:layout_marginStart="30dp"
             android:textSize="14sp"
-            android:textColor="#F1F1F1"/>
+            android:textColor="#80F1F1F1"/>
         <TextView
             android:id="@+id/details_task_item_creator"
             android:layout_width="wrap_content"

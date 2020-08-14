@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -52,7 +53,8 @@ public class HomeFragment extends Fragment {
    private DatabaseReference taskRef;
    private DatabaseReference companionRef;
    private DatabaseReference mUsersRef;
-   private TextView textViewDate, seeAllCompanions;
+   private TextView textViewDate;
+   private ImageView seeAllCompanions;
    private String currentUid;
    private Calendar calendar;
 

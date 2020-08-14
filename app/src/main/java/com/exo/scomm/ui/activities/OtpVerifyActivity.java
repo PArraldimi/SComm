@@ -141,7 +141,7 @@ public class OtpVerifyActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 number,
-                60,
+                200,
                 TimeUnit.SECONDS,
                 TaskExecutors.MAIN_THREAD,
                 mCallBack

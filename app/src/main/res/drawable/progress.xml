@@ -15,7 +15,7 @@
         <gradient
             android:type="sweep"
             android:useLevel="false"
-            android:startColor="@color/ocean_blue"
+            android:startColor="#3f2e90"
             android:angle="0"/>
     </shape>
 </rotate>

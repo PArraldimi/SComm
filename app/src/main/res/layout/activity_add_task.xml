@@ -89,7 +89,7 @@
                     android:fontFamily="@font/century"
                     android:checked="true"
                     android:textSize="20sp"
-                    android:buttonTint="@color/cool_blue"
+                    android:buttonTint="@color/colorAccent"
                     android:onClick="onRadioButtonClicked"/>
                 <RadioButton
                     android:id="@+id/public_radio"
@@ -99,7 +99,7 @@
                     android:text="Public"
                     android:fontFamily="@font/century"
                     android:textSize="20sp"
-                    android:buttonTint="@color/cool_blue"
+                    android:buttonTint="@color/colorAccent"
                     android:onClick="onRadioButtonClicked"/>
             </RadioGroup>
 
@@ -107,17 +107,19 @@
             <Button
                 android:id="@+id/btn_invite"
                 android:layout_width="wrap_content"
-                android:layout_height="30dp"
+                android:layout_height="40dp"
                 android:paddingEnd="7dp"
                 android:paddingStart="7dp"
                 android:layout_gravity="end|center_vertical"
                 android:layout_marginTop="-41dp"
                 android:layout_marginEnd="5dp"
-                android:background="@drawable/button_grey"
+                android:backgroundTint="#3f2e90"
                 android:onClick="inviteCompanions"
                 android:text="@string/invite_companions"
                 android:textAllCaps="false"
+                android:textColor="#ffffff"
                 tools:ignore="RtlHardcoded" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:orientation="horizontal"
@@ -180,7 +182,7 @@
                         android:layout_marginTop="15dp"
                         android:paddingStart="5dp"
                         android:paddingEnd="5dp"
-                        android:textColor="@color/ocean_blue"
+                        android:textColor="#3f2e90"
                         tools:ignore="RtlSymmetry" />
 
                     <Button

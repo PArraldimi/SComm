@@ -17,7 +17,7 @@
             android:id="@+id/all_companions_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="#80BBF8"
+            android:background="#363979"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
             app:navigationIcon="@drawable/ic_chevron_left_black_24dp">
 

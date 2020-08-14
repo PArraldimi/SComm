@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/color_gradient">
+    android:background="@drawable/wallpaper">
 
 
         <RelativeLayout
@@ -19,17 +19,6 @@
                 android:text="@string/my_schedule"
                 android:textColor="#FFFFFF"
                 android:textSize="27sp" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:id="@+id/see_all_users"
-                android:text="@string/all_users"
-                android:clickable="true"
-                android:focusable="true"
-                android:textStyle="bold"
-                android:layout_margin="10dp"
-                android:layout_alignParentEnd="true"
-                android:fontFamily="@font/arialregular"
-                android:layout_height="wrap_content"/>
 
             <TextView
                 android:id="@+id/text_view_date"
@@ -44,18 +33,28 @@
                 android:textSize="12sp" />
 
         </RelativeLayout>
+    <ImageView
+        android:layout_width="80dp"
+        android:id="@+id/see_all_users"
+        android:background="@drawable/ic"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="30dp"
+        android:layout_alignParentEnd="true"
+        android:layout_height="80dp" />
         <!--        profile image layout here-->
 
     <RelativeLayout
         android:id="@+id/relative02"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/relative01">
+        android:layout_below="@id/relative01"
+        android:layout_marginTop="30dp">
         <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
             android:layout_marginStart="35dp"
             android:layout_marginBottom="5dp"
             android:fontFamily="@font/arialregular"

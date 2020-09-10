@@ -190,26 +190,21 @@ public class HomeActivity extends AppCompatActivity {
       } else {
 
         mRootRef.child("Users").child(mCurrentUser.getUid()).child("status").setValue("online");
-
          String current_user_id = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
-
-         firebaseFirestore.collection("users").document(current_user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+         firebaseFirestore.collection("Users").document(current_user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-
                if (task.isSuccessful()) {
                   if (!Objects.requireNonNull(task.getResult()).exists()) {
                      Intent setupIntent = new Intent(HomeActivity.this, SetupActivity.class);
                      startActivity(setupIntent);
                      finish();
                   }
-
                } else {
                   String errorMessage = Objects.requireNonNull(task.getException()).getMessage();
                   Toast.makeText(HomeActivity.this, "Error : " + errorMessage, Toast.LENGTH_LONG).show();
                   Log.e("Error", errorMessage);
                }
-
             }
          });
       }
@@ -221,40 +216,34 @@ public class HomeActivity extends AppCompatActivity {
       Intent i = getIntent();
       String data = i.getStringExtra("fromTaskDetails");
       String data1 = i.getStringExtra("fromCompanions");
-
       if (data != null && data.contentEquals("1")) {
          username = i.getStringExtra("username");
          uid = i.getStringExtra("userId");
-
          Log.e("HomeResume", "" + username + " " + uid);
-
          replaceFragment(chatroomFragment);
          mainBottomNav.setSelectedItemId(R.id.bottom_chat_room);
          add_task.setVisibility(View.GONE);
-
       }
       if (data1 != null && data1.contentEquals("1")) {
          username = i.getStringExtra("username");
          uid = i.getStringExtra("uid");
-
          Log.e("HomeResume", "" + username + " " + uid);
-
          replaceFragment(chatroomFragment);
          mainBottomNav.setSelectedItemId(R.id.bottom_chat_room);
          add_task.setVisibility(View.GONE);
-
       }
    }
 
    private void sendToLogin() {
       Intent intent = new Intent(HomeActivity.this, MainActivity.class);
       startActivity(intent);
-
    }
 
    @Override
    protected void onStop() {
       super.onStop();
-      mRootRef.child("Users").child(mCurrentUser.getUid()).child("online").setValue(ServerValue.TIMESTAMP);
+      if (mCurrentUser != null) {
+         mRootRef.child("Users").child(mCurrentUser.getUid()).child("online").setValue(ServerValue.TIMESTAMP);
+      }
    }
 }

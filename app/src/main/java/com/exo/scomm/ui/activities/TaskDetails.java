@@ -59,11 +59,8 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
    private Set<User> taskCompList = new HashSet<>();
    private Set<User> taskPendingCompList = new HashSet<>();
    private Task task;
-
-
    int mDeleteBnState;
    private Calendar calendar;
-   EditTaskDialog dialog = new EditTaskDialog();
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +79,6 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
       Button deleteTask = this.findViewById(R.id.details_delete_task);
       calendar = Calendar.getInstance();
       mTextViewDate = this.findViewById(R.id.details_today_date_time);
-      Button addNewTask = this.findViewById(R.id.details_add_new_task);
       mInvite = this.findViewById(R.id.details_invite);
       taskDesc = this.findViewById(R.id.details_task_desc);
       taskTitle = findViewById(R.id.detail_task_item_title);
@@ -92,14 +88,12 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
       myTaskCompanions = this.findViewById(R.id.task_details_companions_recycler);
       editTask = this.findViewById(R.id.task_details_edit);
       mInvite.setVisibility(View.GONE);
-      deleteTask.setText("SchommOut");
+      deleteTask.setText(R.string.scom_out);
       mDeleteBnState = 1;
       editTask.setVisibility(View.GONE);
 
       task_id = getIntent().getStringExtra("task_id");
       owner = getIntent().getStringExtra("owner");
-
-
 
       mDeleteBnState = 0;
       mRootRef = FirebaseDatabase.getInstance().getReference();
@@ -126,7 +120,6 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
 
          }
       });
-
 
       mRootRef.child("TaskSupers").child(task_id).addListenerForSingleValueEvent(new ValueEventListener() {
          @Override

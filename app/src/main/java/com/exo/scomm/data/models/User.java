@@ -7,14 +7,24 @@ public class User implements Serializable {
     private String image;
     private String status;
     private String UID;
+    private String phone;
 
     public User() {
     }
 
-    public User(String username, String image, String status) {
+    public User(String username, String image, String status, String phone) {
         this.username = username;
         this.image = image;
         this.status = status;
+        this.phone = phone;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getUsername() {

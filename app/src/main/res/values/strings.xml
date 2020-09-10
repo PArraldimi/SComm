@@ -75,4 +75,6 @@
     <string name="to_scommin">To Scommin</string>
     <string name="scommer_s">Scommer(s)</string>
     <string name="user_phone_number">User Phone Number</string>
+    <string name="scom_out">SchommOut</string>
+    <string name="share_app">Share App</string>
 </resources>

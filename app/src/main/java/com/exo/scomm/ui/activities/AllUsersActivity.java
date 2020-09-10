@@ -69,7 +69,7 @@ public class AllUsersActivity extends AppCompatActivity {
       toolbar.setNavigationOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View v) {
-            onBackPressed();  // byDefault provided backPressed method, or handle your own way
+            onBackPressed();  //
          }
       });
 

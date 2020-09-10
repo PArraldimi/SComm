@@ -33,7 +33,6 @@ import java.util.Set;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Companions extends AppCompatActivity {
-
    private RecyclerView FindFriendsRecyclerList;
    private DatabaseReference TaskCompanionsRef;
 
@@ -41,7 +40,6 @@ public class Companions extends AppCompatActivity {
    protected void onCreate(@Nullable Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_companions);
-
       MaterialToolbar toolbar = findViewById(R.id.all_companions_toolbar);
       toolbar.setTitle("All Companions");
       setSupportActionBar(toolbar);
@@ -52,13 +50,9 @@ public class Companions extends AppCompatActivity {
          }
       });
 
-
       TaskCompanionsRef = FirebaseDatabase.getInstance().getReference().child("Users");
-
       FindFriendsRecyclerList = findViewById(R.id.find_friends_recycler_list);
       FindFriendsRecyclerList.setLayoutManager(new LinearLayoutManager(this));
-
-
    }
 
    private void goBack(Set<User> selectedSet) {
@@ -139,7 +133,6 @@ public class Companions extends AppCompatActivity {
 
       return super.onOptionsItemSelected(item);
    }
-
 
    static class FindFriendViewHolder extends RecyclerView.ViewHolder {
       View mView;

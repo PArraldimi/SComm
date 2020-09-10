@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -93,7 +94,7 @@ public class HomeFragment extends Fragment {
       companionRef = mRootRef.child("TaskCompanions");
       setUpLayouts();
 
-      TasksViewModel model = ViewModelProviders.of(this).get(TasksViewModel.class);
+      TasksViewModel model = new ViewModelProvider(this).get(TasksViewModel.class);
       model.getAllTasks().observe(getViewLifecycleOwner(), new Observer<List<Task>>() {
          @Override
          public void onChanged(List<Task> tasks) {

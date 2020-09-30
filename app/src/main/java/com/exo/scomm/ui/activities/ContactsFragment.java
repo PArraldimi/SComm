@@ -1,14 +1,20 @@
 package com.exo.scomm.ui.activities;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -24,12 +30,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class ContactsFragment extends DialogFragment {
-    private DatabaseReference mRootRef;
-    private LinearLayoutManager layoutManager;
-
+public class ContactsFragment extends DialogFragment implements ContactsAdapter.ContactsAdapterListener {
+    private ContactsAdapter contactsAdapter;
+    private List<Contact> joinedContacts = new ArrayList<>();
+    private RecyclerView recyclerView;
     public ContactsFragment() {
     }
 
@@ -50,48 +59,85 @@ public class ContactsFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
+        setHasOptionsMenu(true);    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_contacts, container);
+        // Add this! (as above)
+        View view = inflater.inflate(R.layout.fragment_contacts, container, false);
+        Toolbar toolbar =  view. findViewById(R.id.my_toolbar);
+        toolbar.setTitle("Contacts");
+        toolbar.inflateMenu(R.menu.menu_search);
+
+        return view;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         assert getArguments() != null;
         final List<Contact> contacts = (List<Contact>) getArguments().getSerializable("contacts");
-        final RecyclerView recyclerView = view.findViewById(R.id.contacts_recycler);
-        mRootRef = FirebaseDatabase.getInstance().getReference();
+        recyclerView = view.findViewById(R.id.contacts_recycler);
+        DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
         recyclerView.setHasFixedSize(true);
 
-        layoutManager = new LinearLayoutManager(requireContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
         recyclerView.setLayoutManager(layoutManager);
-        ContactsAdapter contactsAdapter =new ContactsAdapter(getContext(),contacts);
-        recyclerView.setAdapter(contactsAdapter);
-        DataViewModel  model =new ViewModelProvider(this).get(DataViewModel.class);
-        model.getAllUsers().observe(getViewLifecycleOwner(), new Observer<List<User>>() {
-            @Override
-            public void onChanged(List<User> users) {
-                for (int i = 0; i < users.size(); i++) {
-                    User user = users.get(i);
-                    for (Contact c :
-                            contacts) {
-                        if (user.getPhone().equals(c.phoneNumber)) {
-                            Log.e("User with app ", user.getPhone());
-                            c.setJoined(true);
-                        }
+        DataViewModel model = new ViewModelProvider(this).get(DataViewModel.class);
+        model.getAllUsers().observe(getViewLifecycleOwner(), users -> populateRecycler(users, contacts));
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void populateRecycler(List<User> users, List<Contact> contacts) {
+        joinedContacts = new ArrayList<>();
+        List<Contact> otherContacts = new ArrayList<>();
+        for (int i = 0; i < users.size(); i++) {
+            User user = users.get(i);
+            for (Contact c :
+                    contacts) {
+                if (user.getPhone() != null) {
+                    if (user.getPhone().equals(c.phoneNumber)) {
+                        c.setJoined(true);
+                       joinedContacts.add(c);
+                    }else {
+                        otherContacts.add(c);
                     }
                 }
+            }
+        }
+        contactsAdapter = new ContactsAdapter(getContext(), Stream.concat(joinedContacts.stream(), otherContacts.stream())
+                .collect(Collectors.toList()), this);
+        recyclerView.setAdapter(contactsAdapter);
+    }
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.menu_search, menu);
+        MenuItem item = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) item.getActionView();
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        item.setActionView(searchView);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                contactsAdapter.getFilter().filter(newText);
+                return false;
             }
         });
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onContactSelected(Contact contact) {
+
     }
 }

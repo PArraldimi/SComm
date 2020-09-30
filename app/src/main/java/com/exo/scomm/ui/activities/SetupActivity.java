@@ -62,13 +62,11 @@ public class SetupActivity extends AppCompatActivity {
     private TextInputEditText setupName;
     private Button setupBtn;
     private String user_id;
-    // Uri indicates, where the image will be picked from
     private Uri filePath;
     private StorageReference storageReference;
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore firebaseFirestore;
     private ProgressDialog mSetupProgress;
-    private DatabaseReference reference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +76,6 @@ public class SetupActivity extends AppCompatActivity {
         user_id = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
         firebaseFirestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
-        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(firebaseAuth.getCurrentUser().getUid());
 
         setupImage = findViewById(R.id.setup_image);
         setupName = findViewById(R.id.setup_userName);
@@ -108,33 +105,26 @@ public class SetupActivity extends AppCompatActivity {
         });
 
 
-        setupBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final String user_name = Objects.requireNonNull(setupName.getText()).toString();
-                if (TextUtils.isEmpty(user_name)) {
-                    Toast.makeText(getApplicationContext(), "Enter Username", Toast.LENGTH_SHORT).show();
-                } else {
-                    setupBtn.setEnabled(true);
-                    updateAccount(user_name);
-                }
+        setupBtn.setOnClickListener(v -> {
+            final String user_name = Objects.requireNonNull(setupName.getText()).toString();
+            if (TextUtils.isEmpty(user_name)) {
+                Toast.makeText(getApplicationContext(), "Enter Username", Toast.LENGTH_SHORT).show();
+            } else {
+                setupBtn.setEnabled(true);
+                updateAccount(user_name);
             }
         });
 
-        setupImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(SetupActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(SetupActivity.this, "Permission Denied", Toast.LENGTH_LONG).show();
-                    ActivityCompat.requestPermissions(SetupActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-                } else {
-                    Intent intent = new Intent();
-                    intent.setType("image/*");
-                    intent.setAction(Intent.ACTION_PICK);
-                    startActivityForResult(Intent.createChooser(intent, "Select Image"), GALLERY_PICK);
-                }
+        setupImage.setOnClickListener(v -> {
+            if (ContextCompat.checkSelfPermission(SetupActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(SetupActivity.this, "Permission Denied", Toast.LENGTH_LONG).show();
+                ActivityCompat.requestPermissions(SetupActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            } else {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_PICK);
+                startActivityForResult(Intent.createChooser(intent, "Select Image"), GALLERY_PICK);
             }
-
         });
     }
 
@@ -206,48 +196,34 @@ public class SetupActivity extends AppCompatActivity {
                     FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
                     assert firebaseUser != null;
                     final String userid = firebaseUser.getUid();
-                    reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
-                    FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(SetupActivity.this, new OnSuccessListener<InstanceIdResult>() {
-                        @Override
-                        public void onSuccess(InstanceIdResult instanceIdResult) {
-                            HashMap<String, String> hashMap = getStringStringHashMap(instanceIdResult, userid, user_name, download_uri);
-                            reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        Toast.makeText(SetupActivity.this, "The User Settings are Successfully Updated ", Toast.LENGTH_LONG).show();
-                                        Intent mainIntent = new Intent(SetupActivity.this, MainActivity.class);
-                                        startActivity(mainIntent);
-                                        finish();
-                                    }
-                                }
-                            });
+                    HashMap<String, String> hashMap = getStringStringHashMap( userid, user_name, download_uri);
+                    FirebaseDatabase.getInstance().getReference("Users").child(userid).setValue(hashMap).addOnCompleteListener(task1 -> {
+                        if (task1.isSuccessful()) {
                             Toast.makeText(SetupActivity.this, "The User Settings are Successfully Updated ", Toast.LENGTH_LONG).show();
-                            Intent mainIntent = new Intent(SetupActivity.this, HomeActivity.class);
+                            Intent mainIntent = new Intent(SetupActivity.this, MainActivity.class);
                             startActivity(mainIntent);
+                            finish();
                         }
                     });
-
+                    Toast.makeText(SetupActivity.this, "The User Settings are Successfully Updated ", Toast.LENGTH_LONG).show();
+                    Intent mainIntent = new Intent(SetupActivity.this, HomeActivity.class);
+                    startActivity(mainIntent);
                 } else {
                     mSetupProgress.dismiss();
                     String error = Objects.requireNonNull(task.getException()).getMessage();
                     Toast.makeText(SetupActivity.this, "FIRESTORE  Error : " + error, Toast.LENGTH_LONG).show();
-
                 }
             }
         });
     }
 
-    private HashMap<String, String> getStringStringHashMap(InstanceIdResult instanceIdResult, String userid, String user_name, Uri download_uri) {
-        String tokenId = instanceIdResult.getToken();
+    private HashMap<String, String> getStringStringHashMap( String userid, String user_name, Uri download_uri) {
         HashMap<String, String> hashMap = new HashMap<>();
-        hashMap.put("device_token", tokenId);
         hashMap.put("id", userid);
         hashMap.put("username", user_name);
         hashMap.put("status", "offline");
         hashMap.put("search", user_name.toLowerCase());
         hashMap.put("image", download_uri.toString());
-        hashMap.put("phone", DataHolder.getPhone());
         return hashMap;
     }
 

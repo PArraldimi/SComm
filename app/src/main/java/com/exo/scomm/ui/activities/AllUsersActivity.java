@@ -42,7 +42,6 @@ import java.util.Set;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-
 public class AllUsersActivity extends AppCompatActivity {
 
    private static final String TAG = AllUsersActivity.class.getSimpleName();
@@ -57,7 +56,6 @@ public class AllUsersActivity extends AppCompatActivity {
    private TextView selectedScommers;
    private String task_id;
    boolean invite, newTask = false;
-
 
    @Override
    protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,8 +76,6 @@ public class AllUsersActivity extends AppCompatActivity {
       mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
       mInvitesReqDBRef = mRootRef.child("TaskInviteRequests").child(mCurrentUser.getUid());
       DatabaseReference mCompanionsDatabase = mRootRef.child("TaskCompanions");
-
-
       task_id = getIntent().getStringExtra("task_id");
       if (getIntent().hasExtra("fromTaskDetails")) {
          invite = true;
@@ -95,13 +91,13 @@ public class AllUsersActivity extends AppCompatActivity {
       FindFriendsRecyclerList.setLayoutManager(new LinearLayoutManager(this));
    }
 
-   private void goBack(Set<User> selectedSet) {
-      Log.e(AllUsersActivity.class.getSimpleName(), "" + selectedSet.toString());
-      DataHolder.setSelectedUsers(selectedSet);
-      AddTaskActivity taskActivity = new AddTaskActivity();
-      taskActivity.mSelectedUsers = selectedSet;
-      this.finish();
-   }
+//   private void goBack(Set<User> selectedSet) {
+//      Log.e(AllUsersActivity.class.getSimpleName(), "" + selectedSet.toString());
+//      DataHolder.setSelectedUsers(selectedSet);
+//      AddTaskActivity taskActivity = new AddTaskActivity();
+//      taskActivity.mSelectedUsers = selectedSet;
+//      this.finish();
+//   }
 
    @Override
    protected void onStart() {
@@ -172,19 +168,15 @@ public class AllUsersActivity extends AppCompatActivity {
                        if (selectedUsers.contains(model.getUsername())) {
                           holder.selectCheck.setChecked(true);
                           selectedUsersFab.setVisibility(View.VISIBLE);
-
                        }
                     }
-                    selectedUsersFab.setOnClickListener(new View.OnClickListener() {
-                       @Override
-                       public void onClick(View v) {
-                          if (invite) {
-                             sendInviteRequests(task_id, selectedSet);
-                          } else {
-                             goBack(selectedSet);
-                          }
-
+                    selectedUsersFab.setOnClickListener(v -> {
+                       if (invite) {
+                          sendInviteRequests(task_id, selectedSet);
+                       } else {
+                          //goBack(selectedSet);
                        }
+
                     });
                     if (holder.selectCheck.isChecked()) {
                        selectedUsersFab.setVisibility(View.VISIBLE);
@@ -201,23 +193,13 @@ public class AllUsersActivity extends AppCompatActivity {
                        String str = selectedUsers.toString().replaceAll("\\[|\\]", "");
                        selectedScommers.setText(str);
                     }
-
-
-                    holder.mView.setOnClickListener(new View.OnClickListener() {
-                       @Override
-                       public void onClick(View v) {
-                          selectUser(holder, model);
-                       }
-                    });
-                    holder.profileImage.setOnClickListener(new View.OnClickListener() {
-                       @Override
-                       public void onClick(View v) {
-                          Intent profileIntent = new Intent(AllUsersActivity.this, Profile.class);
-                          profileIntent.putExtra("uid", uid);
-                          profileIntent.putExtra("task_id", task_id);
-                          profileIntent.putExtra("username", model.getUsername());
-                          startActivity(profileIntent);
-                       }
+                    holder.mView.setOnClickListener(v -> selectUser(holder, model));
+                    holder.profileImage.setOnClickListener(v -> {
+                       Intent profileIntent = new Intent(AllUsersActivity.this, Profile.class);
+                       profileIntent.putExtra("uid", uid);
+                       profileIntent.putExtra("task_id", task_id);
+                       profileIntent.putExtra("username", model.getUsername());
+                       startActivity(profileIntent);
                     });
                  }
 
@@ -228,7 +210,6 @@ public class AllUsersActivity extends AppCompatActivity {
                     return new FindFriendViewHolder(view);
                  }
               };
-
       FindFriendsRecyclerList.setAdapter(adapter);
       adapter.startListening();
    }
@@ -276,23 +257,17 @@ public class AllUsersActivity extends AppCompatActivity {
          requestMap.put("TaskInviteRequests/" + mCurrentUser.getUid() + "/" + userId + "/" + task_id, requestSentData);
          requestMap.put("TaskInviteRequests/" + userId + "/" + mCurrentUser.getUid() + "/" + task_id, requestReceivedData);
 
-         mRootRef.updateChildren(requestMap, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-               if (databaseError != null) {
-                  Toast.makeText(AllUsersActivity.this, "There was some error in sending request", Toast.LENGTH_SHORT).show();
-               } else {
-                  selectedUsers.clear();
-                  selectedSet.clear();
-                  mProgressDialog.dismiss();
-                  Toast.makeText(AllUsersActivity.this, "Invitation Requests sent successfully", Toast.LENGTH_SHORT).show();
-               }
+         mRootRef.updateChildren(requestMap, (databaseError, databaseReference) -> {
+            if (databaseError != null) {
+               Toast.makeText(AllUsersActivity.this, "There was some error in sending request", Toast.LENGTH_SHORT).show();
+            } else {
+               selectedUsers.clear();
+               selectedSet.clear();
+               mProgressDialog.dismiss();
+               Toast.makeText(AllUsersActivity.this, "Invitation Requests sent successfully", Toast.LENGTH_SHORT).show();
             }
          });
-
       }
-
-
    }
 
    private void selectUser(@NonNull FindFriendViewHolder holder, @NonNull User model) {
@@ -330,7 +305,6 @@ public class AllUsersActivity extends AppCompatActivity {
          userStatus = mView.findViewById(R.id.single_user_status);
          profileImage = mView.findViewById(R.id.single_user_circle_image);
          selectCheck = mView.findViewById(R.id.select_check);
-
       }
    }
 }

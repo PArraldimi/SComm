@@ -49,13 +49,11 @@ import java.util.Objects;
 import java.util.Set;
 
 public class TaskDetails extends AppCompatActivity implements EditTaskDialog.EditTaskDialogResultListener {
-   private Button mInvite;
-   private Button editTask;
+   private Button editTask,mInvite;
    private RecyclerView myTaskCompanions;
    private TextView taskDesc, taskTitle, taskDate, taskType, taskCreator, mTextViewDate;
    private String task_id, mCurrentUID, mDate, mDesc, mTitle, mType, owner;
-   private DatabaseReference taskCompRef, mTaskRef;
-   private DatabaseReference mRootRef, mUsersRef;
+   private DatabaseReference mRootRef, mUsersRef,taskCompRef, mTaskRef;
    private Set<User> taskCompList = new HashSet<>();
    private Set<User> taskPendingCompList = new HashSet<>();
    private Task task;
@@ -69,11 +67,8 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
       MaterialToolbar toolbar = findViewById(R.id.task_details_app_bar);
       toolbar.setTitle("Task Details");
       setSupportActionBar(toolbar);
-      toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View v) {
-            onBackPressed();  // byDefault provided backPressed method, or handle your own way
-         }
+      toolbar.setNavigationOnClickListener(v -> {
+         onBackPressed();  // byDefault provided backPressed method, or handle your own way
       });
 
       Button deleteTask = this.findViewById(R.id.details_delete_task);
@@ -114,11 +109,8 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
          editTask.setVisibility(View.VISIBLE);
       }
 
-      mInvite.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View v) {
+      mInvite.setOnClickListener(v -> {
 
-         }
       });
 
       mRootRef.child("TaskSupers").child(task_id).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -141,27 +133,19 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
 
       getTaskCompanions();
       getPendingCompanions(task_id);
-      deleteTask.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View v) {
-            if (mDeleteBnState == 0) {
-               Toast.makeText(TaskDetails.this, "Deleting the task", Toast.LENGTH_SHORT).show();
-               deleteTask(task);
-               Toast.makeText(TaskDetails.this, " Task deleted successfully", Toast.LENGTH_SHORT).show();
-            }
-            if (mDeleteBnState == 1) {
-               schommeOut();
-            }
+      deleteTask.setOnClickListener(v -> {
+         if (mDeleteBnState == 0) {
+            Toast.makeText(TaskDetails.this, "Deleting the task", Toast.LENGTH_SHORT).show();
+            deleteTask(task);
+            Toast.makeText(TaskDetails.this, " Task deleted successfully", Toast.LENGTH_SHORT).show();
+         }
+         if (mDeleteBnState == 1) {
+            schommeOut();
          }
       });
 
       ImageView mScommingDetails = this.findViewById(R.id.scomming_details);
-      mScommingDetails.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View v) {
-            showBottomDialog();
-         }
-      });
+      mScommingDetails.setOnClickListener(v -> showBottomDialog());
    }
 
    private void showBottomDialog() {
@@ -186,8 +170,8 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
       allowScrolling(toAcceptTaskRecycler);
 
 
-      PendingCompanionsAdapter pendingCompanionsAdapter = new PendingCompanionsAdapter(getApplicationContext(), taskPendingCompList, task_id);
-      AcceptedCompanionsAdapter acceptedCompanionsAdapter = new AcceptedCompanionsAdapter(getApplicationContext(), taskCompList, task_id);
+      PendingCompanionsAdapter pendingCompanionsAdapter = new PendingCompanionsAdapter(TaskDetails.this, taskPendingCompList, task_id);
+      AcceptedCompanionsAdapter acceptedCompanionsAdapter = new AcceptedCompanionsAdapter(TaskDetails.this, taskCompList, task_id);
       acceptedTaskCompanionsRecycler.setAdapter(acceptedCompanionsAdapter);
       toAcceptTaskRecycler.setAdapter(pendingCompanionsAdapter);
 

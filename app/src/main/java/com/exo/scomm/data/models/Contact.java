@@ -1,8 +1,5 @@
 package com.exo.scomm.data.models;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.io.Serializable;
 
 public class Contact implements Serializable {
@@ -17,6 +14,7 @@ public class Contact implements Serializable {
         this.name = name;
         this.phoneNumber = phoneNumber;
     }
+
 
 
     public boolean isJoined() {
@@ -42,5 +40,4 @@ public class Contact implements Serializable {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-
 }

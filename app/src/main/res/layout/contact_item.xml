@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:id="@+id/contact_card"
     android:layout_height="wrap_content"
-    android:layout_marginTop="3dp"
-    android:layout_marginBottom="5dp"
+    android:layout_marginBottom="3dp"
     android:checkable="true"
+    android:clickable="true"
     android:focusable="true"
     android:elevation="8dp">
 
@@ -17,29 +17,35 @@
         <TextView
             android:id="@+id/contact_item_name"
             android:layout_width="wrap_content"
-            android:layout_margin="10dp"
-            android:padding="10dp"
+            android:layout_margin="3dp"
+            android:padding="5dp"
+            android:textColor="#000"
+            android:textStyle="bold"
             android:layout_height="wrap_content"
             android:drawablePadding="4dp"
-            app:drawableStartCompat="@drawable/ic_baseline_phone" />
+            app:drawableStartCompat="@drawable/ic_baseline_person_24"
+             />
 
         <TextView
             android:id="@+id/contact_item_phone"
             android:layout_width="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_margin="3dp"
             android:layout_height="wrap_content"
-            android:padding="10dp"
+            android:padding="3dp"
             android:layout_below="@+id/contact_item_name"
             android:drawablePadding="4dp"
-            app:drawableStartCompat="@drawable/ic_baseline_person_24" />
+            app:drawableStartCompat="@drawable/ic_baseline_phone"
+             />
         <TextView
             android:id="@+id/contact_share_app"
             android:layout_width="wrap_content"
             android:layout_marginEnd="15dp"
             android:layout_marginBottom="15dp"
             android:layout_height="wrap_content"
-            android:paddingEnd="10dp"
-            android:paddingBottom="10dp"
+            android:paddingEnd="5dp"
+            android:autoLink="web"
+            android:padding="18dp"
+            android:paddingStart="5dp"
             android:layout_above="@+id/contact_item_invite"
             android:layout_alignParentEnd="true"
             android:layout_below="@+id/contact_item_name" />
@@ -47,8 +53,8 @@
             android:layout_width="wrap_content"
             android:id="@+id/contact_item_invite"
             android:text="Invite"
-            android:layout_margin="10dp"
-            android:paddingBottom="8dp"
+            android:background="@drawable/button_grey"
+            android:layout_margin="15dp"
             android:layout_alignBaseline="@+id/contact_item_phone"
             android:layout_alignParentEnd="true"
             android:layout_height="wrap_content"/>

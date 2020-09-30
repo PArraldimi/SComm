@@ -54,42 +54,39 @@ public class PendingCompanionsAdapter extends RecyclerView.Adapter<PendingCompan
    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
       List<User> usersList = new ArrayList<>(companionsList);
       final User user = usersList.get(position);
+      Log.e("TAG", "Phone" + user.getPhone() +"Name "+user.getUsername());
+
       holder.userName.setText(user.getUsername());
+      holder.phoneNo.setText(user.getPhone());
       Picasso.get().load(user.getImage()).placeholder(R.drawable.profile_image).into(holder.profileImage);
-      holder.itemView.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View v) {
-            CharSequence[] options = new CharSequence[]{"Open Profile", "Send Message", "Make Super Scommer"};
-            AlertDialog.Builder builder = new AlertDialog.Builder(mCtxt);
-            builder.setTitle("Select Options");
-            builder.setItems(options, new DialogInterface.OnClickListener() {
-               @Override
-               public void onClick(DialogInterface dialog, int i) {
-                  if (i == 0) {
-                     Intent profileIntent = new Intent(mCtxt, Profile.class);
-                     profileIntent.putExtra("uid", user.getUID());
-                     mCtxt.startActivity(profileIntent);
-                  } else if (i == 1) {
-                     Log.e("User Key", "" + user.getUID());
-                     Intent intent = new Intent(mCtxt.getApplicationContext(), HomeActivity.class);
-                     intent.putExtra("fromTaskDetails", "1");
-                     intent.putExtra("username", user.getUsername());
-                     intent.putExtra("userId", user.getUID());
-                     mCtxt.startActivity(intent);
-                  } else if (i == 2) {
-                     FirebaseDatabase.getInstance().getReference().child("TaskSupers").child(taskId).child(user.getUID()).setValue(ServerValue.TIMESTAMP).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                           if (task.isSuccessful()) {
-                              Toast.makeText(mCtxt.getApplicationContext(), "User is now a super Schommer", Toast.LENGTH_SHORT).show();
-                           }
-                        }
-                     });
+      holder.itemView.setOnClickListener(v -> {
+         CharSequence[] options = new CharSequence[]{"Open Profile", "Send Message", "Make Super Scommer"};
+         AlertDialog.Builder builder = new AlertDialog.Builder(mCtxt);
+         builder.setTitle("Select Options");
+         builder.setItems(options, (dialog, i) -> {
+            if (i == 0) {
+               Intent profileIntent = new Intent(mCtxt, Profile.class);
+               profileIntent.putExtra("uid", user.getUID());
+               mCtxt.startActivity(profileIntent);
+            } else if (i == 1) {
+               Log.e("User Key", "" + user.getUID());
+               Intent intent = new Intent(mCtxt, HomeActivity.class);
+               intent.putExtra("fromTaskDetails", "1");
+               intent.putExtra("username", user.getUsername());
+               intent.putExtra("userId", user.getUID());
+               mCtxt.startActivity(intent);
+            } else if (i == 2) {
+               FirebaseDatabase.getInstance().getReference().child("TaskSupers").child(taskId).child(user.getUID()).setValue(ServerValue.TIMESTAMP).addOnCompleteListener(new OnCompleteListener<Void>() {
+                  @Override
+                  public void onComplete(@NonNull Task<Void> task) {
+                     if (task.isSuccessful()) {
+                        Toast.makeText(mCtxt.getApplicationContext(), "User is now a super Schommer", Toast.LENGTH_SHORT).show();
+                     }
                   }
-               }
-            });
-            builder.show();
-         }
+               });
+            }
+         });
+         builder.show();
       });
 
    }
@@ -102,7 +99,7 @@ public class PendingCompanionsAdapter extends RecyclerView.Adapter<PendingCompan
 
    static class MyViewHolder extends RecyclerView.ViewHolder {
       View mView;
-      TextView userName, userStatus;
+      TextView userName, phoneNo;
       CircleImageView profileImage;
       CheckBox selectCheck;
 
@@ -111,7 +108,7 @@ public class PendingCompanionsAdapter extends RecyclerView.Adapter<PendingCompan
          super(view);
          mView = itemView;
          userName = mView.findViewById(R.id.single_user_tv_name);
-         userStatus = mView.findViewById(R.id.single_user_status);
+         phoneNo = mView.findViewById(R.id.single_user_status);
          profileImage = mView.findViewById(R.id.single_user_circle_image);
          selectCheck = mView.findViewById(R.id.select_check);
          selectCheck.setVisibility(View.INVISIBLE);

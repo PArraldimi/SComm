@@ -33,7 +33,7 @@
             android:layout_toEndOf="@+id/single_user_circle_image"
             android:padding="5dp"
             android:textColor="#000"
-            android:text="Username"
+            android:text="@string/username"
             android:textSize="16sp" />
 
         <TextView
@@ -46,7 +46,7 @@
             android:textColor="@color/grey_90"
             android:layout_toEndOf="@+id/single_user_circle_image"
             android:padding="5dp"
-            android:text="User Phone Number"
+            android:text="@string/user_phone_number"
             android:textSize="12sp" />
 
         <CheckBox

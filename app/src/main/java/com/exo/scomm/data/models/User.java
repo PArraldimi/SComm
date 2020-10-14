@@ -7,14 +7,25 @@ public class User implements Serializable {
     private String image;
     private String status;
     private String UID;
+    private String phone;
+    private String device_token;
 
     public User() {
     }
 
-    public User(String username, String image, String status) {
+    public User(String username, String image, String status, String phone) {
         this.username = username;
         this.image = image;
         this.status = status;
+        this.phone = phone;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getUsername() {
@@ -44,7 +55,16 @@ public class User implements Serializable {
     public String getUID() {
         return UID;
     }
+
     public void setUID(String UID) {
         this.UID = UID;
+    }
+
+    public String getDevice_token() {
+        return device_token;
+    }
+
+    public void setDevice_token(String device_token) {
+        this.device_token = device_token;
     }
 }

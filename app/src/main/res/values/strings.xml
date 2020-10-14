@@ -72,4 +72,10 @@
     <string name="submit">Submit</string>
     <string name="title">Title:</string>
     <string name="change_date_amp_time"><![CDATA[Change Date & Time:]]></string>
+    <string name="to_scommin">To Scommin</string>
+    <string name="scommer_s">Scommer(s)</string>
+    <string name="user_phone_number">User Phone Number</string>
+    <string name="scom_out">SchommOut</string>
+    <string name="share_app">Share App</string>
+    <string name="search">Search</string>
 </resources>

@@ -19,11 +19,11 @@ import java.util.List;
 import java.util.Set;
 
 public class UpComingTasksAdapter extends RecyclerView.Adapter<UpComingTasksAdapter.MyViewHolder>{
-    private Set<Task> tasksSet;
+    private List<Task> tasksList;
     Context mCntxt;
 
-    public UpComingTasksAdapter(Context context, Set<Task> upcomingTasks) {
-        this.tasksSet = upcomingTasks;
+    public UpComingTasksAdapter(Context context, List<Task> upcomingTasks) {
+        this.tasksList = upcomingTasks;
         this.mCntxt = context;
     }
 
@@ -38,7 +38,6 @@ public class UpComingTasksAdapter extends RecyclerView.Adapter<UpComingTasksAdap
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        final List<Task> tasksList = new ArrayList<>(tasksSet);
 
         final Task task = tasksList.get(position);
         final String task_id = task.getTask_id();
@@ -62,7 +61,7 @@ public class UpComingTasksAdapter extends RecyclerView.Adapter<UpComingTasksAdap
 
     @Override
     public int getItemCount() {
-        return tasksSet.size();
+        return tasksList.size();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -72,9 +71,9 @@ public class UpComingTasksAdapter extends RecyclerView.Adapter<UpComingTasksAdap
         MyViewHolder(View view) {
             super(view);
             this.mView = view;
-            title = (TextView) view.findViewById(R.id.upcoming_item_title);
-            date = (TextView) view.findViewById(R.id.upcoming_item_date_time);
-            type = (TextView) view.findViewById(R.id.upcoming_item_type);
+            title = view.findViewById(R.id.upcoming_item_title);
+            date = view.findViewById(R.id.upcoming_item_date_time);
+            type = view.findViewById(R.id.upcoming_item_type);
         }
     }
 }

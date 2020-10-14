@@ -416,6 +416,7 @@ public class NotificationFragment extends Fragment {
          @Override
          public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
             if (databaseError == null) {
+               Toast.makeText(requireContext(), "Request Declined Successfully", Toast.LENGTH_SHORT).show();
                holder.decline.setEnabled(false);
                holder.accept.setEnabled(false);
                holder.chat.setEnabled(false);
@@ -475,7 +476,6 @@ public class NotificationFragment extends Fragment {
                   companionsMap.put("TaskCompanions/" + mCurrentUserId + "/" + task_id + "/", compMap);
                   companionsMap.put("TaskCompanions/" + user_id + "/" + task_id + "/", compMap);
                   companionsMap.put("Notifications/" + user_id + "/" + noteKey, recipientNote);
-                  companionsMap.put("Notifications/" + mCurrentUserId + "/" + noteKey, senderNote);
                   companionsMap.put("Tasks/" + mCurrentUserId + "/" + task_id + "/", taskMap);
                   companionsMap.put("TaskInviteRequests/" + mCurrentUserId + "/" + user_id + "/" + task_id + "/" + "accepted", "true");
                   companionsMap.put("TaskInviteRequests/" + user_id + "/" + mCurrentUserId + "/" + task_id + "/" + "accepted", "true");
@@ -483,6 +483,7 @@ public class NotificationFragment extends Fragment {
                      @Override
                      public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                         if (databaseError == null) {
+                           Toast.makeText(getContext(), "Task added successfully to your schedule", Toast.LENGTH_SHORT).show();
                            holder.decline.setEnabled(false);
                            holder.accept.setEnabled(false);
                            holder.chat.setEnabled(true);
@@ -517,7 +518,6 @@ public class NotificationFragment extends Fragment {
          decline = mView.findViewById(R.id.notification_decline_btn);
          mDate = mView.findViewById(R.id.notification_date);
          mViewSchommers = mView.findViewById(R.id.notification_view_scommers);
-
       }
 
       void setText(String text) {

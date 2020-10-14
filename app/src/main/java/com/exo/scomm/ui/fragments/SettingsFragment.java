@@ -40,35 +40,34 @@ public class SettingsFragment extends Fragment {
     private FirebaseAuth firebaseAuth;
     private String currentUserID;
     private DatabaseReference RootRef;
-
     private Button UpdateAccountSettings;
     private EditText userName;
     private CircleImageView userProfileImage;
-
-    private static final int GalleryPick = 1;
     private StorageReference UserProfileImagesRef;
     private ProgressDialog loadingBar;
-
 
     public SettingsFragment() {
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
-
         firebaseAuth = FirebaseAuth.getInstance();
         currentUserID = firebaseAuth.getCurrentUser().getUid();
         RootRef = FirebaseDatabase.getInstance().getReference();
         UserProfileImagesRef = FirebaseStorage.getInstance().getReference().child("image");
-
         UpdateAccountSettings = (Button) view.findViewById(R.id.btn_update_profile);
         userName = (EditText) view.findViewById(R.id.edit_username);
         userProfileImage = (CircleImageView) view.findViewById(R.id.profile_image);
-
+        Button logoutBtn = view.findViewById(R.id.btn_logout);
+        logoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logout(getContext());
+            }
+        });
 
         UpdateAccountSettings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,59 +81,34 @@ public class SettingsFragment extends Fragment {
         userProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent galleryIntent = new Intent();
-//                galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
-//                galleryIntent.setType("image/*");
-//                startActivityForResult(galleryIntent, GalleryPick);
-
                 CropImage.activity()
                         .setGuidelines(CropImageView.Guidelines.ON)
-                        .setAspectRatio(1,1)
-                        .start(requireContext(),SettingsFragment.this);
+                        .setAspectRatio(1, 1)
+                        .start(requireContext(), SettingsFragment.this);
             }
         });
 
 
-        Button logoutbtn = view.findViewById(R.id.btn_logout);
-
-        logoutbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logout(getContext());
-            }
-        });
-
-
-//         Inflate the layout for this fragment
         return view;
-
-
     }
-
 
 
     private void RetrieveUserInfo() {
         RootRef.child("Users").child(currentUserID)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-                    {
-                        if ((dataSnapshot.exists()) && (dataSnapshot.hasChild("username") && (dataSnapshot.hasChild("image"))))
-                        {
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if ((dataSnapshot.exists()) && (dataSnapshot.hasChild("username") && (dataSnapshot.hasChild("image")))) {
                             String retrieveUserName = dataSnapshot.child("username").getValue().toString();
                             String retrieveProfileImage = dataSnapshot.child("image").getValue().toString();
 
                             userName.setText(retrieveUserName);
                             Picasso.get().load(retrieveProfileImage).into(userProfileImage);
-                        }
-                        else if ((dataSnapshot.exists()) && (dataSnapshot.hasChild("username")))
-                        {
+                        } else if ((dataSnapshot.exists()) && (dataSnapshot.hasChild("username"))) {
                             String retrieveUserName = dataSnapshot.child("username").getValue().toString();
 
                             userName.setText(retrieveUserName);
-                        }
-                        else
-                        {
+                        } else {
                             userName.setVisibility(View.VISIBLE);
                             //Toast.makeText(getContext(), "Please set & update your profile information...", Toast.LENGTH_SHORT).show();
                         }
@@ -170,13 +144,10 @@ public class SettingsFragment extends Fragment {
                         }
                     });
         }
-
     }
 
-    private void logout (Context context) {
+    private void logout(Context context) {
         firebaseAuth.signOut();
         startActivity(new Intent(context, MainActivity.class));
     }
-
-
 }

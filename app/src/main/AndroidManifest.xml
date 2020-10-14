@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
 
     <application
         android:name=".ui.activities.SComm"
@@ -19,6 +20,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ui.activities.Contacts"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".ui.activities.Companions" />
 
         <service
@@ -47,7 +50,20 @@
         <activity android:name=".ui.activities.SettingsActivity" />
         <activity android:name=".ui.activities.TaskListActivity" />
         <activity android:name=".ui.activities.AllUsersActivity" />
-        <activity android:name=".ui.activities.AddTaskActivity" />
+
+        <service android:name=".service.ContactService" />
+
+        <activity
+            android:name=".ui.activities.AddTaskActivity"
+            android:theme="@style/AppTheme.MaterialComponents">
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+        </activity>
         <activity android:name=".ui.activities.SetupActivity" />
         <activity android:name=".ui.activities.HomeActivity" />
         <activity android:name=".ui.activities.SplashActivity">

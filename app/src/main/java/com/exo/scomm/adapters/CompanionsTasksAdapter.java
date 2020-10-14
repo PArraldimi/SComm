@@ -34,7 +34,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class CompanionsTasksAdapter extends RecyclerView.Adapter<CompanionsTasksAdapter.MyViewHolder> {
    private Set<User> companionsList;
    private TaskDetails mCtxt;
-   String taskId;
+   private String taskId;
 
    public CompanionsTasksAdapter(TaskDetails taskDetails, Set<User> taskCompList, String taskId) {
       this.mCtxt = taskDetails;

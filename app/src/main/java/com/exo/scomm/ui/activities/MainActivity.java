@@ -22,19 +22,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
         spinner = findViewById(R.id.spinnerCountries);
-
         spinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, CountryData.countryNames));
-
         phoneEditText = findViewById(R.id.editTextPhone);
-
         findViewById(R.id.btn_send).setOnClickListener(v -> {
             String code = CountryData.countryAreaCodes[spinner.getSelectedItemPosition()];
-
             String number = phoneEditText.getText().toString().trim();
-
             if (number.isEmpty() || number.length() < 10) {
                 phoneEditText.setError("Valid number is required");
                 phoneEditText.requestFocus();
@@ -42,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
             String phoneNumber = "+" + code + number;
-
             Intent intent = new Intent(MainActivity.this, OtpVerifyActivity.class);
             intent.putExtra("phonenumber", phoneNumber);
             startActivity(intent);

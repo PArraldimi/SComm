@@ -72,38 +72,32 @@ public class HomeActivity extends AppCompatActivity {
 
          initializeFragment();
 
-         mainBottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-               switch (item.getItemId()) {
-                  case R.id.bottom_home:
-                     replaceFragment(homeFragment);
-                     add_task.setVisibility(View.VISIBLE);
-                     return true;
-                  case R.id.bottom_notification:
-                     replaceFragment(notificationFragment);
-                     add_task.setVisibility(View.GONE);
-                     return true;
-                  case R.id.bottom_chat_room:
-                     replaceFragment(chatroomFragment);
-                     add_task.setVisibility(View.GONE);
-                     return true;
-                  case R.id.bottom_settings:
-                     replaceFragment(settingsFragment);
-                     add_task.setVisibility(View.GONE);
-                     return true;
-                  default:
-                     return false;
-               }
+         mainBottomNav.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+               case R.id.bottom_home:
+                  replaceFragment(homeFragment);
+                  add_task.setVisibility(View.VISIBLE);
+                  return true;
+               case R.id.bottom_notification:
+                  replaceFragment(notificationFragment);
+                  add_task.setVisibility(View.GONE);
+                  return true;
+               case R.id.bottom_chat_room:
+                  replaceFragment(chatroomFragment);
+                  add_task.setVisibility(View.GONE);
+                  return true;
+               case R.id.bottom_settings:
+                  replaceFragment(settingsFragment);
+                  add_task.setVisibility(View.GONE);
+                  return true;
+               default:
+                  return false;
             }
          });
 
-         add_task.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               Intent intent = new Intent(HomeActivity.this, AddTaskActivity.class);
-               startActivity(intent);
-            }
+         add_task.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, AddTaskActivity.class);
+            startActivity(intent);
          });
       }
    }
@@ -122,31 +116,25 @@ public class HomeActivity extends AppCompatActivity {
    }
 
    private void initializeFragment() {
-
       FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-
       fragmentTransaction.add(R.id.main_container, homeFragment);
       fragmentTransaction.add(R.id.main_container, chatroomFragment);
       fragmentTransaction.add(R.id.main_container, notificationFragment);
       fragmentTransaction.add(R.id.main_container, settingsFragment);
-
       fragmentTransaction.detach(chatroomFragment);
       fragmentTransaction.detach(notificationFragment);
       fragmentTransaction.detach(settingsFragment);
       fragmentTransaction.commit();
-
    }
 
    public void replaceFragment(Fragment fragment) {
 
       FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
       if (fragment == homeFragment) {
-
          fragmentTransaction.detach(chatroomFragment);
          fragmentTransaction.detach(notificationFragment);
          fragmentTransaction.detach(settingsFragment);
          fragmentTransaction.addToBackStack(null);
-
       }
 
       if (fragment == notificationFragment) {
@@ -154,7 +142,6 @@ public class HomeActivity extends AppCompatActivity {
          fragmentTransaction.detach(settingsFragment);
          fragmentTransaction.detach(chatroomFragment);
          fragmentTransaction.addToBackStack(null);
-
       }
 
       if (fragment == chatroomFragment) {
@@ -173,43 +160,32 @@ public class HomeActivity extends AppCompatActivity {
 
 
       fragmentTransaction.attach(fragment);
-
-      //fragmentTransaction.replace(R.id.main_container, fragment);
       fragmentTransaction.commit();
 
    }
 
    protected void onStart() {
-
       super.onStart();
-
       FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
       if (currentUser == null) {
          sendToLogin();
       } else {
-
-        mRootRef.child("Users").child(mCurrentUser.getUid()).child("status").setValue("online");
-
+        mRootRef.child("Users").child(mCurrentUser.getUid()).child("online").setValue("online");
          String current_user_id = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
-
-         firebaseFirestore.collection("users").document(current_user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+         firebaseFirestore.collection("Users").document(current_user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-
                if (task.isSuccessful()) {
                   if (!Objects.requireNonNull(task.getResult()).exists()) {
                      Intent setupIntent = new Intent(HomeActivity.this, SetupActivity.class);
                      startActivity(setupIntent);
                      finish();
                   }
-
                } else {
                   String errorMessage = Objects.requireNonNull(task.getException()).getMessage();
                   Toast.makeText(HomeActivity.this, "Error : " + errorMessage, Toast.LENGTH_LONG).show();
                   Log.e("Error", errorMessage);
                }
-
             }
          });
       }
@@ -221,40 +197,34 @@ public class HomeActivity extends AppCompatActivity {
       Intent i = getIntent();
       String data = i.getStringExtra("fromTaskDetails");
       String data1 = i.getStringExtra("fromCompanions");
-
       if (data != null && data.contentEquals("1")) {
          username = i.getStringExtra("username");
          uid = i.getStringExtra("userId");
-
          Log.e("HomeResume", "" + username + " " + uid);
-
          replaceFragment(chatroomFragment);
          mainBottomNav.setSelectedItemId(R.id.bottom_chat_room);
          add_task.setVisibility(View.GONE);
-
       }
       if (data1 != null && data1.contentEquals("1")) {
          username = i.getStringExtra("username");
          uid = i.getStringExtra("uid");
-
          Log.e("HomeResume", "" + username + " " + uid);
-
          replaceFragment(chatroomFragment);
          mainBottomNav.setSelectedItemId(R.id.bottom_chat_room);
          add_task.setVisibility(View.GONE);
-
       }
    }
 
    private void sendToLogin() {
       Intent intent = new Intent(HomeActivity.this, MainActivity.class);
       startActivity(intent);
-
    }
 
    @Override
    protected void onStop() {
       super.onStop();
-      mRootRef.child("Users").child(mCurrentUser.getUid()).child("online").setValue(ServerValue.TIMESTAMP);
+      if (mCurrentUser != null) {
+         mRootRef.child("Users").child(mCurrentUser.getUid()).child("online").setValue(ServerValue.TIMESTAMP);
+      }
    }
 }

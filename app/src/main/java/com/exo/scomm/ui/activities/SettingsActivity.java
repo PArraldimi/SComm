@@ -7,8 +7,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -33,6 +35,7 @@ import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -42,29 +45,26 @@ public class SettingsActivity extends AppCompatActivity {
     private String currentUserID;
     private DatabaseReference RootRef;
     private FirebaseUser mCurrentUSer;
-
     private EditText userName;
     private CircleImageView userProfileImage;
-
-    private static final int GalleryPick = 1;
+    private static final int GALLERY_PICK = 1;
     private StorageReference UserProfileImagesRef;
     private ProgressDialog loadingBar;
+    private Uri mImageUri;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-
         firebaseAuth = FirebaseAuth.getInstance();
         currentUserID = firebaseAuth.getCurrentUser().getUid();
         RootRef = FirebaseDatabase.getInstance().getReference();
         UserProfileImagesRef = FirebaseStorage.getInstance().getReference().child("image");
-
         Button updateAccountSettings = (Button) findViewById(R.id.btn_update_profile);
         userName = (EditText) findViewById(R.id.edit_username);
         userProfileImage = (CircleImageView) findViewById(R.id.profile_image);
-
 
         updateAccountSettings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,7 +72,6 @@ public class SettingsActivity extends AppCompatActivity {
                 UpdateSettings();
             }
         });
-
         RetrieveUserInfo();
 
         userProfileImage.setOnClickListener(new View.OnClickListener() {
@@ -85,7 +84,7 @@ public class SettingsActivity extends AppCompatActivity {
 
                 CropImage.activity()
                         .setGuidelines(CropImageView.Guidelines.ON)
-                        .setAspectRatio(1,1)
+                        .setAspectRatio(1, 1)
                         .start(getParent());
             }
         });
@@ -100,83 +99,97 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-
-//         Inflate the layout for this fragment
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-    if (requestCode == GalleryPick && resultCode == RESULT_OK) {
-        Uri imageUri = data.getData();
-        CropImage.activity(imageUri).setAspectRatio(1,1)
-                .start(this);
-    }
-     if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
-         CropImage.ActivityResult result = CropImage.getActivityResult(data);
-         if (resultCode == RESULT_OK) {
+        if (requestCode == GALLERY_PICK
+                && resultCode == RESULT_OK
+                && data != null
+                && data.getData() != null) {
+            // Get the Uri of data
+            mImageUri = data.getData();
+            try {
 
-             loadingBar = new ProgressDialog(SettingsActivity.this);
-             loadingBar.setTitle("Uploading Image");
-             loadingBar.setMessage("Please wait while we upload and process the image");
-             loadingBar.setCanceledOnTouchOutside(false);
-             loadingBar.show();
+                // Setting image on image view using Bitmap
+                Bitmap bitmap = MediaStore
+                        .Images
+                        .Media
+                        .getBitmap(
+                                getContentResolver(),
+                                mImageUri);
+                userProfileImage.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                // Log the exception
+                e.printStackTrace();
+            }
+        }
 
-             Uri resultUri = result.getUri();
+
+        /*if (requestCode == GALLERY_PICK && resultCode == RESULT_OK) {
+            mImageUri = data.getData();
+            CropImage.activity(mImageUri).setAspectRatio(1, 1)
+                    .start(this);
+        }*/
+        /*if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+
+                loadingBar = new ProgressDialog(SettingsActivity.this);
+                loadingBar.setTitle("Uploading Image");
+                loadingBar.setMessage("Please wait while we upload and process the image");
+                loadingBar.setCanceledOnTouchOutside(false);
+                loadingBar.show();
+
+                Uri resultUri = result.getUri();
 
 
+                String uid = mCurrentUSer.getUid();
 
-             String uid = mCurrentUSer.getUid();
+                final StorageReference image_path = UserProfileImagesRef.child("profile images").child(uid + ".jpg");
+                image_path.putFile(resultUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-             final StorageReference image_path = UserProfileImagesRef.child("profile images").child(uid + ".jpg");
-             image_path.putFile(resultUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                 @Override
-                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        image_path.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                String downloadUri = uri.toString();
+                                RootRef.child("image").setValue(downloadUri).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            loadingBar.dismiss();
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
 
-                     image_path.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                         @Override
-                         public void onSuccess(Uri uri) {
-                             String downloadUri = uri.toString();
-                             RootRef.child("image").setValue(downloadUri).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                 @Override
-                                 public void onComplete(@NonNull Task<Void> task) {
-                                     if (task.isSuccessful()){
-                                         loadingBar.dismiss();
-                                     }
-                                 }
-                             });
-                         }
-                     });
-                 }
-             });
-
-         }
-     }
+            }
+        }*/
     }
 
     private void RetrieveUserInfo() {
         RootRef.child("Users").child(currentUserID)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot)
-                    {
-                        if ((dataSnapshot.exists()) && (dataSnapshot.hasChild("username") && (dataSnapshot.hasChild("image"))))
-                        {
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if ((dataSnapshot.exists()) && (dataSnapshot.hasChild("username") && (dataSnapshot.hasChild("image")))) {
                             String retrieveUserName = dataSnapshot.child("username").getValue().toString();
                             String retrieveProfileImage = dataSnapshot.child("image").getValue().toString();
 
                             userName.setText(retrieveUserName);
                             Picasso.get().load(retrieveProfileImage).into(userProfileImage);
-                        }
-                        else if ((dataSnapshot.exists()) && (dataSnapshot.hasChild("username")))
-                        {
+                        } else if ((dataSnapshot.exists()) && (dataSnapshot.hasChild("username"))) {
                             String retrieveUserName = dataSnapshot.child("username").getValue().toString();
 
                             userName.setText(retrieveUserName);
-                        }
-                        else
-                        {
+                        } else {
                             userName.setVisibility(View.VISIBLE);
                             Toast.makeText(getApplicationContext(), "Please set & update your profile information...", Toast.LENGTH_SHORT).show();
                         }
@@ -203,7 +216,7 @@ public class SettingsActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
                                 Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
                             } else {
                                 String message = task.getException().toString();
@@ -214,11 +227,9 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
 
-
-
     }
 
-    private void logout (Context context) {
+    private void logout(Context context) {
         firebaseAuth.signOut();
         startActivity(new Intent(SettingsActivity.this, MainActivity.class));
     }

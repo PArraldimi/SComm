@@ -23,7 +23,7 @@
             android:singleLine="true"
             android:maxLength="20"
             android:textCursorDrawable = "@null"
-            android:backgroundTint="@color/ocean_blue" />
+            android:backgroundTint="#E0E4F1" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -89,6 +89,7 @@
                     android:fontFamily="@font/century"
                     android:checked="true"
                     android:textSize="20sp"
+                    android:textColor="#000000"
                     android:buttonTint="@color/colorAccent"
                     android:onClick="onRadioButtonClicked"/>
                 <RadioButton
@@ -99,6 +100,7 @@
                     android:text="Public"
                     android:fontFamily="@font/century"
                     android:textSize="20sp"
+                    android:textColor="#000000"
                     android:buttonTint="@color/colorAccent"
                     android:onClick="onRadioButtonClicked"/>
             </RadioGroup>

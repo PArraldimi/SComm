@@ -10,7 +10,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:id="@+id/toolbar_layout"
-        android:background="@color/ocean_blue"
+        android:background="#80363979"
         android:layout_height="wrap_content">
 
         <TextView

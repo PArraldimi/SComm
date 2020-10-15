@@ -9,7 +9,8 @@
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:background="#ffffff">
+        android:layout_marginBottom="6dp"
+        android:background="@drawable/logo_bg">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -40,7 +41,7 @@
         android:fontFamily="@font/arialregular"
         android:text="@string/enter_phone_number_below"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-        android:textColor="#000000" />
+        android:textColor="#FFFFFF" />
 
     <LinearLayout
         android:id="@+id/linearLayout"

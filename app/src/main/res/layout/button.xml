@@ -1,0 +1,13 @@
+<Button android:layout_width="40dp"
+    android:layout_height="40dp"
+    android:id="@+id/companion_button"
+    android:layout_marginTop="2dp"
+    android:layout_marginStart="2dp"
+    android:background="@drawable/round_button"
+    android:gravity="center_vertical|center_horizontal"
+    android:text="+"
+    android:elevation="0dp"
+    android:textSize="20sp"
+    android:textAlignment="center"
+    android:textColor="#fff"
+    xmlns:android="http://schemas.android.com/apk/res/android" />

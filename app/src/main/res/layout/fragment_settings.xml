@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/color_gradient">
+    android:background="@drawable/wallpaper">
     <androidx.appcompat.widget.Toolbar
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/settings_app_bar"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginBottom="10dp"
-        android:background="#80BBF8"
+        android:background="#80363979"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
 
         <TextView
@@ -91,15 +91,17 @@
             android:layout_height="40dp"
             android:layout_below="@+id/edit_username"
             android:layout_alignParentEnd="true"
+            android:layout_marginTop="20dp"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
-            android:backgroundTint="#6E94F9"
+            android:background="#6BBBF8"
             android:elevation="20dp"
             android:onClick="invite"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
             android:text="Update"
+            android:textColor="#ffffff"
             android:textAllCaps="false"
             android:textSize="16sp" />
 
@@ -108,17 +110,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/edit_username"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="100dp"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             android:paddingStart="20dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="20dp"
-            android:background="#6BBBF8"
+            android:background="#806BBBF8"
             android:drawableStart="@drawable/ic_lock_black_24dp"
             android:text="Privacy"
             android:textAllCaps="false"
-            android:textColor="@color/ocean_blue"
+            android:textColor="#ffffff"
             android:textSize="18sp"
             android:textStyle="bold"
             android:gravity="left"/>
@@ -134,11 +136,11 @@
             android:paddingStart="20dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="20dp"
-            android:background="#6BBBF8"
+            android:background="#806BBBF8"
             android:drawableStart="@drawable/ic_delete_black_24dp"
             android:text="Delete my account"
             android:textAllCaps="false"
-            android:textColor="@color/ocean_blue"
+            android:textColor="#ffffff"
             android:textSize="18sp"
             android:textStyle="bold"
             android:gravity="left"/>
@@ -151,7 +153,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
-            android:background="#6BBBF8"
+            android:background="#806BBBF8"
             android:drawableStart="@drawable/ic_exit_to_app_black_24dp"
             android:gravity="left"
             android:paddingStart="20dp"
@@ -159,7 +161,7 @@
             android:paddingBottom="10dp"
             android:text="Logout"
             android:textAllCaps="false"
-            android:textColor="@color/ocean_blue"
+            android:textColor="#ffffff"
             android:textSize="18sp"
             android:textStyle="bold" />
     </RelativeLayout>

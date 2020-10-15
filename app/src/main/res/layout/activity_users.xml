@@ -69,6 +69,7 @@
             android:textStyle="bold"
             android:textColor="#FFFFFF"/>
     </RelativeLayout>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/selectedUsersFab"
         android:layout_width="wrap_content"
@@ -77,10 +78,10 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="-12dp"
+        android:clickable="true"
+        android:focusable="true"
         android:src="@drawable/ic_check_black_24dp"
         app:backgroundTint="@color/ocean_blue"
         app:elevation="10dp"
-        app:fabSize="normal"
-        android:clickable="true"
-        android:focusable="true" />
+        app:fabSize="normal" />
 </RelativeLayout>

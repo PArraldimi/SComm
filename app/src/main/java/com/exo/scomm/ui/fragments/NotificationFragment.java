@@ -333,10 +333,10 @@ public class NotificationFragment extends Fragment {
                           break;
                        case "deleteTask":
                           assert noteKey != null;
-                          mNotificationsRef.child(noteKey).addValueEventListener(new ValueEventListener() {
+                          mNotificationsRef.child(mCurrentUserId).addValueEventListener(new ValueEventListener() {
                              @Override
                              public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                final String user_id = Objects.requireNonNull(dataSnapshot.child("user").getValue()).toString();
+                                final String user_id = Objects.requireNonNull(dataSnapshot.child("fromUser").getValue()).toString();
                                 mUsersDatabase.child(user_id).addValueEventListener(new ValueEventListener() {
                                    @Override
                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

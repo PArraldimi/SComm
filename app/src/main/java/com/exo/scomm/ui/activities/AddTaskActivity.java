@@ -340,11 +340,9 @@ public class AddTaskActivity extends AppCompatActivity {
                     String contactPhone = contact.getPhoneNumber();
                     newContactPhone = getPhoneLength(contactPhone);
                     String phone = user.getPhone();
+                    Log.e(TAG, "User Phone" + newPhone + " Contact Phone " + newContactPhone);
                     if (phone != null) {
                         newPhone = getPhoneLength(phone);
-                    }
-                    Log.e(TAG, "User Phone" + newPhone + " Contact Phone " + newContactPhone);
-                    if (newPhone != null) {
                         if (newPhone.equals(newContactPhone)) {
                             mRootRef.updateChildren(getInviteMaps(user.getUID()), (databaseError, databaseReference) -> {
                                 if (databaseError != null) {
@@ -356,7 +354,6 @@ public class AddTaskActivity extends AppCompatActivity {
                                 }
                             });
                         }
-
                     }
                 }
             }

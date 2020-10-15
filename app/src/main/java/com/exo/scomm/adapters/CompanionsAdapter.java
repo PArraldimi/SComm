@@ -56,45 +56,33 @@ public class CompanionsAdapter extends RecyclerView.Adapter<CompanionsAdapter.My
     List<User> usersList = new ArrayList<>(companionsSet);
 
     if (position == usersList.size()) {
-      holder.button.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-          mCtxt.startActivity(new Intent(mCtxt.getApplicationContext(), AllUsersActivity.class));
-        }
-      });
+      holder.button.setOnClickListener(view -> mCtxt.startActivity(new Intent(mCtxt.getApplicationContext(), AllUsersActivity.class)));
     } else {
       final User user = usersList.get(position);
       holder.username.setText(user.getUsername());
       Picasso.get().load(user.getImage()).placeholder(R.drawable.profile_image).into(holder.profile);
 
-      holder.itemView.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          CharSequence[] options = new CharSequence[]{"Open Profile", "Send Message"};
-          AlertDialog.Builder builder = new AlertDialog.Builder(mCtxt);
-          builder.setTitle("Select Options");
-          builder.setItems(options, new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int i) {
-              if (i == 0) {
-                Intent profileIntent = new Intent(mCtxt, Profile.class);
-                profileIntent.putExtra("uid", user.getUID());
-                mCtxt.startActivity(profileIntent);
-              } else if (i == 1) {
-                Log.e("User Key", user.getUID());
-                final HomeActivity activity = (HomeActivity) mCtxt;
-                activity.uid = user.getUID();
-                activity.username = user.getUsername();
-                activity.mainBottomNav.setSelectedItemId(R.id.bottom_chat_room);
-                activity.add_task.setVisibility(View.GONE);
+      holder.itemView.setOnClickListener(v -> {
+        CharSequence[] options = new CharSequence[]{"Open Profile", "Send Message"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(mCtxt);
+        builder.setTitle("Select Options");
+        builder.setItems(options, (dialog, i) -> {
+          if (i == 0) {
+            Intent profileIntent = new Intent(mCtxt, Profile.class);
+            profileIntent.putExtra("uid", user.getUID());
+            mCtxt.startActivity(profileIntent);
+          } else if (i == 1) {
+            Log.e("User Key", user.getUID());
+            final HomeActivity activity = (HomeActivity) mCtxt;
+            activity.uid = user.getUID();
+            activity.username = user.getUsername();
+            activity.mainBottomNav.setSelectedItemId(R.id.bottom_chat_room);
+            activity.add_task.setVisibility(View.GONE);
 
 
-              }
-            }
-          });
-          builder.show();
-        }
+          }
+        });
+        builder.show();
       });
     }
   }

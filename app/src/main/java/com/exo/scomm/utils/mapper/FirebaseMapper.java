@@ -26,5 +26,4 @@ public abstract class FirebaseMapper<Entity, Model> implements IMapper<Entity, M
       ParameterizedType superclass = (ParameterizedType) getClass().getGenericSuperclass();
       return (Class<Entity>) superclass.getActualTypeArguments()[0];
    }
-
 }

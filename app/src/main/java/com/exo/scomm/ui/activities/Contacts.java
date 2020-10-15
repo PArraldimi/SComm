@@ -4,9 +4,13 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -22,6 +26,7 @@ import com.exo.scomm.data.models.Contact;
 import com.exo.scomm.data.models.User;
 import com.exo.scomm.utils.DataViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -35,11 +40,12 @@ public class Contacts extends AppCompatActivity implements ContactsAdapter.Conta
     public List<Contact> joinedContacts = new ArrayList<>();
     public MenuItem mDone;
     public List<User> joinedUsers = new ArrayList<>();
-    Set<User> mSelectedUsersSet = new HashSet<>();
     private ContactsAdapter contactsAdapter;
     private RecyclerView recyclerView;
+    private FloatingActionButton mSelectedContactsFab;
+    private RelativeLayout mLayout;
+    private TextView mSelectedScommers;
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +53,12 @@ public class Contacts extends AppCompatActivity implements ContactsAdapter.Conta
         MaterialToolbar toolbar = findViewById(R.id.my_toolbar);
         toolbar.setTitle("Contacts");
         setSupportActionBar(toolbar);
+        mSelectedContactsFab = findViewById(R.id.selectedContactsFab);
+        mSelectedScommers = findViewById(R.id.selected_scommers);
+
+        mLayout = findViewById(R.id.relative004);
+        mLayout.setVisibility(View.GONE);
+        mSelectedContactsFab.setVisibility(View.GONE);
 
         List<Contact> contacts = (List<Contact>) getIntent().getSerializableExtra("contacts");
 
@@ -59,29 +71,39 @@ public class Contacts extends AppCompatActivity implements ContactsAdapter.Conta
         DataViewModel model = new ViewModelProvider(this).get(DataViewModel.class);
         model.getAllUsers().observe(this, users -> populateRecycler(users, contacts));
 
+        mSelectedContactsFab.setOnClickListener(v -> {
+            DataHolder.setSelectedUsers(contactsAdapter.mSelectedContactsSet);
+            finish();
+        });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void populateRecycler(List<User> users, List<Contact> contacts) {
         joinedContacts = new ArrayList<>();
         List<Contact> otherContacts = new ArrayList<>();
         for (int i = 0; i < users.size(); i++) {
             User user = users.get(i);
-            for (Contact c :
-                    contacts) {
-                if (user.getPhone() != null) {
-                    if (user.getPhone().equals(c.phoneNumber)) {
-                        c.setJoined(true);
-                        joinedContacts.add(c);
-                        joinedUsers.add(user);
-                    } else {
-                        otherContacts.add(c);
+            String userPhone;
+            if (user.getPhone() != null){
+             userPhone = new StringBuilder(user.getPhone()).reverse().toString();
+                for (Contact c :
+                        contacts) {
+                    String contactPhone = new StringBuilder(c.getPhoneNumber()).reverse().toString();
+
+                    if ((userPhone != null && userPhone.length() >= 10 ) && (contactPhone != null && contactPhone.length() >= 10)) {
+                        if (userPhone.substring(0, 8).equals(contactPhone.substring(0, 8))) {
+                            c.setJoined(true);
+                            joinedContacts.add(c);
+                            joinedUsers.add(user);
+                        } else {
+                            otherContacts.add(c);
+                        }
                     }
                 }
             }
+
+
         }
-        contactsAdapter = new ContactsAdapter(this, Stream.concat(joinedContacts.stream(), otherContacts.stream())
-                .collect(Collectors.toList()), this);
+        contactsAdapter = new ContactsAdapter(this,joinedContacts,otherContacts, this);
         recyclerView.setAdapter(contactsAdapter);
     }
 
@@ -89,10 +111,6 @@ public class Contacts extends AppCompatActivity implements ContactsAdapter.Conta
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_done) {
             DataHolder.setSelectedUsers(contactsAdapter.mSelectedContactsSet);
-//            Intent intent = new Intent(getApplicationContext(), AddTaskActivity.class);
-//            intent.putExtra("fromContactsActivity", "1");
-//            intent.putExtra("users", (Serializable) contactsAdapter.mSelectedContactsSet);
-//            startActivity(intent);
             finish();
         }
         return super.onOptionsItemSelected(item);
@@ -121,9 +139,23 @@ public class Contacts extends AppCompatActivity implements ContactsAdapter.Conta
 
     @Override
     public void onContactSelected(Contact contact) {
-        mDone.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        mLayout.setVisibility(View.VISIBLE);
+        mSelectedContactsFab.setVisibility(View.VISIBLE);
+        String str = getSelectedContacts().toString().replaceAll("\\[|\\]", "");
+        mSelectedScommers.setText(str);
+      //  mDone.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         if (contactsAdapter.mSelectedContactsSet.isEmpty()) {
-            mDone.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+          //  mDone.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+            mLayout.setVisibility(View.GONE);
+            mSelectedContactsFab.setVisibility(View.GONE);
         }
+    }
+    private List<String> getSelectedContacts(){
+        List<String> name = new ArrayList<>();
+        for (Contact contact: contactsAdapter.mSelectedContactsSet
+             ) {
+            name.add(contact.getName());
+        }
+        return name;
     }
 }

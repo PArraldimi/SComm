@@ -1,0 +1,11 @@
+<com.google.android.material.button.MaterialButton xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/share_app_button"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="2dp"
+    android:elevation="0dp"
+    android:gravity="center_vertical|center_horizontal"
+    android:text="Share App"
+    android:textAlignment="center"
+    android:textColor="#fff"
+    android:textSize="20sp" />

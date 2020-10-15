@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,7 +23,6 @@ import com.exo.scomm.adapters.TodayTasksAdapter;
 import com.exo.scomm.adapters.UpComingTasksAdapter;
 import com.exo.scomm.data.models.Task;
 import com.exo.scomm.data.models.User;
-import com.exo.scomm.ui.activities.TaskDetails;
 import com.exo.scomm.utils.TasksViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -50,20 +48,16 @@ import hirondelle.date4j.DateTime;
 
 
 public class HomeFragment extends Fragment {
-   private static final String LOGTAG = HomeFragment.class.getSimpleName() ;
    private TodayTasksAdapter todayTasksAdapter;
    private UpComingTasksAdapter upComingTasksAdapter;
    private List<Task> todayTasks = new ArrayList<>();
    private List<Task> upcomingTasks = new ArrayList<>();
    private Set<User> companionsList;
    private RecyclerView todayTasksRecycler, companionsRecycler, upComingRecycler;
-   private DatabaseReference taskRef;
-   DatabaseReference mRootRef;
-   private DatabaseReference companionRef;
-   private DatabaseReference mUsersRef;
+   private DatabaseReference mRootRef,companionRef,mUsersRef;
    private TextView textViewDate, seeAllCompanions;
-   private String currentUid;
-   private Calendar calendar;
+   private String mCurrentUid;
+   private Calendar mCalender;
 
    public HomeFragment() {
    }
@@ -73,7 +67,7 @@ public class HomeFragment extends Fragment {
    public View onCreateView(LayoutInflater inflater, ViewGroup container,
                             Bundle savedInstanceState) {
       View view = inflater.inflate(R.layout.fragment_home, container, false);
-      calendar = Calendar.getInstance();
+      mCalender = Calendar.getInstance();
       todayTasksRecycler = view.findViewById(R.id.task_recycler);
       companionsRecycler = view.findViewById(R.id.companions_recycler);
       upComingRecycler = view.findViewById(R.id.upcoming_recycler);
@@ -88,37 +82,33 @@ public class HomeFragment extends Fragment {
 
       FirebaseUser mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
       assert mCurrentUser != null;
-      currentUid = mCurrentUser.getUid();
-      taskRef = mRootRef.child("Tasks").child(currentUid);
+      mCurrentUid = mCurrentUser.getUid();
       mUsersRef = mRootRef.child("Users");
       companionRef = mRootRef.child("TaskCompanions");
       setUpLayouts();
 
       TasksViewModel model = new ViewModelProvider(this).get(TasksViewModel.class);
-      model.getAllTasks().observe(getViewLifecycleOwner(), new Observer<List<Task>>() {
-         @Override
-         public void onChanged(List<Task> tasks) {
-            final String today = new Date().toString();
-            todayTasks.clear();
-            upcomingTasks.clear();
-            // update UI
-            for (Task t: tasks
-                 ) {
-               String taskDate = t.getDate();
-               if (isSameDay(new Date(today), new Date(taskDate))) {
-                  todayTasks.add(t);
-               } else if (new Date(taskDate).after(new Date(today))) {
-                  upcomingTasks.add(t);
-               } else if (new Date(taskDate).before(new Date(today))) {
-                  deleteTask(t);
-               }
+      model.getAllTasks().observe(getViewLifecycleOwner(), tasks -> {
+         final String today = new Date().toString();
+         todayTasks.clear();
+         upcomingTasks.clear();
+         // update UI
+         for (Task t: tasks
+              ) {
+            String taskDate = t.getDate();
+            if (isSameDay(new Date(today), new Date(taskDate))) {
+               todayTasks.add(t);
+            } else if (new Date(taskDate).after(new Date(today))) {
+               upcomingTasks.add(t);
+            } else if (new Date(taskDate).before(new Date(today))) {
+               deleteTask(t);
             }
-            sortTasks();
-            todayTasksAdapter = new TodayTasksAdapter(getContext(), todayTasks);
-            upComingTasksAdapter = new UpComingTasksAdapter(getContext(), upcomingTasks);
-            todayTasksRecycler.setAdapter(todayTasksAdapter);
-            upComingRecycler.setAdapter(upComingTasksAdapter);
          }
+         sortTasks();
+         todayTasksAdapter = new TodayTasksAdapter(getContext(), todayTasks);
+         upComingTasksAdapter = new UpComingTasksAdapter(getContext(), upcomingTasks);
+         todayTasksRecycler.setAdapter(todayTasksAdapter);
+         upComingRecycler.setAdapter(upComingTasksAdapter);
       });
 
       getTaskCompanions();
@@ -126,40 +116,25 @@ public class HomeFragment extends Fragment {
    }
 
    private void deleteTask(Task t) {
-      String deleted_task_id = mRootRef.child("DeletedTask").child(currentUid).push().getKey();
+      String deleted_task_id = mRootRef.child("DeletedTask").child(mCurrentUid).push().getKey();
       HashMap<String, Object> deleteTaskMap = new HashMap<>();
-      deleteTaskMap.put("Tasks/" + currentUid + "/" + t.getTask_id(), null);
+      deleteTaskMap.put("Tasks/" + mCurrentUid + "/" + t.getTask_id(), null);
       deleteTaskMap.put("DeletedTask/" + deleted_task_id + "/" + t.getTask_id() + "/", t);
-      mRootRef.updateChildren(deleteTaskMap, new DatabaseReference.CompletionListener() {
-         @Override
-         public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-            if (databaseError != null) {
-               String error = databaseError.getMessage();
-               Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show();
-            }
+      mRootRef.updateChildren(deleteTaskMap, (databaseError, databaseReference) -> {
+         if (databaseError != null) {
+            String error = databaseError.getMessage();
+            Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show();
          }
       });
    }
 
    private void sortTasks() {
-      Collections.sort( upcomingTasks, new Comparator<Task>() {
-         @Override
-         public int compare(Task o1, Task o2) {
-
-            return new Date(o1.getDate()).compareTo(new Date(o2.getDate()));
-         }
-      });
-      Collections.sort(todayTasks, new Comparator<Task>() {
-         @Override
-         public int compare(Task o1, Task o2) {
-
-            return new Date(o1.getDate()).compareTo(new Date(o2.getDate()));
-         }
-      });
+      Collections.sort( upcomingTasks, (o1, o2) -> new Date(o1.getDate()).compareTo(new Date(o2.getDate())));
+      Collections.sort(todayTasks, (o1, o2) -> new Date(o1.getDate()).compareTo(new Date(o2.getDate())));
    }
 
    private void getTaskCompanions() {
-     final DatabaseReference companionsRef = companionRef.child(currentUid);
+     final DatabaseReference companionsRef = companionRef.child(mCurrentUid);
       companionsRef.addValueEventListener(new ValueEventListener() {
          @Override
          public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -217,15 +192,12 @@ public class HomeFragment extends Fragment {
    @Override
    public void onStart() {
       super.onStart();
-      String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
+      String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(mCalender.getTime());
       textViewDate.setText(currentDate);
 
-      seeAllCompanions.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View view) {
-            Intent usersIntent = new Intent(getActivity(), Companions.class);
-            startActivity(usersIntent);
-         }
+      seeAllCompanions.setOnClickListener(view -> {
+         Intent usersIntent = new Intent(getActivity(), Companions.class);
+         startActivity(usersIntent);
       });
 
    }

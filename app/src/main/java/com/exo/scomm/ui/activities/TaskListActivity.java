@@ -37,11 +37,8 @@ public class TaskListActivity extends AppCompatActivity {
         MaterialToolbar toolbar = findViewById(R.id.all_users_app_bar);
         toolbar.setTitle("All Users");
         setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();  // byDefault provided backPressed method, or handle your own way
-            }
+        toolbar.setNavigationOnClickListener(v -> {
+            onBackPressed();  // byDefault provided backPressed method, or handle your own way
         });
         taskList = new ArrayList<>();
         FirebaseUser mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();

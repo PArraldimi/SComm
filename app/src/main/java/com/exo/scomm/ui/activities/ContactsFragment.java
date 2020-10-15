@@ -3,6 +3,7 @@ package com.exo.scomm.ui.activities;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,7 +17,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,19 +26,16 @@ import com.exo.scomm.adapters.ContactsAdapter;
 import com.exo.scomm.data.models.Contact;
 import com.exo.scomm.data.models.User;
 import com.exo.scomm.utils.DataViewModel;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ContactsFragment extends DialogFragment implements ContactsAdapter.ContactsAdapterListener {
     private ContactsAdapter contactsAdapter;
     private List<Contact> joinedContacts = new ArrayList<>();
     private RecyclerView recyclerView;
+
     public ContactsFragment() {
     }
 
@@ -59,14 +56,15 @@ public class ContactsFragment extends DialogFragment implements ContactsAdapter.
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);    }
+        setHasOptionsMenu(true);
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Add this! (as above)
         View view = inflater.inflate(R.layout.fragment_contacts, container, false);
-        Toolbar toolbar =  view. findViewById(R.id.my_toolbar);
+        Toolbar toolbar = view.findViewById(R.id.my_toolbar);
         toolbar.setTitle("Contacts");
         toolbar.inflateMenu(R.menu.menu_search);
 
@@ -80,7 +78,6 @@ public class ContactsFragment extends DialogFragment implements ContactsAdapter.
         assert getArguments() != null;
         final List<Contact> contacts = (List<Contact>) getArguments().getSerializable("contacts");
         recyclerView = view.findViewById(R.id.contacts_recycler);
-        DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
         recyclerView.setHasFixedSize(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
@@ -89,29 +86,39 @@ public class ContactsFragment extends DialogFragment implements ContactsAdapter.
         model.getAllUsers().observe(getViewLifecycleOwner(), users -> populateRecycler(users, contacts));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void populateRecycler(List<User> users, List<Contact> contacts) {
         joinedContacts = new ArrayList<>();
         List<Contact> otherContacts = new ArrayList<>();
         for (int i = 0; i < users.size(); i++) {
             User user = users.get(i);
+            String userPhone = new StringBuilder(user.getPhone()).reverse().toString();
+            Log.e("TAG", "reversed" + userPhone);
+            Log.e("TAG", "userphonetrimmed" + userPhone.substring(8));
+
             for (Contact c :
                     contacts) {
+                String contactPhone = new StringBuilder(c.getPhoneNumber()).reverse().toString();
+                Log.e("TAG", "contact reversed" + contactPhone);
+                Log.e("TAG", "contact trimmed" + contactPhone.substring(8));
+
+
                 if (user.getPhone() != null) {
-                    if (user.getPhone().equals(c.phoneNumber)) {
+                    if (userPhone.substring(8).equals(contactPhone.substring(8))) {
                         c.setJoined(true);
-                       joinedContacts.add(c);
-                    }else {
+                        joinedContacts.add(c);
+                    } else {
                         otherContacts.add(c);
                     }
                 }
             }
         }
-        contactsAdapter = new ContactsAdapter(getContext(), Stream.concat(joinedContacts.stream(), otherContacts.stream())
-                .collect(Collectors.toList()), this);
+       // joinedContacts.addAll(otherContacts);
+
+        contactsAdapter = new ContactsAdapter(getContext(), joinedContacts, joinedContacts, this);
         recyclerView.setAdapter(contactsAdapter);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -128,6 +135,7 @@ public class ContactsFragment extends DialogFragment implements ContactsAdapter.
             public boolean onQueryTextSubmit(String query) {
                 return false;
             }
+
             @Override
             public boolean onQueryTextChange(String newText) {
                 contactsAdapter.getFilter().filter(newText);

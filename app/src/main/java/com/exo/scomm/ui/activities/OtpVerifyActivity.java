@@ -13,13 +13,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.exo.scomm.R;
 import com.exo.scomm.adapters.DataHolder;
+import com.exo.scomm.data.models.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskExecutors;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
@@ -98,23 +104,21 @@ public class OtpVerifyActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         final String uid = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-                        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(OtpVerifyActivity.this, instanceIdResult -> {
-                            String token = instanceIdResult.getToken();
-                            HashMap<String, String> hashMap = new HashMap<>();
-                            hashMap.put("device_token", token);
-                            hashMap.put("phone", mPhone);
-                            mUsersDBRef.child(uid).setValue(hashMap).addOnCompleteListener(task1 -> {
-                                if (task1.isSuccessful()) {
-                                    DataHolder.setPhone(mPhone);
-                                    Intent intent = new Intent(OtpVerifyActivity.this, HomeActivity.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    startActivity(intent);
-                                } else {
-                                    Toast.makeText(OtpVerifyActivity.this, "Cannot get device token. Please try again.",
-                                            Toast.LENGTH_SHORT).show();
+                        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid);
+                        usersRef.child("phone").setValue(mPhone).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+//                                    if (user.getUsername() == null) {
+//                                        DataHolder.setPhone(mPhone);
+//                                        startActivity(new Intent(getApplicationContext(), SetupActivity.class));
+//                                    } else {
+                                        startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+                                        OtpVerifyActivity.this.finish();
+                                    //}
                                 }
-                            });
 
+                            }
                         });
                     } else {
                         Toast.makeText(OtpVerifyActivity.this, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_LONG).show();

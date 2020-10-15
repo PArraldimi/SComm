@@ -20,7 +20,8 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
     <style name="AppTheme.MaterialComponents" parent="Theme.MaterialComponents.DayNight">
-
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="MyStyle" parent="@style/Base.TextAppearance.AppCompat.Title">

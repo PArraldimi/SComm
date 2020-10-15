@@ -1,21 +1,16 @@
 package com.exo.scomm.ui.activities;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,8 +22,6 @@ import com.exo.scomm.R;
 import com.exo.scomm.adapters.DataHolder;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,15 +31,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
-import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageView;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -85,23 +73,20 @@ public class SetupActivity extends AppCompatActivity {
 
         setupBtn.setEnabled(true);
 
-        firebaseFirestore.collection("Users").document(user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    if (Objects.requireNonNull(task.getResult()).exists()) {
-                        String name = task.getResult().getString("name");
-                        String image = task.getResult().getString("image");
-                        if (image != null) {
-                            filePath = Uri.parse(image);
-                            setupName.setText(name);
-                            Picasso.get().load(filePath).placeholder(R.drawable.profile_image).into(setupImage);
-                        }
+        firebaseFirestore.collection("Users").document(user_id).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                if (Objects.requireNonNull(task.getResult()).exists()) {
+                    String name = task.getResult().getString("name");
+                    String image = task.getResult().getString("image");
+                    if (image != null) {
+                        filePath = Uri.parse(image);
+                        setupName.setText(name);
+                        Picasso.get().load(filePath).placeholder(R.drawable.profile_image).into(setupImage);
                     }
                 }
-                mSetupProgress.dismiss();
-                setupBtn.setEnabled(true);
             }
+            mSetupProgress.dismiss();
+            setupBtn.setEnabled(true);
         });
 
 
@@ -196,18 +181,24 @@ public class SetupActivity extends AppCompatActivity {
                     FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
                     assert firebaseUser != null;
                     final String userid = firebaseUser.getUid();
-                    HashMap<String, String> hashMap = getStringStringHashMap( userid, user_name, download_uri);
-                    FirebaseDatabase.getInstance().getReference("Users").child(userid).setValue(hashMap).addOnCompleteListener(task1 -> {
-                        if (task1.isSuccessful()) {
-                            Toast.makeText(SetupActivity.this, "The User Settings are Successfully Updated ", Toast.LENGTH_LONG).show();
-                            Intent mainIntent = new Intent(SetupActivity.this, MainActivity.class);
-                            startActivity(mainIntent);
-                            finish();
-                        }
+                    DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("Users").child(userid);
+
+                    FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(SetupActivity.this, instanceIdResult -> {
+                        String token = instanceIdResult.getToken();
+                        HashMap<String, String> hashMap = getStringStringHashMap(userid, user_name,token, download_uri);
+                        usersRef.setValue(hashMap).addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                Toast.makeText(SetupActivity.this, "The User Settings are Successfully Updated ", Toast.LENGTH_LONG).show();
+                                Intent mainIntent = new Intent(SetupActivity.this, MainActivity.class);
+                                startActivity(mainIntent);
+                                finish();
+                            }
+                        });
+
                     });
-                    Toast.makeText(SetupActivity.this, "The User Settings are Successfully Updated ", Toast.LENGTH_LONG).show();
-                    Intent mainIntent = new Intent(SetupActivity.this, HomeActivity.class);
-                    startActivity(mainIntent);
+//                    Toast.makeText(SetupActivity.this, "The User Settings are Successfully Updated ", Toast.LENGTH_LONG).show();
+//                    Intent mainIntent = new Intent(SetupActivity.this, HomeActivity.class);
+//                    startActivity(mainIntent);
                 } else {
                     mSetupProgress.dismiss();
                     String error = Objects.requireNonNull(task.getException()).getMessage();
@@ -217,13 +208,19 @@ public class SetupActivity extends AppCompatActivity {
         });
     }
 
-    private HashMap<String, String> getStringStringHashMap( String userid, String user_name, Uri download_uri) {
+    private HashMap<String, String> getStringStringHashMap( String userid, String user_name,String s, Uri download_uri) {
         HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("device_token", s);
         hashMap.put("id", userid);
         hashMap.put("username", user_name);
+        hashMap.put("phone", DataHolder.getPhone());
         hashMap.put("status", "offline");
         hashMap.put("search", user_name.toLowerCase());
-        hashMap.put("image", download_uri.toString());
+        if (download_uri != null) {
+            hashMap.put("image", download_uri.toString());
+        } else {
+            hashMap.put("image", null);
+        }
         return hashMap;
     }
 

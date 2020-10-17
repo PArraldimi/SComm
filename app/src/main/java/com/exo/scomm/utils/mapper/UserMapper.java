@@ -7,6 +7,7 @@ public class UserMapper extends  FirebaseMapper<UserEntity, User> {
     @Override
     public User map(UserEntity userEntity) {
         User user = new User();
+        user.setId(userEntity.getId());
         user.setImage(userEntity.getImage());
         user.setStatus(userEntity.getStatus());
         user.setUsername(userEntity.getUsername());

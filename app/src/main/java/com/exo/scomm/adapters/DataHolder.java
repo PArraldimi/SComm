@@ -1,14 +1,11 @@
 package com.exo.scomm.adapters;
 
-import com.exo.scomm.data.models.Contact;
 import com.exo.scomm.data.models.Task;
 import com.exo.scomm.data.models.User;
 
 import java.util.List;
-import java.util.Set;
 
 public class DataHolder {
-    private static List<Contact> selectedUsers;
     private static String UID;
     private static String taskId;
     private static Task task;
@@ -71,13 +68,5 @@ public class DataHolder {
 
     public static void setUID(String UID) {
         DataHolder.UID = UID;
-    }
-
-    public static List<Contact> getSelectedUsers() {
-        return selectedUsers;
-    }
-
-    public static void setSelectedUsers(List<Contact> selectedUsers) {
-        DataHolder.selectedUsers = selectedUsers;
     }
 }

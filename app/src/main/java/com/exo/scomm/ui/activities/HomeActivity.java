@@ -166,22 +166,6 @@ public class HomeActivity extends AppCompatActivity {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             mRootRef.child("Users").child(mCurrentUser.getUid()).child("online").setValue("online");
-            String current_user_id = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
-            firebaseFirestore.collection("Users").document(current_user_id).get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    if (!Objects.requireNonNull(task.getResult()).exists()) {
-                        Intent setupIntent = new Intent(HomeActivity.this, SetupActivity.class);
-                        startActivity(setupIntent);
-                        finish();
-                    }
-                } else {
-                    String errorMessage = Objects.requireNonNull(task.getException()).getMessage();
-                    Toast.makeText(HomeActivity.this, "Error : " + errorMessage, Toast.LENGTH_LONG).show();
-                    Log.e("Error", errorMessage);
-                }
-            });
-        } else {
-           sendToLogin();
 
         }
     }

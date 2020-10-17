@@ -1,9 +1,7 @@
 package com.exo.scomm.ui.activities;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,7 +11,6 @@ import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -27,17 +24,16 @@ import com.exo.scomm.data.models.User;
 import com.exo.scomm.utils.DataViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Contacts extends AppCompatActivity implements ContactsAdapter.ContactsAdapterListener {
-    public List<Contact> joinedContacts = new ArrayList<>();
+    public Set<Contact> joinedContacts = new HashSet<>();
     public MenuItem mDone;
     public List<User> joinedUsers = new ArrayList<>();
     private ContactsAdapter contactsAdapter;
@@ -45,6 +41,7 @@ public class Contacts extends AppCompatActivity implements ContactsAdapter.Conta
     private FloatingActionButton mSelectedContactsFab;
     private RelativeLayout mLayout;
     private TextView mSelectedScommers;
+    private List<Contact> mSelectedContacts = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,46 +69,47 @@ public class Contacts extends AppCompatActivity implements ContactsAdapter.Conta
         model.getAllUsers().observe(this, users -> populateRecycler(users, contacts));
 
         mSelectedContactsFab.setOnClickListener(v -> {
-            DataHolder.setSelectedUsers(contactsAdapter.mSelectedContactsSet);
+            Intent intent= new Intent();
+            intent.putExtra("selectedContactsList", (Serializable) mSelectedContacts);
+            intent.putExtra("joinedUsersList", (Serializable) joinedUsers);
+            setResult(RESULT_OK, intent);
             finish();
         });
     }
 
     private void populateRecycler(List<User> users, List<Contact> contacts) {
-        joinedContacts = new ArrayList<>();
-        List<Contact> otherContacts = new ArrayList<>();
+
         for (int i = 0; i < users.size(); i++) {
             User user = users.get(i);
             String userPhone;
-            if (user.getPhone() != null){
-             userPhone = new StringBuilder(user.getPhone()).reverse().toString();
+            if (user.getPhone() != null) {
+                userPhone = new StringBuilder(user.getPhone()).reverse().toString();
                 for (Contact c :
                         contacts) {
                     String contactPhone = new StringBuilder(c.getPhoneNumber()).reverse().toString();
-
-                    if ((userPhone != null && userPhone.length() >= 10 ) && (contactPhone != null && contactPhone.length() >= 10)) {
-                        if (userPhone.substring(0, 8).equals(contactPhone.substring(0, 8))) {
+                    if (userPhone.length() >= 10 && contactPhone.length() >= 10) {
+                        if (userPhone.substring(0, 7).equals(contactPhone.substring(0, 7))) {
+                            if (user.getId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                continue;
+                            }
                             c.setJoined(true);
                             joinedContacts.add(c);
-                            joinedUsers.add(user);
-                        } else {
-                            otherContacts.add(c);
+                            if (!joinedUsers.contains(user)) {
+                                joinedUsers.add(user);
+                            }
+
                         }
                     }
                 }
             }
-
-
         }
-        contactsAdapter = new ContactsAdapter(this,joinedContacts,otherContacts, this);
+        contactsAdapter = new ContactsAdapter(this, joinedContacts, this);
         recyclerView.setAdapter(contactsAdapter);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_done) {
-            DataHolder.setSelectedUsers(contactsAdapter.mSelectedContactsSet);
-            finish();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -140,20 +138,20 @@ public class Contacts extends AppCompatActivity implements ContactsAdapter.Conta
     @Override
     public void onContactSelected(Contact contact) {
         mLayout.setVisibility(View.VISIBLE);
+        mSelectedContacts.add(contact);
         mSelectedContactsFab.setVisibility(View.VISIBLE);
         String str = getSelectedContacts().toString().replaceAll("\\[|\\]", "");
         mSelectedScommers.setText(str);
-      //  mDone.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         if (contactsAdapter.mSelectedContactsSet.isEmpty()) {
-          //  mDone.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
             mLayout.setVisibility(View.GONE);
             mSelectedContactsFab.setVisibility(View.GONE);
         }
     }
-    private List<String> getSelectedContacts(){
+
+    public List<String> getSelectedContacts() {
         List<String> name = new ArrayList<>();
-        for (Contact contact: contactsAdapter.mSelectedContactsSet
-             ) {
+        for (Contact contact : contactsAdapter.mSelectedContactsSet
+        ) {
             name.add(contact.getName());
         }
         return name;

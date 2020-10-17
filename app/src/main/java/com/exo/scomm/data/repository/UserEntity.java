@@ -4,6 +4,8 @@ import com.google.firebase.database.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
 public class UserEntity {
+    private String id;
+    private String device_token;
     private String username;
     private String image;
     private String status;
@@ -51,5 +53,21 @@ public class UserEntity {
 
     public void setUID(String UID) {
         this.UID = UID;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getDevice_token() {
+        return device_token;
+    }
+
+    public void setDevice_token(String device_token) {
+        this.device_token = device_token;
     }
 }

@@ -24,20 +24,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.exo.scomm.R;
-import com.exo.scomm.adapters.DataHolder;
 import com.exo.scomm.data.models.Contact;
 import com.exo.scomm.data.models.User;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.kunzisoft.switchdatetime.SwitchDateTimeDialogFragment;
 
 import java.io.Serializable;
@@ -67,38 +61,36 @@ public class AddTaskActivity extends AppCompatActivity {
             ContactsContract.Contacts.DISPLAY_NAME,
             ContactsContract.CommonDataKinds.Phone.NUMBER
     };
-    public List<Contact> mSelectedUsers = new ArrayList<>();
+    private final Calendar calendar = Calendar.getInstance();
     private TextInputEditText mTitle;
     private EditText mDescription;
     private RadioButton mPrivate, mPublic;
     private RadioGroup type;
     private FirebaseUser mCurrentUser;
-    private StorageReference mStorage;
     private ProgressDialog mProgressDialog;
-    private Button mdateButton, pickDate, mInvite;
+    private Button pickDate, mInvite, mAddTask;
     private TextView mViewDate, mInvites, invitesLabel;
     private Date currentDate;
     private String task_id;
     private SwitchDateTimeDialogFragment dateTimeFragment;
-    private Calendar calendar = Calendar.getInstance();
     private DatabaseReference mRootRef;
-    private Contacts mContacts;
     private List<Contact> mSelectedContacts;
+    private List<User> mJoinedUsers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContacts = new Contacts();
         setContentView(R.layout.activity_add_task);
         mTitle = findViewById(R.id.ed_task_title);
         mDescription = findViewById(R.id.ed_task_description);
         type = findViewById(R.id.radio_group);
         mInvite = findViewById(R.id.btn_invite);
+        mAddTask = findViewById(R.id.button_add_task);
         mPrivate = findViewById(R.id.private_radio);
         mPublic = findViewById(R.id.public_radio);
         mViewDate = findViewById(R.id.view_date);
         pickDate = findViewById(R.id.date_picker);
-        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog = new ProgressDialog(AddTaskActivity.this);
         mInvite.setVisibility(View.GONE);
         mInvites = findViewById(R.id.taskInvites);
         invitesLabel = findViewById(R.id.invitesLabel);
@@ -107,7 +99,6 @@ public class AddTaskActivity extends AppCompatActivity {
 
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
         mRootRef = FirebaseDatabase.getInstance().getReference();
-        mStorage = FirebaseStorage.getInstance().getReference();
         currentDate = calendar.getTime();
 
         type.setOnCheckedChangeListener((group, checkedId) -> {
@@ -123,6 +114,10 @@ public class AddTaskActivity extends AppCompatActivity {
             }
         });
         setUpDateChooser();
+        mInvite.setOnClickListener(view -> {
+            inviteCompanions();
+        });
+        mAddTask.setOnClickListener(view -> addTask());
     }
 
     @Override
@@ -192,7 +187,7 @@ public class AddTaskActivity extends AppCompatActivity {
         });
     }
 
-    public void addTask(View view) {
+    public void addTask() {
         int SelectedId = type.getCheckedRadioButtonId();
         String selectedItem = null;
 
@@ -201,10 +196,10 @@ public class AddTaskActivity extends AppCompatActivity {
         } else if (SelectedId == mPublic.getId()) {
             selectedItem = "Public";
         }
-        validateTask(selectedItem, view);
+        validateTask(selectedItem);
     }
 
-    private void validateTask(String selectedItem, View view) {
+    private void validateTask(String selectedItem) {
         String title = Objects.requireNonNull(mTitle.getText()).toString();
         String description = Objects.requireNonNull(mDescription.getText()).toString();
         String date = Objects.requireNonNull(mViewDate.getText()).toString();
@@ -217,7 +212,7 @@ public class AddTaskActivity extends AppCompatActivity {
             mViewDate.requestFocus();
         } else {
             task_id = FirebaseDatabase.getInstance().getReference().child("Tasks").child(mCurrentUser.getUid()).push().getKey();
-            createTask(title, description, selectedItem, date, view);
+            createTask(title, description, selectedItem, date);
         }
     }
 
@@ -240,11 +235,7 @@ public class AddTaskActivity extends AppCompatActivity {
 
     }
 
-    private void createTask(String title, String description, String selectedItem, final String date, View view) {
-        mProgressDialog.setTitle("Adding Task");
-        mProgressDialog.setMessage("Please wait while we add the task");
-        mProgressDialog.setCanceledOnTouchOutside(false);
-        mProgressDialog.show();
+    private void createTask(String title, String description, String selectedItem, final String date) {
         final HashMap<String, String> taskMap = new HashMap<>();
         taskMap.put("taskOwner", mCurrentUser.getUid());
         taskMap.put("title", title);
@@ -254,6 +245,10 @@ public class AddTaskActivity extends AppCompatActivity {
         taskMap.put("task_id", task_id);
         DatabaseReference db = mRootRef.child("Tasks").child(mCurrentUser.getUid()).child(task_id);
         if (selectedItem.equals("Private")) {
+            mProgressDialog.setTitle("Creating private Task");
+            mProgressDialog.setMessage("Please wait while we create the task");
+            mProgressDialog.setCanceledOnTouchOutside(false);
+            mProgressDialog.show();
             assert task_id != null;
             db.setValue(taskMap).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
@@ -270,133 +265,117 @@ public class AddTaskActivity extends AppCompatActivity {
                 }
             });
         } else if (selectedItem.equals("Public")) {
-            if (mSelectedContacts.isEmpty()) {
+            ProgressDialog pDialog = new ProgressDialog(AddTaskActivity.this);
+            pDialog.setTitle("Creating public Task");
+            pDialog.setMessage("Please wait while we create the task");
+            pDialog.setCanceledOnTouchOutside(false);
+            pDialog.show();
+            if (mSelectedContacts == null) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(AddTaskActivity.this);
                 builder.setMessage("No Selected Contacts to invite");
                 builder.setCancelable(false);
                 builder.setNegativeButton("Invite", ((dialog, which) -> {
-                    mProgressDialog.hide();
-                    inviteCompanions(view);
+                    pDialog.hide();
+                    inviteCompanions();
                 }));
                 builder.setPositiveButton("Continue", (dialog, which) -> {
-                    addTask(taskMap);
-                    finish();
+                    saveTask(taskMap);
                 });
                 builder.setTitle("Invitation Confirmation");
                 builder.show();
             } else {
-                mRootRef.child("Users").addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        List<User> userToInviteList = new ArrayList<>();
-                        for (DataSnapshot childDataSnapshot : snapshot.getChildren()) {
-                            String fireBaseUserId = childDataSnapshot.getKey();
-                            assert fireBaseUserId != null;
-                            User user = snapshot.child(fireBaseUserId).getValue(User.class);
-                            if (user != null) {
-                                user.setUID(fireBaseUserId);
-                                userToInviteList.add(user);
-
-                            } else
-                                Toast.makeText(AddTaskActivity.this, "User null", Toast.LENGTH_SHORT).show();
-                        }
-                        addTask(taskMap);
-                        inviteUser(userToInviteList);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
+                final Set<User> usersToInvite = filterUsersToInvite(mJoinedUsers, mSelectedContacts);
+                inviteUserToTask(taskMap, usersToInvite);
+                AddTaskActivity.this.finish();
             }
         }
     }
 
-    private void addTask(HashMap<String, String> taskMap) {
-        DatabaseReference db;
-        db = FirebaseDatabase.getInstance().getReference().child("Tasks").child(mCurrentUser.getUid()).child(task_id);
+    private void inviteUserToTask(HashMap<String, String> taskMap, Set<User> userSet) {
+        List<User> users = new ArrayList<>(userSet);
+        Map<String, Object> requestMap = new HashMap<>();
+        requestMap.put("Tasks/" + mCurrentUser.getUid() + "/" + task_id, taskMap);
+        String uid;
+        for (User user : users
+        ) {
+            for (int i = 0; i < users.size(); i++) {
+                User user1 = users.get(i);
+                uid = user1.getId();
+                requestMap.put("InvitedUsers/" + user.getId() + "/" + task_id + "/" + uid + "/", ServerValue.TIMESTAMP);
+                requestMap.put("InvitedUsers/" + mCurrentUser.getUid() + "/" + task_id + "/" + uid + "/", ServerValue.TIMESTAMP);
+                mRootRef.updateChildren(requestMap).addOnCompleteListener(task -> {
+                    if (task.isComplete()) {
+                        if (task.isSuccessful()) {
+                            String noteId = mRootRef.child("Notifications").child(user.getId()).push().getKey();
+                            sendNotifications(user1.getId(), noteId);
+                        } else {
+                            Log.e("ADD TASK ", task.getException().getMessage());
+                        }
+                    }
+                });
+            }
+            Toast.makeText(AddTaskActivity.this, user.getUsername() + "  invited successfully", Toast.LENGTH_SHORT).show();
+        }
+        Toast.makeText(AddTaskActivity.this, "Task Added Successfully ", Toast.LENGTH_LONG).show();
+    }
+
+    private void sendNotifications(String userId, String noteId) {
+        Map<String, Object> noteMap = new HashMap<>();
+        noteMap.put("fromUser", mCurrentUser.getUid());
+        noteMap.put("type", "invite");
+        noteMap.put("toUser", userId);
+        noteMap.put("task_id", task_id);
+        noteMap.put("date", ServerValue.TIMESTAMP);
+
+            Map<String, Object> noteRequestMap = new HashMap<>();
+            noteRequestMap.put("Notifications/" + userId + "/" + noteId + "/", noteMap);
+            mRootRef.updateChildren(noteRequestMap).addOnCompleteListener(task -> {
+                if (task.isComplete()) {
+                    if (task.isSuccessful()) {
+                    } else {
+                        Log.e("ADD TASK ", task.getException().getMessage());
+                    }
+                }
+            });
+
+    }
+
+    private Set<User> filterUsersToInvite(List<User> joinedUsers, List<Contact> mSelectedContacts) {
+        Set<User> usersToInvite = new HashSet<>();
+        for (int i = 0; i < joinedUsers.size(); i++) {
+            User user = joinedUsers.get(i);
+            String userPhone;
+            if (user.getPhone() != null) {
+                userPhone = new StringBuilder(user.getPhone()).reverse().toString();
+                for (Contact c :
+                        mSelectedContacts) {
+                    String contactPhone = new StringBuilder(c.getPhoneNumber()).reverse().toString();
+                    if (userPhone.length() >= 10 && contactPhone.length() >= 10) {
+                        String trimmedUserPhone = userPhone.substring(0,7);
+                        String trimmedContactPhone = contactPhone.substring(0,7);
+                        if (trimmedUserPhone.equals(trimmedContactPhone) ) {
+                            usersToInvite.add(user);
+                        }
+                    }
+                }
+            }
+        }
+        return usersToInvite;
+    }
+
+    private void saveTask(HashMap<String, String> taskMap) {
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Tasks").child(mCurrentUser.getUid()).child(task_id);
         db.setValue(taskMap).addOnCompleteListener(task -> {
+            mProgressDialog.dismiss();
             if (task.isSuccessful()) {
-                mProgressDialog.dismiss();
                 Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
-                finish();
             } else {
                 Log.e("Error", Objects.requireNonNull(task.getResult()).toString());
             }
         });
     }
 
-
-    private void inviteUser(List<User> userToInviteList) {
-        if (!userToInviteList.isEmpty()) {
-            String newPhone = null;
-            String newContactPhone;
-
-            for (Contact contact :
-                    mSelectedContacts) {
-                for (User user :
-                        userToInviteList) {
-                    String contactPhone = contact.getPhoneNumber();
-                    newContactPhone = getPhoneLength(contactPhone);
-                    String phone = user.getPhone();
-                    Log.e(TAG, "User Phone" + newPhone + " Contact Phone " + newContactPhone);
-                    if (phone != null) {
-                        newPhone = getPhoneLength(phone);
-                        if (newPhone.equals(newContactPhone)) {
-                            mRootRef.updateChildren(getInviteMaps(user.getUID()), (databaseError, databaseReference) -> {
-                                if (databaseError != null) {
-                                    Toast.makeText(getApplicationContext(), "Error in sending invite request", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    mProgressDialog.dismiss();
-                                    Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
-                                    Toast.makeText(AddTaskActivity.this, "Request sent to " + user.getUsername() + " successfully", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-//            for (Contact contact :
-//                    mSelectedContacts) {
-//                for (User user :
-//                        userToInviteList) {
-//                    if (contact.getPhoneNumber().equals(user.getPhone())) {
-//                        mRootRef.updateChildren(getInviteMaps(user.getUID()), (databaseError, databaseReference) -> {
-//                            if (databaseError != null) {
-//                                Toast.makeText(getApplicationContext(), "Error in sending invite request", Toast.LENGTH_SHORT).show();
-//                            } else {
-//                                mProgressDialog.dismiss();
-//                                Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
-//                                Toast.makeText(AddTaskActivity.this, "Request sent to " + user.getUsername() + " successfully", Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
-//                    }
-//                }
-//            }
-        }
-    }
-
-    private String getPhoneLength(String phone) {
-        String newPhone = null;
-        int count = 0;
-        if (phone != null) {
-            //Counts each character except space
-            for (int i = 0; i < phone.length(); i++) {
-                if (phone.charAt(i) != ' ')
-                    count++;
-            }
-            if (count > 10) {
-                newPhone = phone.substring(4);
-            } else if (count == 10) {
-                newPhone = phone.substring(1);
-            }
-        }
-
-        return newPhone;
-    }
-
-    private Map getInviteMaps(String userId) {
+    private Map<String, Object> getInviteMaps(String userId) {
         DatabaseReference newNotificationRef = mRootRef.child("Notifications").child(mCurrentUser.getUid()).push();
         String newNotificationId = newNotificationRef.getKey();
 
@@ -445,13 +424,14 @@ public class AddTaskActivity extends AppCompatActivity {
         dateTimeFragment.show(getSupportFragmentManager(), TAG_DATETIME_FRAGMENT);
     }
 
-    public void inviteCompanions(View view) {
+    public void inviteCompanions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
         } else {
-            Intent intent = new Intent(AddTaskActivity.this, Contacts.class);
+
+            Intent intent = new Intent(AddTaskActivity.this.getApplicationContext(), Contacts.class);
             intent.putExtra("contacts", (Serializable) getContactList());
-            startActivity(intent);
+            startActivityForResult(intent, 2404);
 
         }
     }
@@ -469,7 +449,25 @@ public class AddTaskActivity extends AppCompatActivity {
         }
     }
 
-    private List<Contact> getContactList() {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == 2404) {
+            if (data != null) {
+                mSelectedContacts = (List<Contact>) data.getSerializableExtra("selectedContactsList");
+                mJoinedUsers = (List<User>) data.getSerializableExtra("joinedUsersList");
+                Log.e("Selected Contacts", mSelectedContacts.toString());
+                Set<String> inviteNames = new HashSet<>();
+                for (Contact u : mSelectedContacts
+                ) {
+                    inviteNames.add(u.getName());
+                }
+                mInvites.setText(inviteNames.toString());
+            }
+        }
+    }
+
+    public List<Contact> getContactList() {
         List<Contact> contactList = new ArrayList<>();
         ContentResolver cr = getContentResolver();
         Cursor cursor = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, PROJECTION, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
@@ -493,19 +491,5 @@ public class AddTaskActivity extends AppCompatActivity {
             }
         }
         return contactList;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mSelectedContacts = DataHolder.getSelectedUsers();
-        if (mSelectedContacts != null) {
-            Set<String> inviteNames = new HashSet<>();
-            for (Contact u : mSelectedContacts
-            ) {
-                inviteNames.add(u.getName());
-            }
-            mInvites.setText(inviteNames.toString());
-        }
     }
 }

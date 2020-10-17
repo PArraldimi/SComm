@@ -3,6 +3,7 @@ package com.exo.scomm.data.models;
 import java.io.Serializable;
 
 public class User implements Serializable {
+    private String id;
     private String username;
     private String image;
     private String status;
@@ -13,11 +14,14 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(String username, String image, String status, String phone) {
+    public User(String id, String username, String image, String status, String UID, String phone, String device_token) {
+        this.id = id;
         this.username = username;
         this.image = image;
         this.status = status;
+        this.UID = UID;
         this.phone = phone;
+        this.device_token = device_token;
     }
 
     public String getPhone() {
@@ -66,5 +70,13 @@ public class User implements Serializable {
 
     public void setDevice_token(String device_token) {
         this.device_token = device_token;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

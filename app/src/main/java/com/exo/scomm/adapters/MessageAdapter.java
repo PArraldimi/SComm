@@ -1,5 +1,6 @@
 package com.exo.scomm.adapters;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.exo.scomm.R;
+import com.exo.scomm.data.models.Chat;
 import com.exo.scomm.data.models.Messages;
+import com.exo.scomm.ui.activities.MessageActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,60 +25,91 @@ import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
-    private List<Messages> messagesList;
-    private DatabaseReference mUserdatabase;
+    private List<Chat> messagesList = new ArrayList<>();
+    private DatabaseReference mUserDatabase;
 
-    public MessageAdapter(List<Messages> messagesList) {
-        this.messagesList = messagesList;
+    public static  final int MSG_TYPE_LEFT = 0;
+    public static  final int MSG_TYPE_RIGHT = 1;
+
+    private Context mContext;
+    private List<Chat> mChat;
+    private String imageurl;
+
+    FirebaseUser fuser;
+
+    public MessageAdapter(MessageActivity messageActivity, List<Chat> mchat, String imageurl) {
+        this.mContext = messageActivity;
+        this.mChat = mchat;
+        this.messagesList = mChat;
+        this.imageurl = imageurl;
+
     }
 
     @NonNull
     @Override
     public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_single_layout, parent, false);
+
+
+        View view;
+        if (viewType == MSG_TYPE_RIGHT) {
+            view = LayoutInflater.from(mContext).inflate(R.layout.chat_item_right, parent, false);
+        } else {
+            view = LayoutInflater.from(mContext).inflate(R.layout.chat_item_left, parent, false);
+        }
         return new MessageViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final MessageViewHolder holder, int position) {
-        Messages messages = messagesList.get(position);
-        String from_user = messages.getFrom();
-        String message_type = messages.getType();
-        DateFormat dateFormat = new SimpleDateFormat("hh.mm aa");
-        final String dateString = dateFormat.format(messages.getTime());
+//        Messages messages = messagesList.get(position);
+//
+//        DateFormat dateFormat = new SimpleDateFormat("hh.mm aa");
+//        final String dateString = dateFormat.format(messages.getTime());
 
-        mUserdatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(from_user);
-        mUserdatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                String name = dataSnapshot.child("username").getValue().toString();
-                String image = dataSnapshot.child("image").getValue().toString();
-                holder.displayName.setText(name);
-                holder.displayTime.setText(dateString);
-                Picasso.get().load(image).placeholder(R.drawable.profile_image_placeholder).into(holder.profile);
+        Chat chat = mChat.get(position);
+
+        holder.show_message.setText(chat.getMessage());
+
+
+/*
+        if (imageurl.equals("default")){
+            holder.profile_image.setImageResource(R.mipmap.ic_launcher);
+            }  else {
+            Glide.with(mContext).load(imageurl).into(holder.profile_image);
+       }
+
+ */
+
+        if (position == mChat.size()-1){
+            if (chat.isSeen()){
+                holder.txt_seen.setText("Seen");
+            } else {
+                holder.txt_seen.setText("Delivered");
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-        if (message_type.equals("text")) {
-            holder.messageText.setText(messages.getMessage());
-            holder.messageImage.setVisibility(View.INVISIBLE);
         } else {
-            holder.messageText.setVisibility(View.INVISIBLE);
-            Picasso.get().load(messages.getMessage()).into(holder.messageImage);
-
+            holder.txt_seen.setVisibility(View.GONE);
         }
 
 
+
+
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        fuser = FirebaseAuth.getInstance().getCurrentUser();
+        if (mChat.get(position).getSender().equals(fuser.getUid())){
+            return MSG_TYPE_RIGHT;
+        } else {
+            return MSG_TYPE_LEFT;
+        }
     }
 
     @Override
@@ -82,18 +118,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     }
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
-        TextView messageText;
-        TextView displayName, displayTime;
-        ImageView messageImage;
-        public CircleImageView profile;
+        public TextView show_message;
+        public ImageView profile_image;
+        public TextView txt_seen;
 
         MessageViewHolder(@NonNull View itemView) {
             super(itemView);
-            messageText = itemView.findViewById(R.id.message_single_text);
-            profile = itemView.findViewById(R.id.message_profile_image);
-            displayName = itemView.findViewById(R.id.message_single_dispaly_name);
-            messageImage = itemView.findViewById(R.id.message_single_image);
-            displayTime = itemView.findViewById(R.id.message_single_display_time);
+            show_message = itemView.findViewById(R.id.message_profile_image);
+            profile_image = itemView.findViewById(R.id.profile_image);
+            txt_seen = itemView.findViewById(R.id.message_seen);
         }
     }
 }

@@ -1,8 +1,15 @@
 package com.exo.scomm.ui.activities;
 
+import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -10,11 +17,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -24,11 +31,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.exo.scomm.R;
 import com.exo.scomm.adapters.AcceptedCompanionsAdapter;
 import com.exo.scomm.adapters.CompanionsTasksAdapter;
+import com.exo.scomm.adapters.DataHolder;
 import com.exo.scomm.adapters.PendingCompanionsAdapter;
+import com.exo.scomm.data.models.Contact;
 import com.exo.scomm.data.models.Task;
 import com.exo.scomm.data.models.User;
 import com.exo.scomm.ui.fragments.EditTaskDialog;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -38,25 +48,34 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.Serializable;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 public class TaskDetails extends AppCompatActivity implements EditTaskDialog.EditTaskDialogResultListener {
+    private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
+    private static final String[] PROJECTION = new String[]{
+            ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
+            ContactsContract.Contacts.DISPLAY_NAME,
+            ContactsContract.CommonDataKinds.Phone.NUMBER
+    };
+    private final Set<User> taskCompList = new HashSet<>();
     int mDeleteBnState;
-    private Button editTask, mInvite;
+    private final Set<User> taskPendingCompList = new HashSet<>();
+    private Button mInvite;
     private RecyclerView myTaskCompanions;
     private TextView taskDesc, taskTitle, taskDate, taskType, taskCreator, mTextViewDate;
-    private String task_id, mCurrentUID, mDate, mDesc, mTitle, mType, owner;
-    private DatabaseReference mRootRef, mUsersRef, taskCompRef, mTaskRef;
-    private Set<User> taskCompList = new HashSet<>();
-    private Set<User> taskPendingCompList = new HashSet<>();
-    private Task task;
+    private String mCurrentUID;
+    private DatabaseReference mRootRef, mUsersRef, taskCompRef;
     private Calendar calendar;
+    private ProgressDialog mProgressDialog;
+    private Task taskDetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,71 +98,148 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
         taskType = findViewById(R.id.detail_task_item_type);
         taskCreator = findViewById(R.id.details_task_item_creator);
         myTaskCompanions = this.findViewById(R.id.task_details_companions_recycler);
-        editTask = this.findViewById(R.id.task_details_edit);
-        mInvite.setVisibility(View.GONE);
+        Button editTask = this.findViewById(R.id.task_details_edit);
+        mProgressDialog = new ProgressDialog(TaskDetails.this);
+
+        ImageView mScommingDetails = this.findViewById(R.id.scomming_details);
+        RelativeLayout layout = findViewById(R.id.scomming_details_btn);
+        taskDetails = (Task) getIntent().getSerializableExtra("task");
         deleteTask.setText(R.string.scom_out);
-        mDeleteBnState = 1;
-        editTask.setVisibility(View.GONE);
 
-        task_id = getIntent().getStringExtra("task_id");
-        owner = getIntent().getStringExtra("owner");
-
-        mDeleteBnState = 0;
         mRootRef = FirebaseDatabase.getInstance().getReference();
         mUsersRef = mRootRef.child("Users");
         taskCompRef = mRootRef.child("TaskCompanions");
-        mTaskRef = mRootRef.child("Tasks");
         LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false);
-
         linearLayoutManager1.setStackFromEnd(true);
         myTaskCompanions.setLayoutManager(linearLayoutManager1);
         mCurrentUID = FirebaseAuth.getInstance().getUid();
 
-        getTaskOwner(owner);
-
-        if (owner.equals(mCurrentUID)) {
-            deleteTask.setText(R.string.delete_task);
-            mDeleteBnState = 0;
-            editTask.setVisibility(View.VISIBLE);
-        }
+        taskType.setText(taskDetails.getType());
+        taskDate.setText(taskDetails.getDate());
+        taskTitle.setText(taskDetails.getTitle());
+        taskDesc.setText(taskDetails.getDescription());
 
         mInvite.setOnClickListener(v -> {
-
-        });
-
-        mRootRef.child("TaskSupers").child(task_id).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChild(mCurrentUID)) {
-                    mInvite.setEnabled(true);
-                    mInvite.setVisibility(View.VISIBLE);
-                } else {
-                    mInvite.setEnabled(false);
-                    mInvite.setVisibility(View.INVISIBLE);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
+            } else {
+                Intent intent = new Intent(TaskDetails.this.getApplicationContext(), Contacts.class);
+                intent.putExtra("contacts", (Serializable) getContactList());
+                startActivityForResult(intent, 2404);
             }
         });
 
+        if (taskDetails.getType().equals("Private")) {
+            getTaskOwner(mCurrentUID);
+            mDeleteBnState = 0;
+            deleteTask.setText(R.string.delete_task);
+            mInvite.setVisibility(View.GONE);
+            layout.setVisibility(View.GONE);
+        } else {
+            getPendingCompanions(taskDetails.getTask_id());
+
+            if (taskDetails.getTaskOwner().equals(mCurrentUID)) {
+                getTaskOwner(mCurrentUID);
+                deleteTask.setText(R.string.delete_task);
+                editTask.setVisibility(View.VISIBLE);
+                mDeleteBnState = 0;
+            } else {
+                mDeleteBnState = 1;
+                getTaskOwner(taskDetails.getTaskOwner());
+                mRootRef.child("TaskSupers").child(taskDetails.getTaskOwner()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.hasChild(mCurrentUID)) {
+                            mInvite.setEnabled(true);
+                            mInvite.setVisibility(View.VISIBLE);
+                        } else {
+                            mInvite.setEnabled(false);
+                            mInvite.setVisibility(View.INVISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        }
+        editTask.setOnClickListener(v -> editTask(taskDetails));
         getTaskCompanions();
-        getPendingCompanions(task_id);
         deleteTask.setOnClickListener(v -> {
             if (mDeleteBnState == 0) {
-                Toast.makeText(TaskDetails.this, "Deleting the task", Toast.LENGTH_SHORT).show();
-                deleteTask(task);
-                Toast.makeText(TaskDetails.this, " Task deleted successfully", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(TaskDetails.this, "Deleting the task", Toast.LENGTH_SHORT).show();
+                deleteTask();
+                //Toast.makeText(TaskDetails.this, " Task deleted successfully", Toast.LENGTH_SHORT).show();
             }
             if (mDeleteBnState == 1) {
                 schommeOut();
             }
         });
-
-        ImageView mScommingDetails = this.findViewById(R.id.scomming_details);
         mScommingDetails.setOnClickListener(v -> showBottomDialog());
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == 2404) {
+            if (data != null) {
+                List<Contact> mSelectedContacts = (List<Contact>) data.getSerializableExtra("selectedContactsList");
+                List<User> mJoinedUsers = (List<User>) data.getSerializableExtra("joinedUsersList");
+                final Set<User> usersToInvite = filterUsersToInvite(mJoinedUsers, mSelectedContacts);
+                inviteUserToTask( usersToInvite);
+            }
+        }
+    }
+
+    private void inviteUserToTask(Set<User> userSet) {
+        List<User> users = new ArrayList<>(userSet);
+        Map<String, Object> requestMap = new HashMap<>();
+        String uid;
+        for (User user : users
+        ) {
+            for (int i = 0; i < users.size(); i++) {
+                User user1 = users.get(i);
+                uid = user1.getId();
+                requestMap.put("InvitedUsers/" + user.getId() + "/" + taskDetails.getTask_id() + "/" + uid + "/", ServerValue.TIMESTAMP);
+                requestMap.put("InvitedUsers/" + mCurrentUID + "/" + taskDetails.getTask_id() + "/" + uid + "/", ServerValue.TIMESTAMP);
+                mRootRef.updateChildren(requestMap).addOnCompleteListener(task -> {
+                    if (task.isComplete()) {
+                        if (task.isSuccessful()) {
+                            String noteId = mRootRef.child("Notifications").child(user.getId()).push().getKey();
+                            sendNotifications(user1.getId(), noteId);
+                        } else {
+                            Log.e("ADD TASK ", task.getException().getMessage());
+                        }
+                    }
+                });
+            }
+            Toast.makeText(TaskDetails.this.getApplicationContext(), user.getUsername() + "  invited successfully", Toast.LENGTH_SHORT).show();
+        }
+        Toast.makeText(TaskDetails.this.getApplicationContext(), "Task Added Successfully ", Toast.LENGTH_LONG).show();
+    }
+
+    private void sendNotifications(String userId, String noteId) {
+        Map<String, Object> noteMap = new HashMap<>();
+        noteMap.put("fromUser", mCurrentUID);
+        noteMap.put("type", "invite");
+        noteMap.put("toUser", userId);
+        noteMap.put("task_id", taskDetails.getTask_id());
+        noteMap.put("date", ServerValue.TIMESTAMP);
+
+        Map<String, Object> noteRequestMap = new HashMap<>();
+        noteRequestMap.put("Notifications/" + userId + "/" + noteId + "/", noteMap);
+        mRootRef.updateChildren(noteRequestMap).addOnCompleteListener(task -> {
+            if (task.isComplete()) {
+                if (task.isSuccessful()) {
+                } else {
+                    Log.e("ADD TASK ", task.getException().getMessage());
+                }
+            }
+        });
+
     }
 
     private void showBottomDialog() {
@@ -164,12 +260,15 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
         toAcceptTaskRecycler.setLayoutManager(linearLayoutManager3);
         toAcceptTaskRecycler.addItemDecoration(new DividerItemDecoration(getApplicationContext(), LinearLayoutManager.VERTICAL));
         acceptedTaskCompanionsRecycler.addItemDecoration(new DividerItemDecoration(getApplicationContext(), LinearLayoutManager.VERTICAL));
-        allowScrolling(acceptedTaskCompanionsRecycler);
-        allowScrolling(toAcceptTaskRecycler);
 
 
-        PendingCompanionsAdapter pendingCompanionsAdapter = new PendingCompanionsAdapter(TaskDetails.this, taskPendingCompList, task_id);
-        AcceptedCompanionsAdapter acceptedCompanionsAdapter = new AcceptedCompanionsAdapter(TaskDetails.this, taskCompList, task_id);
+
+//        allowScrolling(acceptedTaskCompanionsRecycler);
+//        allowScrolling(toAcceptTaskRecycler);
+
+
+        PendingCompanionsAdapter pendingCompanionsAdapter = new PendingCompanionsAdapter(TaskDetails.this, taskPendingCompList, taskDetails.getTask_id());
+        AcceptedCompanionsAdapter acceptedCompanionsAdapter = new AcceptedCompanionsAdapter(TaskDetails.this, taskCompList, taskDetails.getTask_id());
         acceptedTaskCompanionsRecycler.setAdapter(acceptedCompanionsAdapter);
         toAcceptTaskRecycler.setAdapter(pendingCompanionsAdapter);
 
@@ -185,7 +284,7 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
                 switch (action) {
                     case MotionEvent.ACTION_DOWN:
                         // Disallow NestedScrollView to intercept touch events.
-                        v1.getParent().requestDisallowInterceptTouchEvent(true);
+                        v1.getParent().requestDisallowInterceptTouchEvent(false);
                         break;
 
                     case MotionEvent.ACTION_UP:
@@ -202,52 +301,41 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
     }
 
     private void getPendingCompanions(final String task_id) {
-        final DatabaseReference pendingCompanionsRef = mRootRef.child("TaskInviteRequests").child(mCurrentUID);
-        pendingCompanionsRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-                        final String userId = childDataSnapshot.getKey();
-                        if (userId != null) {
-                            pendingCompanionsRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.exists() && dataSnapshot.hasChild(task_id)) {
-                                        mUsersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                if (dataSnapshot.hasChild(userId)) {
-                                                    User user = dataSnapshot.child(userId).getValue(User.class);
-                                                    assert user != null;
-                                                    user.setUID(userId);
-                                                    taskPendingCompList.add(user);
-                                                }
+        mRootRef.child("InvitedUsers").child(mCurrentUID).child(task_id)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+                                final String userId = childDataSnapshot.getKey();
+                                Log.e("Invited User Id", userId);
+                                if (userId != null) {
+                                    mUsersRef.child(userId).addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            if (dataSnapshot.exists()) {
+                                                User user = dataSnapshot.getValue(User.class);
+                                                taskPendingCompList.add(user);
                                             }
+                                        }
 
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                            }
-                                        });
-                                    }
+                                        }
+                                    });
+                                    Log.e("Invited Users", taskPendingCompList.toString());
                                 }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
+                            }
                         }
+                        Log.e("Invited Users", taskPendingCompList.toString());
                     }
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
+                    }
+                });
     }
 
     private void editTask(Task task) {
@@ -273,25 +361,36 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
 
     private void schommeOut() {
         HashMap<String, Object> schommOutMap = new HashMap<>();
-        schommOutMap.put("TaskCompanions/" + mCurrentUID + "/" + task_id + "/", null);
-        schommOutMap.put("Tasks/" + mCurrentUID + "/" + task_id + "/", null);
-        mRootRef.updateChildren(schommOutMap, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                if (databaseError == null) {
-                    taskType.setText("");
-                    taskDate.setText("");
-                    taskTitle.setText("");
-                    taskDesc.setText("");
-                    taskCreator.setText("");
-                    Toast.makeText(TaskDetails.this, "You opted out of the task successfully", Toast.LENGTH_SHORT).show();
-                } else {
-                    String error = databaseError.getMessage();
-                    Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
-                }
+        schommOutMap.put("TaskCompanions/" + mCurrentUID + "/" + taskDetails.getTask_id() + "/", null);
+        schommOutMap.put("Tasks/" + mCurrentUID + "/" + taskDetails.getTask_id() + "/", null);
+        mRootRef.updateChildren(schommOutMap, (databaseError, databaseReference) -> {
+            if (databaseError == null) {
+                taskType.setText("");
+                taskDate.setText("");
+                taskTitle.setText("");
+                taskDesc.setText("");
+                taskCreator.setText("");
+                Toast.makeText(TaskDetails.this, "You opted out of the task successfully", Toast.LENGTH_SHORT).show();
+            } else {
+                String error = databaseError.getMessage();
+                Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
             }
         });
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST_READ_CONTACTS) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission is granted
+                getContactList();
+            } else {
+                Toast.makeText(this, "Until you grant the permission, we cannot display the names", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 
     private void getTaskCompanions() {
         final ProgressDialog progressDialog = new ProgressDialog(this);
@@ -300,7 +399,7 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
 
-        final DatabaseReference companionsRef = taskCompRef.child(mCurrentUID).child(task_id);
+        final DatabaseReference companionsRef = taskCompRef.child(mCurrentUID).child(taskDetails.getTask_id());
         companionsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -317,7 +416,7 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
                                     assert user != null;
                                     user.setUID(userId);
                                     taskCompList.add(user);
-                                    CompanionsTasksAdapter adapter = new CompanionsTasksAdapter(TaskDetails.this, taskCompList, task_id);
+                                    CompanionsTasksAdapter adapter = new CompanionsTasksAdapter(TaskDetails.this, taskCompList, taskDetails.getTask_id());
                                     myTaskCompanions.setAdapter(adapter);
                                 }
                             }
@@ -343,95 +442,94 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
         super.onStart();
         String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
         mTextViewDate.setText(currentDate);
+    }
 
-        mTaskRef.child(owner).child(task_id).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChildren()) {
-                    mTitle = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
-                    mDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
-                    mDesc = Objects.requireNonNull(dataSnapshot.child("description").getValue()).toString();
-                    mType = Objects.requireNonNull(dataSnapshot.child("type").getValue()).toString();
-
-                    task = new Task(task_id, mDate, mDesc, mTitle, mType, owner);
-                    taskType.setText(mType);
-                    taskDate.setText(mDate);
-                    taskTitle.setText(mTitle);
-                    taskDesc.setText(mDesc);
-
-                    if (task.getType().equals("Public")) {
-                        mInvite.setVisibility(View.VISIBLE);
-                    }
-
-                    editTask.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            editTask(task);
+    private Set<User> filterUsersToInvite(List<User> joinedUsers, List<Contact> mSelectedContacts) {
+        Set<User> usersToInvite = new HashSet<>();
+        for (int i = 0; i < joinedUsers.size(); i++) {
+            User user = joinedUsers.get(i);
+            String userPhone;
+            if (user.getPhone() != null) {
+                userPhone = new StringBuilder(user.getPhone()).reverse().toString();
+                for (Contact c :
+                        mSelectedContacts) {
+                    String contactPhone = new StringBuilder(c.getPhoneNumber()).reverse().toString();
+                    if (userPhone.length() >= 10 && contactPhone.length() >= 10) {
+                        String trimmedUserPhone = userPhone.substring(0,7);
+                        String trimmedContactPhone = contactPhone.substring(0,7);
+                        if (trimmedUserPhone.equals(trimmedContactPhone) ) {
+                            usersToInvite.add(user);
                         }
-                    });
+                    }
                 }
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        }
+        return usersToInvite;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
+    public void deleteTask() {
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Deleting task");
+        progressDialog.setMessage("Please wait!!");
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
+        String noteKey = mRootRef.child("Notifications").child(taskDetails.getTask_id()).push().getKey();
+        if (taskDetails.getType().equals("Private")) {
+            deletePrivateTask(noteKey, mCurrentUID);
+            progressDialog.dismiss();
+            Toast.makeText(TaskDetails.this.getApplicationContext(), " Task deleted successfully", Toast.LENGTH_SHORT).show();
 
-    public void invite(View view) {
-        Intent usersIntent = new Intent(TaskDetails.this, AllUsersActivity.class);
-        usersIntent.putExtra("task_id", task_id);
-        usersIntent.putExtra("fromTaskDetails", "1");
-        startActivity(usersIntent);
-    }
-
-    public void deleteTask(Task task) {
-        String noteKey = mRootRef.child("Notifications").child(task.getTask_id()).push().getKey();
-
-        if (taskCompList.size() == 0 || task.getType().equals("Private") || taskPendingCompList.size() == 0) {
-            deletePrivateTask(noteKey, noteKey, mCurrentUID);
             finish();
         } else {
-            for (User user : taskCompList
-            ) {
-                deletePublicTask(noteKey, user);
+            if (taskPendingCompList.size() == 0 && taskCompList.size() == 0) {
+                deletePrivateTask(noteKey, mCurrentUID);
+            } else {
+                deletePublicTask(noteKey);
             }
-           for (User user : taskPendingCompList
-           ) {
-              deletePendingPublicTask(noteKey, user);
-           }
         }
     }
 
-   private  void deletePendingPublicTask(String noteKey, User user){
-      Map recipientNote = deleteTaskNoteMap(task_id);
+    private void deletePublicTask(String noteKey) {
 
-      HashMap<String, Object> deleteTaskMap = new HashMap<>();
-      deleteTaskMap.put("TaskInviteRequests/" + user.getUID() + "/" + mCurrentUID + "/" + task_id, null);
-      deleteTaskMap.put("Notifications/" + user.getUID() + "/" + task.getTask_id() + "/" + noteKey, recipientNote);
-      deleteTaskMap.put("Tasks/" + mCurrentUID + "/" + task_id, null);
-      deleteTaskMap.put("Tasks/" + user.getUID() + "/" + task_id, null);
-      deleteTaskMap.put("DeletedTask/" + noteKey + "/" + task_id + "/", task);
-      performDelete(deleteTaskMap);
+        Map<String, Object> recipientNote = new HashMap<>();
+        recipientNote.put("type", "deletedTask");
+        recipientNote.put("task_id", taskDetails.getTask_id());
+        recipientNote.put("taskOwner", mCurrentUID);
+        recipientNote.put("date", ServerValue.TIMESTAMP);
+        for (User user : taskPendingCompList
+        ) {
+            HashMap<String, Object> deleteTaskMap = new HashMap<>();
+            deleteTaskMap.put("InviteUsers/" + user.getUID() + "/" + taskDetails.getTask_id(), null);
+            deleteTaskMap.put("Notifications/" + user.getUID() + "/" + taskDetails.getTask_id() + "/", null);
+            deleteTaskMap.put("Tasks/" + mCurrentUID + "/" + taskDetails.getTask_id(), null);
+            deleteTaskMap.put("Tasks/" + user.getUID() + "/" + taskDetails.getTask_id(), null);
+            deleteTaskMap.put("DeletedTask/" + noteKey + "/" + taskDetails.getTask_id() + "/", taskDetails);
+            performDelete(deleteTaskMap);
+        }
 
-
-   }
+        for (User user : taskCompList
+        ) {
+            HashMap<String, Object> deleteTaskMap = new HashMap<>();
+            deleteTaskMap.put("Notifications/" + user.getUID() + "/" + taskDetails.getTask_id() + "/", recipientNote);
+            deleteTaskMap.put("Tasks/" + mCurrentUID + "/" + taskDetails.getTask_id(), null);
+            deleteTaskMap.put("Tasks/" + user.getUID() + "/" + taskDetails.getTask_id(), null);
+            deleteTaskMap.put("DeletedTask/" + noteKey + "/" + taskDetails.getTask_id() + "/", taskDetails);
+            performDelete(deleteTaskMap);
+        }
+    }
 
     private void deletePublicTask(String noteKey, User user) {
-        Map recipientNote = deleteTaskNoteMap(task_id);
-        HashMap<String, Object> deleteTaskMap = new HashMap<>();
-        deleteTaskMap.put("TaskCompanions/" + user.getUID() + "/" + mCurrentUID + "/" + task_id, null);
-        deleteTaskMap.put("Notifications/" + user.getUID() + "/" + task.getTask_id() + "/" + noteKey, recipientNote);
-        deleteTaskMap.put("Tasks/" + mCurrentUID + "/" + task_id, null);
-        deleteTaskMap.put("Tasks/" + user.getUID() + "/" + task_id, null);
-        deleteTaskMap.put("DeletedTask/" + noteKey + "/" + task_id + "/", task);
+        Map<String, Object> recipientNote = new HashMap<>();
+        recipientNote.put("type", "deletedTask");
+        recipientNote.put("task_id", taskDetails.getTask_id());
+        recipientNote.put("taskOwner", mCurrentUID);
+        recipientNote.put("date", ServerValue.TIMESTAMP);
 
+        HashMap<String, Object> deleteTaskMap = new HashMap<>();
+        deleteTaskMap.put("Notifications/" + user.getUID() + "/" + taskDetails.getTask_id() + "/" + noteKey, recipientNote);
+        deleteTaskMap.put("Tasks/" + mCurrentUID + "/" + taskDetails.getTask_id(), null);
+        deleteTaskMap.put("Tasks/" + user.getUID() + "/" + taskDetails.getTask_id(), null);
+        deleteTaskMap.put("DeletedTask/" + noteKey + "/" + taskDetails.getTask_id() + "/", taskDetails);
         performDelete(deleteTaskMap);
     }
 
@@ -452,31 +550,11 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
         });
     }
 
-    private void deletePrivateTask(String noteKey, String deleted_task_id, String mCurrentUID) {
+    private void deletePrivateTask(String deleted_task_id, String mCurrentUID) {
         HashMap<String, Object> deleteTaskMap = new HashMap<>();
-        Map senderNote = getSenderNoteMap(mCurrentUID);
-        deleteTaskMap.put("Notifications/" + mCurrentUID + "/" + noteKey, senderNote);
-        deleteTaskMap.put("Tasks/" + mCurrentUID + "/" + task_id, null);
-        deleteTaskMap.put("DeletedTask/" + deleted_task_id + "/" + task_id + "/", task);
+        deleteTaskMap.put("Tasks/" + mCurrentUID + "/" + taskDetails.getTask_id(), null);
+        deleteTaskMap.put("DeletedTask/" + deleted_task_id + "/" + taskDetails.getTask_id() + "/", taskDetails);
         performDelete(deleteTaskMap);
-    }
-
-    private Map getSenderNoteMap(String mCurrentUID) {
-        HashMap<String, Object> senderNote = new HashMap<>();
-        senderNote.put("user", mCurrentUID);
-        senderNote.put("type", "deleteTask");
-        senderNote.put("task_id", task_id);
-        senderNote.put("date", ServerValue.TIMESTAMP);
-        return senderNote;
-    }
-
-    private Map deleteTaskNoteMap(String task_id) {
-        HashMap<String, Object> senderNote = new HashMap<>();
-        senderNote.put("user", mCurrentUID);
-        senderNote.put("type", "deleteTask");
-        senderNote.put("task_id", task_id);
-        senderNote.put("date", ServerValue.TIMESTAMP);
-        return senderNote;
     }
 
     public void addNewTask(View view) {
@@ -499,5 +577,31 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public List<Contact> getContactList() {
+        List<Contact> contactList = new ArrayList<>();
+        ContentResolver cr = getContentResolver();
+        Cursor cursor = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, PROJECTION, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
+        if (cursor != null) {
+            HashSet<String> mobileNoSet = new HashSet<>();
+            try {
+                final int nameIndex = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
+                final int numberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+                String name, number;
+                while (cursor.moveToNext()) {
+                    name = cursor.getString(nameIndex);
+                    number = cursor.getString(numberIndex);
+                    number = number.replace(" ", "");
+                    if (!mobileNoSet.contains(number)) {
+                        contactList.add(new Contact(name, number));
+                        mobileNoSet.add(number);
+                    }
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        return contactList;
     }
 }

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
@@ -20,19 +19,21 @@ import com.google.android.material.card.MaterialCardView;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder> implements Filterable {
     private final List<Contact> contactList;
     private final Context mCtxt;
-    private final List<Contact> contactListAll;
+    private final Set<Contact> contactListAll;
     private final ContactsAdapterListener listener;
-    public List<Contact> mSelectedContactsSet = new ArrayList<>();
+    public Set<Contact> mSelectedContactsSet = new HashSet<>();
 
-    public ContactsAdapter(Context context, List<Contact> joinedContacts, List<Contact> otherContacts, ContactsAdapterListener listener) {
-        this.contactList = joinedContacts;
+    public ContactsAdapter(Context context, Set<Contact> joinedContacts, ContactsAdapterListener listener) {
+        this.contactList = new ArrayList<>(joinedContacts);
         this.mCtxt = context;
-        this.contactListAll = new ArrayList<>(joinedContacts);
+        this.contactListAll = new HashSet<>(joinedContacts);
         this.listener = listener;
     }
 
@@ -55,36 +56,22 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
             holder.button.setOnClickListener(view -> inviteUser()
             );
         } else {
-            Contact contact = contactList.get(position);
+            List<Contact> list = new ArrayList<>(contactList);
+            Contact contact = list.get(position);
             holder.name.setText(contact.getName());
             holder.phoneNumber.setText(contact.getPhoneNumber());
-            if (contact.isJoined()) {
-                holder.invite.setText(R.string.invite);
-                holder.invite.setVisibility(View.GONE);
-                holder.shareApp.setVisibility(View.GONE);
-                holder.cardView.setOnClickListener(v -> {
-                    if (holder.cardView.isChecked()) {
-                        holder.cardView.setChecked(false);
-                        mSelectedContactsSet.remove(contact);
 
-                    } else {
-                        holder.cardView.setChecked(true);
-                        mSelectedContactsSet.add(contact);
-                    }
+            holder.cardView.setOnClickListener(v -> {
+                if (holder.cardView.isChecked()) {
+                    holder.cardView.setChecked(false);
+                    mSelectedContactsSet.remove(contact);
+                } else {
+                    mSelectedContactsSet.add(contact);
                     listener.onContactSelected(contact);
-                });
-
-
-            } else {
-                holder.shareApp.setText(R.string.share_app);
-                holder.invite.setVisibility(View.GONE);
-            }
-            holder.shareApp.setOnClickListener(v -> {
-                inviteUser();
+                    holder.cardView.setChecked(true);
+                }
             });
-
         }
-
     }
 
     private void inviteUser() {
@@ -148,17 +135,13 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
     public class ContactsViewHolder extends RecyclerView.ViewHolder {
         private final TextView name;
         private final TextView phoneNumber;
-        private final TextView shareApp;
         MaterialCardView cardView;
-        Button invite;
         MaterialButton button;
 
         public ContactsViewHolder(@NonNull View itemView) {
             super(itemView);
-            shareApp = itemView.findViewById(R.id.contact_share_app);
             name = itemView.findViewById(R.id.contact_item_name);
             phoneNumber = itemView.findViewById(R.id.contact_item_phone);
-            invite = itemView.findViewById(R.id.contact_item_invite);
             cardView = itemView.findViewById(R.id.contact_card);
             button = (MaterialButton) itemView.findViewById(R.id.share_app_button);
 

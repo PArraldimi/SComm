@@ -40,8 +40,7 @@ public class OtpVerifyActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private ProgressBar progressBar;
     private EditText editText;
-    private DatabaseReference mUsersDBRef;
-    private PhoneAuthProvider.OnVerificationStateChangedCallbacks
+    private final PhoneAuthProvider.OnVerificationStateChangedCallbacks
             mCallBack = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
         @Override
@@ -70,7 +69,7 @@ public class OtpVerifyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_otp_verify);
         mAuth = FirebaseAuth.getInstance();
-        mUsersDBRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        DatabaseReference mUsersDBRef = FirebaseDatabase.getInstance().getReference().child("Users");
         progressBar = findViewById(R.id.progressbar);
         editText = findViewById(R.id.editTextCode);
         TextView changeNo = findViewById(R.id.change_number);
@@ -103,23 +102,10 @@ public class OtpVerifyActivity extends AppCompatActivity {
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        final String uid = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-                        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uid);
-                        usersRef.child("phone").setValue(mPhone).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-//                                    if (user.getUsername() == null) {
-//                                        DataHolder.setPhone(mPhone);
-//                                        startActivity(new Intent(getApplicationContext(), SetupActivity.class));
-//                                    } else {
-                                        startActivity(new Intent(getApplicationContext(), HomeActivity.class));
-                                        OtpVerifyActivity.this.finish();
-                                    //}
-                                }
-
-                            }
-                        });
+                       // final String uid = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+                        DataHolder.setPhone(mPhone);
+                        startActivity(new Intent(getApplicationContext(), SetupActivity.class));
+                        OtpVerifyActivity.this.finish();
                     } else {
                         Toast.makeText(OtpVerifyActivity.this, Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_LONG).show();
                     }
@@ -130,7 +116,7 @@ public class OtpVerifyActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 number,
-                60,
+                120,
                 TimeUnit.SECONDS,
                 TaskExecutors.MAIN_THREAD,
                 mCallBack

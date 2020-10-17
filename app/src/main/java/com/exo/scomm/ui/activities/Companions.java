@@ -144,7 +144,7 @@ public class Companions extends AppCompatActivity {
          super(itemView);
          mView = itemView;
          userName = mView.findViewById(R.id.single_user_tv_name);
-         userStatus = mView.findViewById(R.id.single_user_status);
+         userStatus = mView.findViewById(R.id.single_user_phone);
          profileImage = mView.findViewById(R.id.single_user_circle_image);
          selectCheck = mView.findViewById(R.id.select_check);
          selectCheck.setVisibility(View.GONE);

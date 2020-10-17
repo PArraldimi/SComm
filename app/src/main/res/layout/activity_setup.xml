@@ -29,6 +29,7 @@
                 android:fontFamily="@font/arialregular"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
                 android:textColor="#000000"
+                android:textStyle="bold"
                 tools:ignore="RtlHardcoded" />
 
         </RelativeLayout>
@@ -86,6 +87,7 @@
                             app:civ_border_color="@color/grey"
                             app:civ_border_width="1dp"
                             android:layout_height="200dp"
+                            android:src="#3f2e90"
                             android:background="@drawable/ic_baseline_person_24"
                              />
 
@@ -132,7 +134,7 @@
                             android:maxLines="1"
                             android:singleLine="true"
                             android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-                            android:textColor="#000"
+                            android:textColor="#3f2e90"
                             android:textStyle="bold" />
 
 
@@ -166,7 +168,7 @@
                             android:layout_weight="1"
                             android:background="@drawable/button_background"
                             style="@style/Widget.AppCompat.Button.Borderless"
-                            android:backgroundTint="#0077be"
+                            android:backgroundTint="#3f2e90"
                             android:textAllCaps="false"
                             android:clickable="true"
                             android:focusable="true"

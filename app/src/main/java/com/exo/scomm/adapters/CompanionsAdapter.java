@@ -14,8 +14,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.exo.scomm.ui.activities.AllUsersActivity;
+import com.exo.scomm.ui.activities.Contacts;
 import com.exo.scomm.ui.activities.HomeActivity;
+import com.exo.scomm.ui.activities.MessageActivity;
 import com.exo.scomm.ui.activities.Profile;
 import com.exo.scomm.R;
 import com.exo.scomm.data.models.User;
@@ -54,9 +55,8 @@ public class CompanionsAdapter extends RecyclerView.Adapter<CompanionsAdapter.My
   @Override
   public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
     List<User> usersList = new ArrayList<>(companionsSet);
-
     if (position == usersList.size()) {
-      holder.button.setOnClickListener(view -> mCtxt.startActivity(new Intent(mCtxt.getApplicationContext(), AllUsersActivity.class)));
+      holder.button.setOnClickListener(view -> mCtxt.startActivity(new Intent(mCtxt.getApplicationContext(), Contacts.class)));
     } else {
       final User user = usersList.get(position);
       holder.username.setText(user.getUsername());
@@ -73,13 +73,18 @@ public class CompanionsAdapter extends RecyclerView.Adapter<CompanionsAdapter.My
             mCtxt.startActivity(profileIntent);
           } else if (i == 1) {
             Log.e("User Key", user.getUID());
-            final HomeActivity activity = (HomeActivity) mCtxt;
-            activity.uid = user.getUID();
-            activity.username = user.getUsername();
-            activity.mainBottomNav.setSelectedItemId(R.id.bottom_chat_room);
-            activity.add_task.setVisibility(View.GONE);
+            Intent intent = new Intent(mCtxt, MessageActivity.class);
+            intent.putExtra("fromTaskDetails", "1");
+            intent.putExtra("username", user.getUsername());
+            intent.putExtra("user_id", user.getUID());
+            mCtxt.startActivity(intent);
 
 
+//            final HomeActivity activity = (HomeActivity) mCtxt;
+//            activity.uid = user.getUID();
+//            activity.username = user.getUsername();
+//            activity.mainBottomNav.setSelectedItemId(R.id.bottom_chat_room);
+//            activity.add_task.setVisibility(View.GONE);
           }
         });
         builder.show();

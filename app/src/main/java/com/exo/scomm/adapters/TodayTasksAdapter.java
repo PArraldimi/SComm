@@ -52,11 +52,7 @@ public class TodayTasksAdapter extends RecyclerView.Adapter<TodayTasksAdapter.My
          @Override
          public void onClick(View view) {
             Intent detailsIntent = new Intent(mCntxt, TaskDetails.class);
-            detailsIntent.putExtra("task_id", task_id);
-            detailsIntent.putExtra("title", task.getTitle());
-            detailsIntent.putExtra("desc", task.getDescription());
-            detailsIntent.putExtra("date", task.getDate());
-            detailsIntent.putExtra("owner", task.getTaskOwner());
+           detailsIntent.putExtra("task", task);
             DataHolder.setTodayTasks(tasksList);
             mCntxt.startActivity(detailsIntent);
          }

@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#E0E4F1">
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/task_title"
         app:endIconMode="clear_text"
@@ -27,11 +26,9 @@
             android:singleLine="true"
             android:maxLength="20"
             android:textCursorDrawable = "@null"
-            android:backgroundTint="@color/ocean_blue" />
+            android:backgroundTint="#E0E4F1" />
 
     </com.google.android.material.textfield.TextInputLayout>
-
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -94,7 +91,8 @@
                     android:fontFamily="@font/century"
                     android:checked="true"
                     android:textSize="20sp"
-                    android:buttonTint="@color/cool_blue"
+                    android:textColor="#000000"
+                    android:buttonTint="@color/colorAccent"
                     android:onClick="onRadioButtonClicked"/>
                 <RadioButton
                     android:id="@+id/public_radio"
@@ -104,7 +102,8 @@
                     android:text="Public"
                     android:fontFamily="@font/century"
                     android:textSize="20sp"
-                    android:buttonTint="@color/cool_blue"
+                    android:textColor="#000000"
+                    android:buttonTint="@color/colorAccent"
                     android:onClick="onRadioButtonClicked"/>
             </RadioGroup>
 
@@ -112,16 +111,16 @@
             <Button
                 android:id="@+id/btn_invite"
                 android:layout_width="wrap_content"
-                android:layout_height="38dp"
+                android:layout_height="40dp"
                 android:paddingEnd="7dp"
                 android:paddingStart="7dp"
                 android:layout_gravity="end|center_vertical"
                 android:layout_marginTop="-41dp"
                 android:layout_marginEnd="5dp"
-                android:background="@drawable/button_grey"
-                android:onClick="inviteCompanions"
+                android:backgroundTint="#3f2e90"
                 android:text="@string/invite_companions"
                 android:textAllCaps="false"
+                android:textColor="#ffffff"
                 tools:ignore="RtlHardcoded" />
 
             <LinearLayout
@@ -186,7 +185,7 @@
                         android:layout_marginTop="15dp"
                         android:paddingStart="5dp"
                         android:paddingEnd="5dp"
-                        android:textColor="@color/ocean_blue"
+                        android:textColor="#3f2e90"
                         tools:ignore="RtlSymmetry" />
 
                     <Button

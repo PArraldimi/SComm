@@ -56,6 +56,7 @@ public class AcceptedCompanionsAdapter extends RecyclerView.Adapter<AcceptedComp
       List<User> usersList = new ArrayList<>(companionsList);
       final User user = usersList.get(position);
       holder.userName.setText(user.getUsername());
+      holder.phoneNo.setText(user.getPhone());
       Picasso.get().load(user.getImage()).placeholder(R.drawable.profile_image).into(holder.profileImage);
       holder.itemView.setOnClickListener(new View.OnClickListener() {
          @Override
@@ -103,7 +104,7 @@ public class AcceptedCompanionsAdapter extends RecyclerView.Adapter<AcceptedComp
 
    static class MyViewHolder extends RecyclerView.ViewHolder {
       View mView;
-      TextView userName, userStatus;
+      TextView userName, phoneNo;
       CircleImageView profileImage;
       CheckBox selectCheck;
 
@@ -111,7 +112,7 @@ public class AcceptedCompanionsAdapter extends RecyclerView.Adapter<AcceptedComp
          super(view);
          mView = itemView;
          userName = mView.findViewById(R.id.single_user_tv_name);
-         userStatus = mView.findViewById(R.id.single_user_status);
+         phoneNo = mView.findViewById(R.id.single_user_phone);
          profileImage = mView.findViewById(R.id.single_user_circle_image);
          selectCheck = mView.findViewById(R.id.select_check);
          selectCheck.setVisibility(View.INVISIBLE);

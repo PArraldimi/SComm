@@ -2,7 +2,6 @@ package com.exo.scomm.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,9 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.exo.scomm.R;
 import com.exo.scomm.data.models.User;
 import com.exo.scomm.ui.activities.HomeActivity;
+import com.exo.scomm.ui.activities.MessageActivity;
 import com.exo.scomm.ui.activities.Profile;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.squareup.picasso.Picasso;
@@ -33,9 +31,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PendingCompanionsAdapter extends RecyclerView.Adapter<PendingCompanionsAdapter.MyViewHolder> {
 
-   private Set<User> companionsList;
-   private Context mCtxt;
-   private String taskId;
+   private final Set<User> companionsList;
+   private final Context mCtxt;
+   private final String taskId;
 
    public PendingCompanionsAdapter(Context taskDetails, Set<User> taskCompList, String taskId) {
       this.mCtxt = taskDetails;
@@ -70,18 +68,15 @@ public class PendingCompanionsAdapter extends RecyclerView.Adapter<PendingCompan
                mCtxt.startActivity(profileIntent);
             } else if (i == 1) {
                Log.e("User Key", "" + user.getUID());
-               Intent intent = new Intent(mCtxt, HomeActivity.class);
+               Intent intent = new Intent(mCtxt, MessageActivity.class);
                intent.putExtra("fromTaskDetails", "1");
                intent.putExtra("username", user.getUsername());
-               intent.putExtra("userId", user.getUID());
+               intent.putExtra("user_id", user.getId());
                mCtxt.startActivity(intent);
             } else if (i == 2) {
-               FirebaseDatabase.getInstance().getReference().child("TaskSupers").child(taskId).child(user.getUID()).setValue(ServerValue.TIMESTAMP).addOnCompleteListener(new OnCompleteListener<Void>() {
-                  @Override
-                  public void onComplete(@NonNull Task<Void> task) {
-                     if (task.isSuccessful()) {
-                        Toast.makeText(mCtxt.getApplicationContext(), "User is now a super Schommer", Toast.LENGTH_SHORT).show();
-                     }
+               FirebaseDatabase.getInstance().getReference().child("TaskSupers").child(taskId).child(user.getUID()).setValue(ServerValue.TIMESTAMP).addOnCompleteListener(task -> {
+                  if (task.isSuccessful()) {
+                     Toast.makeText(mCtxt.getApplicationContext(), "User is now a super Schommer", Toast.LENGTH_SHORT).show();
                   }
                });
             }
@@ -108,7 +103,7 @@ public class PendingCompanionsAdapter extends RecyclerView.Adapter<PendingCompan
          super(view);
          mView = itemView;
          userName = mView.findViewById(R.id.single_user_tv_name);
-         phoneNo = mView.findViewById(R.id.single_user_status);
+         phoneNo = mView.findViewById(R.id.single_user_phone);
          profileImage = mView.findViewById(R.id.single_user_circle_image);
          selectCheck = mView.findViewById(R.id.select_check);
          selectCheck.setVisibility(View.INVISIBLE);

@@ -6,10 +6,16 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.exo.scomm.R;
+import com.exo.scomm.data.models.User;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -32,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
                 phoneEditText.requestFocus();
                 return;
             }
-
             String phoneNumber = "+" + code + number;
             Intent intent = new Intent(MainActivity.this, OtpVerifyActivity.class);
             intent.putExtra("phonenumber", phoneNumber);
@@ -41,33 +46,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     @Override
     protected void onStart() {
         super.onStart();
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-        }
-        //else {
-//            FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                    User user = snapshot.getValue(User.class);
-//                    if (user.getUsername() == null) {
-//                        startActivity(new Intent(getApplicationContext(), SetupActivity.class));
-//                    } else {
-//                        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
-//                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                        startActivity(intent);
-//                    }
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError error) {
-//
-//                }
-//            });
+//        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+//            getUser();
 //        }
     }
 

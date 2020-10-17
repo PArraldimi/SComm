@@ -4,6 +4,14 @@
     android:id="@+id/main_app_bar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#80BBF8"
+    android:background="#80363979"
     android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chatroom"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:fontFamily="@font/arialregular"/>
 </androidx.appcompat.widget.Toolbar>

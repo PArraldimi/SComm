@@ -26,9 +26,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
@@ -55,6 +57,26 @@ public class SetupActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore firebaseFirestore;
     private ProgressDialog mSetupProgress;
+    private DatabaseReference usersRef;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        usersRef.child(user_id).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists() && snapshot.child("username").exists()) {
+                    startActivity(new Intent(SetupActivity.this, HomeActivity.class));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +86,7 @@ public class SetupActivity extends AppCompatActivity {
         user_id = Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid();
         firebaseFirestore = FirebaseFirestore.getInstance();
         storageReference = FirebaseStorage.getInstance().getReference();
-
+        usersRef = FirebaseDatabase.getInstance().getReference("Users").child(user_id);
         setupImage = findViewById(R.id.setup_image);
         setupName = findViewById(R.id.setup_userName);
 
@@ -102,7 +124,7 @@ public class SetupActivity extends AppCompatActivity {
 
         setupImage.setOnClickListener(v -> {
             if (ContextCompat.checkSelfPermission(SetupActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(SetupActivity.this, "Permission Denied", Toast.LENGTH_LONG).show();
+                ///Toast.makeText(SetupActivity.this, "Permission Denied", Toast.LENGTH_LONG).show();
                 ActivityCompat.requestPermissions(SetupActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
             } else {
                 Intent intent = new Intent();
@@ -124,14 +146,11 @@ public class SetupActivity extends AppCompatActivity {
 
         if (isChanged) {
             Task uploadTask = image_path.putFile(filePath);
-            uploadTask.continueWithTask(new Continuation() {
-                @Override
-                public Object then(@NonNull Task task) throws Exception {
-                    if (!task.isSuccessful()) {
-                        throw task.getException();
-                    }
-                    return image_path.getDownloadUrl();
+            uploadTask.continueWithTask((Continuation) task -> {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
                 }
+                return image_path.getDownloadUrl();
             }).addOnCompleteListener(new OnCompleteListener() {
                 @Override
                 public void onComplete(@NonNull Task task) {
@@ -178,27 +197,20 @@ public class SetupActivity extends AppCompatActivity {
 
                 if (task.isSuccessful()) {
                     mSetupProgress.dismiss();
-                    FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-                    assert firebaseUser != null;
-                    final String userid = firebaseUser.getUid();
-                    DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("Users").child(userid);
 
                     FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(SetupActivity.this, instanceIdResult -> {
                         String token = instanceIdResult.getToken();
-                        HashMap<String, String> hashMap = getStringStringHashMap(userid, user_name,token, download_uri);
+                        HashMap<String, String> hashMap = getStringStringHashMap(user_id, user_name, token, download_uri);
                         usersRef.setValue(hashMap).addOnCompleteListener(task1 -> {
                             if (task1.isSuccessful()) {
                                 Toast.makeText(SetupActivity.this, "The User Settings are Successfully Updated ", Toast.LENGTH_LONG).show();
-                                Intent mainIntent = new Intent(SetupActivity.this, MainActivity.class);
+                                Intent mainIntent = new Intent(SetupActivity.this, HomeActivity.class);
                                 startActivity(mainIntent);
                                 finish();
                             }
                         });
 
                     });
-//                    Toast.makeText(SetupActivity.this, "The User Settings are Successfully Updated ", Toast.LENGTH_LONG).show();
-//                    Intent mainIntent = new Intent(SetupActivity.this, HomeActivity.class);
-//                    startActivity(mainIntent);
                 } else {
                     mSetupProgress.dismiss();
                     String error = Objects.requireNonNull(task.getException()).getMessage();
@@ -208,7 +220,7 @@ public class SetupActivity extends AppCompatActivity {
         });
     }
 
-    private HashMap<String, String> getStringStringHashMap( String userid, String user_name,String s, Uri download_uri) {
+    private HashMap<String, String> getStringStringHashMap(String userid, String user_name, String s, Uri download_uri) {
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("device_token", s);
         hashMap.put("id", userid);

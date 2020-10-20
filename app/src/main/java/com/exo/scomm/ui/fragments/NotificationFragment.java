@@ -24,6 +24,7 @@ import com.exo.scomm.data.models.Task;
 import com.exo.scomm.data.models.User;
 import com.exo.scomm.ui.activities.Companions;
 import com.exo.scomm.ui.activities.HomeActivity;
+import com.exo.scomm.ui.activities.MessageActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -123,8 +124,9 @@ public class NotificationFragment extends Fragment {
                                                     holder.decline.setEnabled(true);
                                                     holder.accept.setEnabled(true);
                                                     holder.chat.setEnabled(false);
-                                                    holder.decline.setOnClickListener(v -> declineInvite(user.getId(), holder));
-                                                    holder.accept.setOnClickListener(view -> acceptInvite(user.getId(), task_id));
+                                                    holder.decline.setOnClickListener(v -> declineInvite(user.getId(),task_id, holder));
+                                                    holder.chat.setOnClickListener(v -> startChat(user.getId()));
+                                                    holder.accept.setOnClickListener(view -> acceptInvite(holder,user.getId(), task_id));
                                                 }
                                             }
 
@@ -192,7 +194,7 @@ public class NotificationFragment extends Fragment {
                                                                 holder.decline.setEnabled(false);
                                                                 holder.accept.setEnabled(false);
                                                                 holder.chat.setEnabled(true);
-                                                                acceptInvite(user_id, task_id);
+                                                                acceptInvite(holder, user_id, task_id);
 
 
                                                             });
@@ -236,12 +238,7 @@ public class NotificationFragment extends Fragment {
                             case "accepted":
                                 holder.accept.setEnabled(false);
                                 holder.chat.setEnabled(true);
-                                assert noteKey != null;
-                                mNotificationsRef.child(noteKey).addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        final String user_id = dataSnapshot.child("user").getValue().toString();
-                                        mUsersDatabase.child(user_id).addValueEventListener(new ValueEventListener() {
+                                        mUsersDatabase.child(model.getUser()).addValueEventListener(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                 final String userName = dataSnapshot.child("username").getValue().toString();
@@ -251,7 +248,7 @@ public class NotificationFragment extends Fragment {
                                                         String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
                                                         String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
                                                         if (dataSnapshot.hasChildren()) {
-                                                            if (user_id.equals(mCurrentUserId)) {
+                                                            if (model.getUser().equals(mCurrentUserId)) {
                                                                 holder.decline.setEnabled(false);
                                                                 holder.accept.setEnabled(false);
                                                                 holder.chat.setEnabled(true);
@@ -271,7 +268,7 @@ public class NotificationFragment extends Fragment {
                                                             public void onClick(View v) {
                                                                 final HomeActivity activity = (HomeActivity) getContext();
                                                                 assert activity != null;
-                                                                activity.uid = user_id;
+                                                                activity.uid = model.getUser();
                                                                 activity.username = userName;
                                                                 activity.mainBottomNav.setSelectedItemId(R.id.bottom_chat_room);
                                                                 activity.add_task.setVisibility(View.GONE);
@@ -291,14 +288,6 @@ public class NotificationFragment extends Fragment {
 
                                             }
                                         });
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    }
-                                });
-
                                 break;
                             case "deleteTask":
                                 assert noteKey != null;
@@ -355,22 +344,25 @@ public class NotificationFragment extends Fragment {
         adapter.startListening();
     }
 
-    private void declineInvite(String user_id, @NonNull final FriendsReqViewHolder holder) {
+    private void startChat(String id) {
+        Intent intent = new Intent(requireContext(), MessageActivity.class);
+        intent.putExtra("user_id", id);
+        startActivity(intent);
+    }
+
+    private void declineInvite(String user_id, String task_id, @NonNull final FriendsReqViewHolder holder) {
         Map declineInviteMap = new HashMap();
-        declineInviteMap.put("TaskCompanions/" + mCurrentUserId + "/" + user_id + "/" + "task_id", null);
+        declineInviteMap.put("InvitedUsers/" + task_id + "/" + user_id, null);
         declineInviteMap.put("TaskCompanions/" + user_id + "/" + mCurrentUserId + "/" + "task_id", null);
 
-        mRootRef.updateChildren(declineInviteMap, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                if (databaseError == null) {
-                    holder.decline.setEnabled(true);
-                    holder.accept.setEnabled(false);
-                    holder.chat.setEnabled(false);
-                } else {
-                    String error = databaseError.getMessage();
-                    Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
-                }
+        mRootRef.updateChildren(declineInviteMap, (databaseError, databaseReference) -> {
+            if (databaseError == null) {
+                holder.decline.setEnabled(false);
+                holder.accept.setEnabled(false);
+                holder.chat.setEnabled(false);
+            } else {
+                String error = databaseError.getMessage();
+                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -403,7 +395,7 @@ public class NotificationFragment extends Fragment {
         transaction.addToBackStack(null).add(R.id.main_container, ChatroomFragment.newInstance(user_id)).commit();
     }
 
-    private void acceptInvite(final String user_id, final String task_id) {
+    private void acceptInvite(FriendsReqViewHolder holder, final String user_id, final String task_id) {
         mRootRef.child("Tasks").child(user_id).child(task_id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -429,30 +421,25 @@ public class NotificationFragment extends Fragment {
                 recipientNote.put("date", ServerValue.TIMESTAMP);
 
 
-                Map compMap = new HashMap<>();
-                compMap.put(mCurrentUserId, ServerValue.TIMESTAMP);
-                compMap.put(user_id, ServerValue.TIMESTAMP);
+
 
                 Map companionsMap = new HashMap();
-                companionsMap.put("TaskCompanions/" + mCurrentUserId + "/" + task_id + "/", compMap);
-                companionsMap.put("TaskCompanions/" + user_id + "/" + task_id + "/", compMap);
+                companionsMap.put("TaskCompanions/" + task_id + "/" + mCurrentUserId +"/",ServerValue.TIMESTAMP);
 
                 companionsMap.put("Notifications/" + user_id + "/" + noteKey, recipientNote);
                 companionsMap.put("Tasks/" + mCurrentUserId + "/" + task_id + "/", taskMap);
 
-                companionsMap.put("InvitedUsers/" + mCurrentUserId +  "/" + task_id + "/" + mCurrentUserId, null);
-                companionsMap.put("InvitedUsers/" + user_id +  "/" + task_id + "/" + mCurrentUserId, null);
-                mRootRef.updateChildren(companionsMap, new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                        if (databaseError == null) {
-                            Toast.makeText(getContext(), "Task added successfully to your schedule", Toast.LENGTH_SHORT).show();
-                        } else {
-                            String error = databaseError.getMessage();
-                            Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
-                        }
+                companionsMap.put("InvitedUsers/"  + task_id + "/" + mCurrentUserId +"/", null);
+                mRootRef.updateChildren(companionsMap, (databaseError, databaseReference) -> {
+                    if (databaseError == null) {
+                        holder.accept.setEnabled(false);
+                        holder.decline.setEnabled(false);
+                        holder.chat.setEnabled(true);
+                        Toast.makeText(getContext(), "Task added successfully to your schedule", Toast.LENGTH_SHORT).show();
+                    } else {
+                        String error = databaseError.getMessage();
+                        Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
                     }
-
                 });
             }
 

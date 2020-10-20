@@ -67,10 +67,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     @Override
     public void onBindViewHolder(@NonNull final MessageViewHolder holder, int position) {
-//        Messages messages = messagesList.get(position);
-//
-//        DateFormat dateFormat = new SimpleDateFormat("hh.mm aa");
-//        final String dateString = dateFormat.format(messages.getTime());
 
 
         Chat chat = mChat.get(position);
@@ -124,8 +120,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
         MessageViewHolder(@NonNull View itemView) {
             super(itemView);
-            show_message = itemView.findViewById(R.id.message_profile_image);
-            profile_image = itemView.findViewById(R.id.profile_image);
+            show_message = itemView.findViewById(R.id.message);
+            //profile_image = itemView.findViewById(R.id.profile_image);
             txt_seen = itemView.findViewById(R.id.message_seen);
         }
     }

@@ -26,6 +26,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.exo.scomm.R;
 import com.exo.scomm.data.models.Contact;
 import com.exo.scomm.data.models.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -243,27 +245,14 @@ public class AddTaskActivity extends AppCompatActivity {
         taskMap.put("type", selectedItem);
         taskMap.put("date", date);
         taskMap.put("task_id", task_id);
-        DatabaseReference db = mRootRef.child("Tasks").child(mCurrentUser.getUid()).child(task_id);
         if (selectedItem.equals("Private")) {
             mProgressDialog.setTitle("Creating private Task");
             mProgressDialog.setMessage("Please wait while we create the task");
             mProgressDialog.setCanceledOnTouchOutside(false);
             mProgressDialog.show();
             assert task_id != null;
-            db.setValue(taskMap).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    mRootRef.child("TaskSupers").child(task_id).child(mCurrentUser.getUid()).setValue(ServerValue.TIMESTAMP).addOnCompleteListener(task1 -> {
-                        mProgressDialog.dismiss();
-                        Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
-                        finish();
-                    });
+            saveTask(taskMap);
 
-                } else {
-                    mProgressDialog.dismiss();
-                    Toast.makeText(AddTaskActivity.this, "Task not added since " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.e("Error", Objects.requireNonNull(task.getResult()).toString());
-                }
-            });
         } else if (selectedItem.equals("Public")) {
             ProgressDialog pDialog = new ProgressDialog(AddTaskActivity.this);
             pDialog.setTitle("Creating public Task");
@@ -295,28 +284,30 @@ public class AddTaskActivity extends AppCompatActivity {
         List<User> users = new ArrayList<>(userSet);
         Map<String, Object> requestMap = new HashMap<>();
         requestMap.put("Tasks/" + mCurrentUser.getUid() + "/" + task_id, taskMap);
-        String uid;
+        requestMap.put("TaskSupers/"   + task_id + "/" + mCurrentUser.getUid() + "/", ServerValue.TIMESTAMP);
+        requestMap.put("TaskCompanions/" + task_id + "/" + mCurrentUser.getUid() + "/", ServerValue.TIMESTAMP);
+        String noteId = mRootRef.child("Notifications").child(mCurrentUser.getUid()).push().getKey();
         for (User user : users
         ) {
-            for (int i = 0; i < users.size(); i++) {
-                User user1 = users.get(i);
-                uid = user1.getId();
-                requestMap.put("InvitedUsers/" + user.getId() + "/" + task_id + "/" + uid + "/", ServerValue.TIMESTAMP);
-                requestMap.put("InvitedUsers/" + mCurrentUser.getUid() + "/" + task_id + "/" + uid + "/", ServerValue.TIMESTAMP);
-                mRootRef.updateChildren(requestMap).addOnCompleteListener(task -> {
-                    if (task.isComplete()) {
-                        if (task.isSuccessful()) {
-                            String noteId = mRootRef.child("Notifications").child(user.getId()).push().getKey();
-                            sendNotifications(user1.getId(), noteId);
-                        } else {
-                            Log.e("ADD TASK ", task.getException().getMessage());
-                        }
+            requestMap.put("InvitedUsers/" + "/" + task_id + "/" + user.getId() + "/", ServerValue.TIMESTAMP);
+            // requestMap.put("InvitedUsers/" + mCurrentUser.getUid() + "/" + task_id + "/" + uid + "/", ServerValue.TIMESTAMP);
+            mRootRef.updateChildren(requestMap).addOnCompleteListener(task -> {
+                if (task.isComplete()) {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(AddTaskActivity.this, user.getUsername() + "  invited successfully", Toast.LENGTH_SHORT).show();
+                        sendNotifications(user.getId(), noteId);
+
+                    } else {
+                        Log.e("ADD TASK ", task.getException().getMessage());
                     }
-                });
-            }
-            Toast.makeText(AddTaskActivity.this, user.getUsername() + "  invited successfully", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
+
+
         Toast.makeText(AddTaskActivity.this, "Task Added Successfully ", Toast.LENGTH_LONG).show();
+
+
     }
 
     private void sendNotifications(String userId, String noteId) {
@@ -327,16 +318,16 @@ public class AddTaskActivity extends AppCompatActivity {
         noteMap.put("task_id", task_id);
         noteMap.put("date", ServerValue.TIMESTAMP);
 
-            Map<String, Object> noteRequestMap = new HashMap<>();
-            noteRequestMap.put("Notifications/" + userId + "/" + noteId + "/", noteMap);
-            mRootRef.updateChildren(noteRequestMap).addOnCompleteListener(task -> {
-                if (task.isComplete()) {
-                    if (task.isSuccessful()) {
-                    } else {
-                        Log.e("ADD TASK ", task.getException().getMessage());
-                    }
+        Map<String, Object> noteRequestMap = new HashMap<>();
+        noteRequestMap.put("Notifications/" + userId + "/" + noteId + "/", noteMap);
+        mRootRef.updateChildren(noteRequestMap).addOnCompleteListener(task -> {
+            if (task.isComplete()) {
+                if (task.isSuccessful()) {
+                } else {
+                    Log.e("ADD TASK ", task.getException().getMessage());
                 }
-            });
+            }
+        });
 
     }
 
@@ -351,9 +342,9 @@ public class AddTaskActivity extends AppCompatActivity {
                         mSelectedContacts) {
                     String contactPhone = new StringBuilder(c.getPhoneNumber()).reverse().toString();
                     if (userPhone.length() >= 10 && contactPhone.length() >= 10) {
-                        String trimmedUserPhone = userPhone.substring(0,7);
-                        String trimmedContactPhone = contactPhone.substring(0,7);
-                        if (trimmedUserPhone.equals(trimmedContactPhone) ) {
+                        String trimmedUserPhone = userPhone.substring(0, 7);
+                        String trimmedContactPhone = contactPhone.substring(0, 7);
+                        if (trimmedUserPhone.equals(trimmedContactPhone)) {
                             usersToInvite.add(user);
                         }
                     }
@@ -364,12 +355,19 @@ public class AddTaskActivity extends AppCompatActivity {
     }
 
     private void saveTask(HashMap<String, String> taskMap) {
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Tasks").child(mCurrentUser.getUid()).child(task_id);
-        db.setValue(taskMap).addOnCompleteListener(task -> {
-            mProgressDialog.dismiss();
+        Map<String, Object> requestMap = new HashMap<>();
+        requestMap.put("Tasks/" + "/" + mCurrentUser.getUid() + "/" + task_id + "/",taskMap);
+        requestMap.put("TaskSupers/"   + task_id + "/" + mCurrentUser.getUid() + "/", ServerValue.TIMESTAMP);
+        requestMap.put("TaskCompanions/"   + task_id + "/" + mCurrentUser.getUid() + "/", ServerValue.TIMESTAMP);
+        mRootRef.updateChildren(requestMap).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(AddTaskActivity.this, "Task Added Successfully", Toast.LENGTH_SHORT).show();
-            } else {
+                mProgressDialog.dismiss();
+                finish();
+            }
+            else {
+                mProgressDialog.dismiss();
+                Toast.makeText(AddTaskActivity.this, "Task not added since " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("Error", Objects.requireNonNull(task.getResult()).toString());
             }
         });

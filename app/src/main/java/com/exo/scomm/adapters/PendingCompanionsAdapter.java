@@ -58,27 +58,17 @@ public class PendingCompanionsAdapter extends RecyclerView.Adapter<PendingCompan
       holder.phoneNo.setText(user.getPhone());
       Picasso.get().load(user.getImage()).placeholder(R.drawable.profile_image).into(holder.profileImage);
       holder.itemView.setOnClickListener(v -> {
-         CharSequence[] options = new CharSequence[]{"Open Profile", "Send Message", "Make Super Scommer"};
+         CharSequence[] options = new CharSequence[]{"Send Message"};
          AlertDialog.Builder builder = new AlertDialog.Builder(mCtxt);
          builder.setTitle("Select Options");
          builder.setItems(options, (dialog, i) -> {
-            if (i == 0) {
-               Intent profileIntent = new Intent(mCtxt, Profile.class);
-               profileIntent.putExtra("uid", user.getUID());
-               mCtxt.startActivity(profileIntent);
-            } else if (i == 1) {
+             if (i == 0) {
                Log.e("User Key", "" + user.getUID());
                Intent intent = new Intent(mCtxt, MessageActivity.class);
                intent.putExtra("fromTaskDetails", "1");
                intent.putExtra("username", user.getUsername());
                intent.putExtra("user_id", user.getId());
                mCtxt.startActivity(intent);
-            } else if (i == 2) {
-               FirebaseDatabase.getInstance().getReference().child("TaskSupers").child(taskId).child(user.getUID()).setValue(ServerValue.TIMESTAMP).addOnCompleteListener(task -> {
-                  if (task.isSuccessful()) {
-                     Toast.makeText(mCtxt.getApplicationContext(), "User is now a super Schommer", Toast.LENGTH_SHORT).show();
-                  }
-               });
             }
          });
          builder.show();

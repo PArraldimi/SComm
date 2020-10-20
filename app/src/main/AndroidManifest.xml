@@ -6,6 +6,8 @@
     <dist:module dist:instant="true" />
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -54,7 +56,19 @@
         <activity android:name=".ui.activities.TaskListActivity" />
         <activity android:name=".ui.activities.AllUsersActivity" />
 
+        <receiver
+            android:name=".TaskReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":remote" />
         <service android:name=".service.ContactService" />
+        <receiver android:name=".BootCompletedReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".ui.activities.AddTaskActivity"

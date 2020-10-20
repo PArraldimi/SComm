@@ -6,10 +6,19 @@ public class Notification {
     private  String type;
     private String fromUser;
     private String toUser;
+    private String user;
     private long date;
     private String  task_id;
 
     public Notification() {
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
     }
 
     public String getType() {

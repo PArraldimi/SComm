@@ -21,8 +21,7 @@
 
         <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_weight="2"
-            android:padding="10dp"
+            android:layout_weight="3"
             android:background="@drawable/chat_item_right_background"
             android:layout_height="wrap_content">
 
@@ -49,6 +48,8 @@
                 android:fontFamily="@font/arialregular"
                 android:gravity="end|bottom"
                 android:text="Date/Time sent"
+                android:layout_alignParentEnd="true"
+                android:singleLine="true"
                 android:textColor="#80FFFFFF"
                 android:textSize="13sp" />
         </RelativeLayout>

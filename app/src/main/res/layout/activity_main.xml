@@ -78,7 +78,7 @@
         android:layout_below="@id/linearLayout"
         android:layout_centerHorizontal="true"
         android:background="@drawable/button_background"
-        android:text="@string/send_code"
+        android:text="Request Code"
         android:textStyle="bold"
         android:textAllCaps="false"
         android:textColor="#ffffff"

@@ -69,7 +69,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:background="@drawable/button_background"
-        android:text="@string/verify"
+        android:text="Verify Code"
         android:textStyle="bold"
         android:textAllCaps="false"
         android:textColor="#ffffff" />

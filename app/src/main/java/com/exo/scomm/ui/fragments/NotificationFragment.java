@@ -464,8 +464,8 @@ public class NotificationFragment extends Fragment {
 
     public static class FriendsReqViewHolder extends RecyclerView.ViewHolder {
         View mView;
-        TextView mDate;
-        Button accept, decline, chat, mViewSchommers;
+        TextView mDate, mViewSchommers;
+        Button accept, decline, chat;
 
         FriendsReqViewHolder(@NonNull View itemView) {
             super(itemView);

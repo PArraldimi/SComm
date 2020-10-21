@@ -67,7 +67,7 @@
             android:layout_toEndOf="@+id/list_icon"
             android:textSize="15sp"
             android:textStyle="bold"
-            android:textColor="#FFFFFF"/>
+            android:textColor="#E1DBDB"/>
     </RelativeLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -80,8 +80,8 @@
         android:layout_marginBottom="-12dp"
         android:clickable="true"
         android:focusable="true"
-        android:src="@drawable/ic_check_black_24dp"
-        app:backgroundTint="@color/ocean_blue"
+        android:src="@drawable/ic_baseline_check_24"
+        app:backgroundTint="#E1DBDB"
         app:elevation="10dp"
         app:fabSize="normal" />
 </RelativeLayout>

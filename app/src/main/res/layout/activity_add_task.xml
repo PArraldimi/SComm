@@ -19,7 +19,6 @@
             android:layout_height="wrap_content"
             android:focusable="auto"
             android:cursorVisible="true"
-
             android:hint="@string/i_want_to"
             android:fontFamily="@font/century"
             android:textColor="#000000"

@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="3dp"
     android:checkable="true"
+    android:backgroundTint="@color/white"
     android:clickable="true"
     android:focusable="true"
     android:elevation="8dp">
@@ -23,7 +24,7 @@
             android:textStyle="bold"
             android:layout_height="wrap_content"
             android:drawablePadding="4dp"
-            app:drawableStartCompat="@drawable/ic_baseline_person_24"
+            app:drawableStartCompat="@drawable/ic_baseline_person"
              />
 
         <TextView
@@ -32,6 +33,7 @@
             android:layout_margin="3dp"
             android:layout_height="wrap_content"
             android:padding="3dp"
+            android:textColor="#000"
             android:layout_below="@+id/contact_item_name"
             android:drawablePadding="4dp"
             app:drawableStartCompat="@drawable/ic_baseline_phone"

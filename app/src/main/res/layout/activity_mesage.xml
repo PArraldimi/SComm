@@ -81,7 +81,7 @@
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/chat_message_view"
+            android:id="@+id/chat_message_text"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="9"

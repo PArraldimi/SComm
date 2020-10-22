@@ -65,7 +65,7 @@
         android:layout_below="@+id/toolbar">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/messages_recycler"
+            android:id="@+id/chats_recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/action_linear"

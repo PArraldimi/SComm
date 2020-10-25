@@ -56,6 +56,10 @@
         <activity android:name=".ui.activities.TaskListActivity" />
         <activity android:name=".ui.activities.AllUsersActivity" />
 
+
+
+        <receiver android:name=".AlarmReceiver" />
+
         <receiver
             android:name=".TaskReceiver"
             android:enabled="true"

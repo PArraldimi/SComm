@@ -1,5 +1,8 @@
 package com.exo.scomm.ui.fragments;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.exo.scomm.AlarmReceiver;
 import com.exo.scomm.R;
 import com.exo.scomm.adapters.CompanionsAdapter;
 import com.exo.scomm.adapters.TodayTasksAdapter;
@@ -66,6 +70,11 @@ public class HomeFragment extends Fragment {
         DateTime dateObject2 = DateTime.forInstant(date2.getTime(), TimeZone.getDefault());
         return dateObject1.isSameDayAs(dateObject2);
     }
+    private static boolean isSameTime(Date date1, Date date2) {
+        DateTime dateObject1 = DateTime.forInstant(date1.getTime(), TimeZone.getDefault());
+        DateTime dateObject2 = DateTime.forInstant(date2.getTime(), TimeZone.getDefault());
+        return dateObject1.equals(dateObject2);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -102,6 +111,9 @@ public class HomeFragment extends Fragment {
                 String taskDate = t.getDate();
                 if (isSameDay(new Date(today), new Date(taskDate))) {
                     todayTasks.add(t);
+                    if (isSameTime(new Date(taskDate), new Date(today) )) {
+                        playReminder(t);
+                    }
                 } else if (new Date(taskDate).after(new Date(today))) {
                     upcomingTasks.add(t);
                 } else if (new Date(taskDate).before(new Date(today))) {
@@ -117,6 +129,26 @@ public class HomeFragment extends Fragment {
 
         getTaskCompanions();
         return view;
+    }
+
+    private void playReminder(Task task) {
+        AlarmManager manager = (AlarmManager) requireActivity().getSystemService(Context.ALARM_SERVICE);
+        Date dat = new Date(task.getDate());
+        Calendar cal_alarm = Calendar.getInstance();
+        Calendar cal_now = Calendar.getInstance();
+        cal_now.setTime(dat);
+        cal_alarm.setTime(dat);
+        cal_alarm.set(Calendar.HOUR_OF_DAY,dat.getHours());
+        cal_alarm.set(Calendar.MINUTE,dat.getMinutes());
+        cal_alarm.set(Calendar.SECOND,dat.getSeconds());
+        if(cal_alarm.before(cal_now)){
+            cal_alarm.add(Calendar.DATE,1);
+        }
+
+        Intent myIntent = new Intent(requireContext(), AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(requireContext(), 0, myIntent, 0);
+
+        manager.set(AlarmManager.RTC_WAKEUP,cal_alarm.getTimeInMillis(), pendingIntent);
     }
 
     private void deleteTask(Task t) {

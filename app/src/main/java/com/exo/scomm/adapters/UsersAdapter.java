@@ -57,8 +57,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
 
         final String user_ID = mUsers.get(position).getId();
         firebaseDatabase = FirebaseDatabase.getInstance().getReference();
-        //get User Details
-
 
         firebaseDatabase.child("Users").child(user_ID).addValueEventListener(new ValueEventListener() {
             @Override
@@ -66,7 +64,9 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
                 User user1 = snapshot.getValue(User.class);
                 //String userName = task.getResult().getString("name");
 
-                holder.setUserData(user.getImage());
+                if (user1.getImage() != null) {
+                    holder.setUserData(user1.getImage());
+                }
 
             }
 
@@ -88,18 +88,18 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
             holder.last_msg.setVisibility(View.GONE);
         }
 
-        if (ischat) {
-            if (user.getStatus().equals("online")) {
-                holder.img_on.setVisibility(View.VISIBLE);
-                holder.img_off.setVisibility(View.GONE);
-            } else {
-                holder.img_on.setVisibility(View.GONE);
-                holder.img_off.setVisibility(View.VISIBLE);
-            }
-        } else {
-            holder.img_on.setVisibility(View.GONE);
-            holder.img_off.setVisibility(View.GONE);
-        }
+//        if (ischat) {
+//            if (user.getStatus().equals("online")) {
+//                holder.img_on.setVisibility(View.VISIBLE);
+//                holder.img_off.setVisibility(View.GONE);
+//            } else {
+//                holder.img_on.setVisibility(View.GONE);
+//                holder.img_off.setVisibility(View.VISIBLE);
+//            }
+//        } else {
+//            holder.img_on.setVisibility(View.GONE);
+//            holder.img_off.setVisibility(View.GONE);
+//        }
 
         holder.itemView.setOnClickListener(view -> {
             Intent intent = new Intent(mContext, MessageActivity.class);
@@ -165,8 +165,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
 
             username = itemView.findViewById(R.id.single_user_tv_name);
             profile_image = itemView.findViewById(R.id.single_user_circle_image);
-//            img_on = itemView.findViewById(R.id.img_on);
-//            img_off = itemView.findViewById(R.id.img_off);
             last_msg = itemView.findViewById(R.id.single_user_msg);
         }
 
@@ -177,7 +175,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
 
             Glide.with(mContext)
                     .applyDefaultRequestOptions(placeholderOption)
-
                     .load(image)
                     .placeholder(R.drawable.profile_image_placeholder)
                     .centerCrop()

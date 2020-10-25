@@ -1,21 +1,18 @@
 package com.exo.scomm.ui.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.exo.scomm.R;
-import com.exo.scomm.data.models.User;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -38,12 +35,33 @@ public class MainActivity extends AppCompatActivity {
                 phoneEditText.requestFocus();
                 return;
             }
-            String phoneNumber = "+" + code + number;
-            Intent intent = new Intent(MainActivity.this, OtpVerifyActivity.class);
-            intent.putExtra("phonenumber", phoneNumber);
-            startActivity(intent);
+            if (isNetworkAvailable()) {
+                String phoneNumber = "+" + code + number;
+                Intent intent = new Intent(MainActivity.this, OtpVerifyActivity.class);
+                intent.putExtra("phonenumber", phoneNumber);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "No internet!! Please connect to internet and try again", Toast.LENGTH_SHORT).show();
+            }
 
         });
+    }
+
+    public boolean isNetworkAvailable() {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
     }
 
 

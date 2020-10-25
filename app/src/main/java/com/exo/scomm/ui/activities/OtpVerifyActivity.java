@@ -1,6 +1,9 @@
 package com.exo.scomm.ui.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -13,22 +16,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.exo.scomm.R;
 import com.exo.scomm.adapters.DataHolder;
-import com.exo.scomm.data.models.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskExecutors;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
 
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -69,12 +62,14 @@ public class OtpVerifyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_otp_verify);
         mAuth = FirebaseAuth.getInstance();
-        DatabaseReference mUsersDBRef = FirebaseDatabase.getInstance().getReference().child("Users");
         progressBar = findViewById(R.id.progressbar);
         editText = findViewById(R.id.editTextCode);
         TextView changeNo = findViewById(R.id.change_number);
+        TextView resendCode = findViewById(R.id.resend);
+
         mPhone = getIntent().getStringExtra("phonenumber");
-        sendVerificationCode(mPhone);
+            sendVerificationCode(mPhone);
+
         DataHolder.setPhone(mPhone);
         findViewById(R.id.buttonVerify).setOnClickListener(v -> {
             String code = editText.getText().toString().trim();
@@ -89,9 +84,13 @@ public class OtpVerifyActivity extends AppCompatActivity {
             Intent intent = new Intent(OtpVerifyActivity.this, MainActivity.class);
             startActivity(intent);
         });
+        resendCode.setOnClickListener(view -> resendCode(mPhone, PhoneAuthProvider.ForceResendingToken.zza()
+        ));
 
 
     }
+
+
 
     private void verifyCode(String code) {
         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
@@ -102,7 +101,7 @@ public class OtpVerifyActivity extends AppCompatActivity {
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                       // final String uid = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+                        // final String uid = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
                         DataHolder.setPhone(mPhone);
                         startActivity(new Intent(getApplicationContext(), SetupActivity.class));
                         OtpVerifyActivity.this.finish();
@@ -121,6 +120,18 @@ public class OtpVerifyActivity extends AppCompatActivity {
                 TaskExecutors.MAIN_THREAD,
                 mCallBack
         );
+
+    }
+
+    private void resendCode(String phoneNumber,
+                            PhoneAuthProvider.ForceResendingToken token) {
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                phoneNumber,
+                60,
+                TimeUnit.SECONDS,
+                this,
+                mCallBack,
+                token);
 
     }
 }

@@ -11,7 +11,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -46,7 +45,7 @@ public class NotificationFragment extends Fragment {
     Button clearAll;
     private RecyclerView mFriendsRecycler;
     private DatabaseReference mNotificationsRef;
-    private DatabaseReference mUsersDatabase, mTaskRef;
+    private DatabaseReference mUsersDatabase, mInviteRef, mTaskRef;
     private FirebaseUser mCurrentUser;
     private String mCurrentUserId;
     private DatabaseReference mRootRef;
@@ -67,6 +66,7 @@ public class NotificationFragment extends Fragment {
         mRootRef = FirebaseDatabase.getInstance().getReference();
         mNotificationsRef = mRootRef.child("Notifications").child(mCurrentUserId);
         mUsersDatabase = mRootRef.child("Users");
+        mInviteRef = mRootRef.child("InvitedUsers");
         mTaskRef = mRootRef.child("Tasks");
         mFriendsRecycler.setHasFixedSize(true);
         mFriendsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -104,7 +104,6 @@ public class NotificationFragment extends Fragment {
                         });
 
                         switch (req_type) {
-
                             case "invite": {
                                 assert noteKey != null;
                                 mUsersDatabase.child(model.getFromUser()).addValueEventListener(new ValueEventListener() {
@@ -119,106 +118,34 @@ public class NotificationFragment extends Fragment {
                                                     String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
                                                     String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
                                                     String text = user.getUsername() + " has invited you to task " + taskName + " to be scommed on " + taskDate;
+
                                                     holder.setText(text);
                                                     holder.setDate(date);
-                                                    holder.decline.setEnabled(true);
-                                                    holder.accept.setEnabled(true);
-                                                    holder.chat.setEnabled(false);
-                                                    holder.decline.setOnClickListener(v -> declineInvite(user.getId(),task_id, holder));
-                                                    holder.chat.setOnClickListener(v -> startChat(user.getId()));
-                                                    holder.accept.setOnClickListener(view -> acceptInvite(holder,user.getId(), task_id));
-                                                }
-                                            }
 
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                            }
-                                        });
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    }
-                                });
-                                break;
-                            }
-                            case "received": {
-                                assert noteKey != null;
-                                mNotificationsRef.child(noteKey).addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        final String user_id = dataSnapshot.child("fromUser").getValue().toString();
-                                        mRootRef.child("TaskInviteRequests").child(mCurrentUserId).child(user_id).child(task_id).addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                                                if (dataSnapshot.hasChild("accepted")) {
-                                                    String accepted = dataSnapshot.child("accepted").getValue().toString();
-                                                    if (accepted.equals("true")) {
-                                                        holder.decline.setEnabled(false);
-                                                        holder.accept.setEnabled(false);
-                                                        holder.chat.setEnabled(true);
-                                                        holder.mViewSchommers.setEnabled(true);
-                                                    } else {
-                                                        holder.decline.setEnabled(true);
-                                                        holder.accept.setEnabled(true);
-                                                        holder.chat.setEnabled(false);
-                                                        holder.mViewSchommers.setEnabled(true);
-                                                    }
-
-                                                }
-
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                            }
-                                        });
-                                        mUsersDatabase.child(user_id).addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                final String userName = dataSnapshot.child("username").getValue().toString();
-                                                mTaskRef.child(user_id).child(task_id).addValueEventListener(new ValueEventListener() {
-                                                    @Override
-                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                        if (dataSnapshot.hasChildren()) {
-                                                            final String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
-                                                            final String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
-                                                            String text = userName + " has invited you to accompany them to task " + taskName + " to be scommed on " + taskDate;
-                                                            holder.setText(text);
-                                                            holder.setDate(date);
-                                                            holder.accept.setOnClickListener(view -> {
+                                                    mInviteRef.child(task_id).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                            if (snapshot.hasChild(mCurrentUserId)) {
+                                                                holder.decline.setEnabled(true);
+                                                                holder.accept.setEnabled(true);
+                                                                holder.chat.setEnabled(false);
+                                                            } else {
                                                                 holder.decline.setEnabled(false);
                                                                 holder.accept.setEnabled(false);
                                                                 holder.chat.setEnabled(true);
-                                                                acceptInvite(holder, user_id, task_id);
-
-
-                                                            });
-                                                            holder.chat.setOnClickListener(v -> openChat(user_id));
-                                                            holder.decline.setOnClickListener(new View.OnClickListener() {
-                                                                @Override
-                                                                public void onClick(View v) {
-                                                                    revokeInvite(user_id, task_id, holder);
-                                                                    holder.decline.setEnabled(false);
-                                                                    holder.accept.setEnabled(false);
-                                                                    holder.chat.setEnabled(false);
-                                                                    holder.mViewSchommers.setEnabled(false);
-                                                                    holder.mViewSchommers.setText("Declined");
-                                                                }
-                                                            });
+                                                            }
                                                         }
 
-                                                    }
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError error) {
 
-                                                    @Override
-                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                        }
+                                                    });
 
-                                                    }
-                                                });
+                                                    holder.decline.setOnClickListener(v -> declineInvite(user.getId(), task_id, holder));
+                                                    holder.chat.setOnClickListener(v -> startChat(user.getId()));
+                                                    holder.accept.setOnClickListener(view -> acceptInvite(holder, user.getId(), task_id));
+                                                }
                                             }
 
                                             @Override
@@ -235,51 +162,36 @@ public class NotificationFragment extends Fragment {
                                 });
                                 break;
                             }
+
                             case "accepted":
                                 holder.accept.setEnabled(false);
                                 holder.chat.setEnabled(true);
-                                        mUsersDatabase.child(model.getUser()).addValueEventListener(new ValueEventListener() {
+                                holder.decline.setEnabled(false);
+                                mUsersDatabase.child(model.getUser()).addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        final String userName = dataSnapshot.child("username").getValue().toString();
+                                        mTaskRef.child(mCurrentUserId).addValueEventListener(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                final String userName = dataSnapshot.child("username").getValue().toString();
-                                                mTaskRef.child(mCurrentUserId).child(task_id).addValueEventListener(new ValueEventListener() {
-                                                    @Override
-                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                        String taskName = Objects.requireNonNull(dataSnapshot.child("title").getValue()).toString();
-                                                        String taskDate = Objects.requireNonNull(dataSnapshot.child("date").getValue()).toString();
-                                                        if (dataSnapshot.hasChildren()) {
-                                                            if (model.getUser().equals(mCurrentUserId)) {
-                                                                holder.decline.setEnabled(false);
-                                                                holder.accept.setEnabled(false);
-                                                                holder.chat.setEnabled(true);
-                                                                holder.mViewSchommers.setEnabled(true);
-                                                                String text = userName + " accepted your invitation request to task " + taskName + " to be scommed on " + taskDate;
-                                                                holder.setText(text);
-                                                                holder.setDate(date);
-                                                            } else {
-                                                                Toast.makeText(getContext(), " Task added successfully to your schedule", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        } else {
-                                                            Toast.makeText(getContext(), "The task " + taskName + " was deleted by owner", Toast.LENGTH_SHORT).show();
-                                                        }
+                                                Task task = dataSnapshot.child(task_id).getValue(Task.class);
+                                                if (task != null) {
+                                                    holder.decline.setEnabled(false);
+                                                    holder.accept.setEnabled(false);
+                                                    holder.chat.setEnabled(true);
+                                                    holder.mViewSchommers.setEnabled(true);
+                                                    String text = userName + " accepted your invitation request to task " + task.getTitle() + " to be scommed on " + task.getDate();
+                                                    holder.setText(text);
+                                                    holder.setDate(date);
 
-                                                        holder.chat.setOnClickListener(new View.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(View v) {
-                                                                final HomeActivity activity = (HomeActivity) getContext();
-                                                                assert activity != null;
-                                                                activity.uid = model.getUser();
-                                                                activity.username = userName;
-                                                                activity.mainBottomNav.setSelectedItemId(R.id.bottom_chat_room);
-                                                                activity.add_task.setVisibility(View.GONE);
-                                                            }
-                                                        });
-                                                    }
-
-                                                    @Override
-                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                    }
+                                                }
+                                                holder.chat.setOnClickListener(v -> {
+                                                    final HomeActivity activity = (HomeActivity) getContext();
+                                                    assert activity != null;
+                                                    activity.uid = model.getUser();
+                                                    activity.username = userName;
+                                                    activity.mainBottomNav.setSelectedItemId(R.id.bottom_chat_room);
+                                                    activity.add_task.setVisibility(View.GONE);
                                                 });
                                             }
 
@@ -288,6 +200,13 @@ public class NotificationFragment extends Fragment {
 
                                             }
                                         });
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
                                 break;
                             case "deleteTask":
                                 assert noteKey != null;
@@ -373,18 +292,15 @@ public class NotificationFragment extends Fragment {
         unfriendsMap.put("TaskInviteRequests/" + user_id + "/" + mCurrentUserId + "/" + task_id, null);
         unfriendsMap.put("TaskCompanions/" + mCurrentUserId + "/" + user_id + "/" + "task_id", null);
         unfriendsMap.put("TaskCompanions/" + user_id + "/" + mCurrentUserId + "/" + "task_id", null);
-        mRootRef.updateChildren(unfriendsMap, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                if (databaseError == null) {
-                    Toast.makeText(requireContext(), "Request Declined Successfully", Toast.LENGTH_SHORT).show();
-                    holder.decline.setEnabled(false);
-                    holder.accept.setEnabled(false);
-                    holder.chat.setEnabled(false);
-                } else {
-                    String error = databaseError.getMessage();
-                    Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
-                }
+        mRootRef.updateChildren(unfriendsMap, (databaseError, databaseReference) -> {
+            if (databaseError == null) {
+                Toast.makeText(requireContext(), "Request Declined Successfully", Toast.LENGTH_SHORT).show();
+                holder.decline.setEnabled(false);
+                holder.accept.setEnabled(false);
+                holder.chat.setEnabled(false);
+            } else {
+                String error = databaseError.getMessage();
+                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -403,44 +319,41 @@ public class NotificationFragment extends Fragment {
                     Toast.makeText(getContext(), "Unable to complete request", Toast.LENGTH_SHORT).show();
                 }
                 Task task = dataSnapshot.getValue(Task.class);
+                if (task != null) {
+                    final Map<String, String> taskMap = new HashMap<>();
+                    taskMap.put("taskOwner", task.getTaskOwner());
+                    taskMap.put("title", task.getTitle());
+                    taskMap.put("description", task.getDescription());
+                    taskMap.put("type", task.getType());
+                    taskMap.put("task_id", task_id);
+                    taskMap.put("date", task.getDate());
+                    String noteKey = mRootRef.child("Notifications").child(mCurrentUserId).push().getKey();
 
-                final Map<String, String> taskMap = new HashMap<>();
-                taskMap.put("taskOwner", task.getTaskOwner());
-                taskMap.put("title", task.getTitle());
-                taskMap.put("description", task.getDescription());
-                taskMap.put("type", task.getType());
-                taskMap.put("task_id", task_id);
-                taskMap.put("date", task.getDate());
-
-                String noteKey = mRootRef.child("Notifications").child(mCurrentUserId).push().getKey();
-
-                Map recipientNote = new HashMap<>();
-                recipientNote.put("user", mCurrentUserId);
-                recipientNote.put("type", "accepted");
-                recipientNote.put("task_id", task_id);
-                recipientNote.put("date", ServerValue.TIMESTAMP);
-
+                    Map<String, Object> recipientNote = new HashMap<>();
+                    recipientNote.put("user", mCurrentUserId);
+                    recipientNote.put("type", "accepted");
+                    recipientNote.put("task_id", task_id);
+                    recipientNote.put("date", ServerValue.TIMESTAMP);
 
 
+                    Map<String, Object> companionsMap = new HashMap<>();
+                    companionsMap.put("TaskCompanions/" + task_id + "/" + mCurrentUserId + "/", ServerValue.TIMESTAMP);
+                    companionsMap.put("Notifications/" + user_id + "/" + noteKey, recipientNote);
+                    companionsMap.put("Tasks/" + mCurrentUserId + "/" + task_id + "/", taskMap);
+                    companionsMap.put("InvitedUsers/" + task_id + "/" + mCurrentUserId, null);
+                    mRootRef.updateChildren(companionsMap, (databaseError, databaseReference) -> {
+                        if (databaseError == null) {
+                            holder.accept.setEnabled(false);
+                            holder.decline.setEnabled(false);
+                            holder.chat.setEnabled(true);
+                            Toast.makeText(getContext(), "Task added successfully to your schedule", Toast.LENGTH_SHORT).show();
+                        } else {
+                            String error = databaseError.getMessage();
+                            Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
 
-                Map companionsMap = new HashMap();
-                companionsMap.put("TaskCompanions/" + task_id + "/" + mCurrentUserId +"/",ServerValue.TIMESTAMP);
-
-                companionsMap.put("Notifications/" + user_id + "/" + noteKey, recipientNote);
-                companionsMap.put("Tasks/" + mCurrentUserId + "/" + task_id + "/", taskMap);
-
-                companionsMap.put("InvitedUsers/"  + task_id + "/" + mCurrentUserId +"/", null);
-                mRootRef.updateChildren(companionsMap, (databaseError, databaseReference) -> {
-                    if (databaseError == null) {
-                        holder.accept.setEnabled(false);
-                        holder.decline.setEnabled(false);
-                        holder.chat.setEnabled(true);
-                        Toast.makeText(getContext(), "Task added successfully to your schedule", Toast.LENGTH_SHORT).show();
-                    } else {
-                        String error = databaseError.getMessage();
-                        Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
-                    }
-                });
             }
 
             @Override

@@ -72,7 +72,6 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
     private String mCurrentUID;
     private DatabaseReference mRootRef, mUsersRef, taskCompRef;
     private Calendar calendar;
-    private ProgressDialog mProgressDialog;
     private Task taskDetails;
 
     @Override
@@ -97,7 +96,7 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
         taskCreator = findViewById(R.id.details_task_item_creator);
         myTaskCompanions = this.findViewById(R.id.task_details_companions_recycler);
         Button editTask = this.findViewById(R.id.task_details_edit);
-        mProgressDialog = new ProgressDialog(TaskDetails.this);
+        ProgressDialog mProgressDialog = new ProgressDialog(TaskDetails.this);
 
         ImageView mScommingDetails = this.findViewById(R.id.scomming_details);
         RelativeLayout layout = findViewById(R.id.scomming_details_btn);
@@ -358,7 +357,7 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
 
     private void schommeOut() {
         HashMap<String, Object> schommOutMap = new HashMap<>();
-        schommOutMap.put("TaskCompanions/" + mCurrentUID + "/" + taskDetails.getTask_id() + "/", null);
+        schommOutMap.put("TaskCompanions/" + taskDetails.getTask_id() + "/" + mCurrentUID , null);
         schommOutMap.put("Tasks/" + mCurrentUID + "/" + taskDetails.getTask_id() + "/", null);
         mRootRef.updateChildren(schommOutMap, (databaseError, databaseReference) -> {
             if (databaseError == null) {
@@ -368,6 +367,7 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
                 taskDesc.setText("");
                 taskCreator.setText("");
                 Toast.makeText(TaskDetails.this, "You opted out of the task successfully", Toast.LENGTH_SHORT).show();
+                this.finish();
             } else {
                 String error = databaseError.getMessage();
                 Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
@@ -413,7 +413,7 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
                                     assert user != null;
                                     user.setUID(userId);
                                     taskCompList.add(user);
-                                    CompanionsTasksAdapter adapter = new CompanionsTasksAdapter(TaskDetails.this, taskCompList, taskDetails.getTask_id());
+                                    CompanionsTasksAdapter adapter = new CompanionsTasksAdapter(TaskDetails.this, taskCompList, taskDetails.getTask_id(), taskDetails);
                                     myTaskCompanions.setAdapter(adapter);
                                 }
                             }
@@ -475,7 +475,6 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
             deletePrivateTask(noteKey, mCurrentUID);
             progressDialog.dismiss();
             Toast.makeText(TaskDetails.this.getApplicationContext(), " Task deleted successfully", Toast.LENGTH_SHORT).show();
-
             finish();
         } else {
             if (taskPendingCompSet.size() == 0 && taskCompList.size() == 0) {
@@ -506,7 +505,7 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
         for (User user : taskCompList
         ) {
             HashMap<String, Object> deleteTaskMap = new HashMap<>();
-            deleteTaskMap.put("Notifications/" + taskDetails.getTask_id() + "/" + user.getId(), recipientNote);
+            deleteTaskMap.put("Notifications/" + user.getId() + "/" + taskDetails.getTask_id(), recipientNote);
             deleteTaskMap.put("Tasks/" + mCurrentUID + "/" + taskDetails.getTask_id(), null);
             deleteTaskMap.put("Tasks/" + user.getId() + "/" + taskDetails.getTask_id(), null);
             deleteTaskMap.put("TaskCompanions/" + user.getId() + "/" + taskDetails.getTask_id(), null);

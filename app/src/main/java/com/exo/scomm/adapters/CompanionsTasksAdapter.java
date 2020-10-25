@@ -1,7 +1,6 @@
 package com.exo.scomm.adapters;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,13 +13,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.exo.scomm.R;
+import com.exo.scomm.data.models.User;
 import com.exo.scomm.ui.activities.HomeActivity;
 import com.exo.scomm.ui.activities.Profile;
-import com.exo.scomm.R;
 import com.exo.scomm.ui.activities.TaskDetails;
-import com.exo.scomm.data.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.squareup.picasso.Picasso;
@@ -34,12 +34,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class CompanionsTasksAdapter extends RecyclerView.Adapter<CompanionsTasksAdapter.MyViewHolder> {
    private Set<User> companionsList;
    private TaskDetails mCtxt;
-   private String taskId;
+   private com.exo.scomm.data.models.Task task;
+   private String taskType;
 
-   public CompanionsTasksAdapter(TaskDetails taskDetails, Set<User> taskCompList, String taskId) {
+   public CompanionsTasksAdapter(TaskDetails taskDetails, Set<User> taskCompList, String task_id, com.exo.scomm.data.models.Task taskType) {
       this.mCtxt = taskDetails;
       this.companionsList = taskCompList;
-      this.taskId = taskId;
+      this.task = taskType;
    }
 
    @NonNull
@@ -55,15 +56,14 @@ public class CompanionsTasksAdapter extends RecyclerView.Adapter<CompanionsTasks
       final User user = usersList.get(position);
       holder.username.setText(user.getUsername());
       Picasso.get().load(user.getImage()).placeholder(R.drawable.profile_image).into(holder.profile);
-      holder.itemView.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View v) {
-            CharSequence[] options = new CharSequence[]{"Open Profile", "Send Message", "Make Super Scommer"};
-            AlertDialog.Builder builder = new AlertDialog.Builder(mCtxt);
-            builder.setTitle("Select Options");
-            builder.setItems(options, new DialogInterface.OnClickListener() {
-               @Override
-               public void onClick(DialogInterface dialog, int i) {
+      holder.itemView.setOnClickListener(v -> {
+         if (task.getType().equals("Public")) {
+            if (!task.getTaskOwner().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+
+               CharSequence[] options = new CharSequence[]{"Open Profile", "Send Message", "Make Super Scommer"};
+               AlertDialog.Builder builder = new AlertDialog.Builder(mCtxt);
+               builder.setTitle("Select Options");
+               builder.setItems(options, (dialog, i) -> {
                   if (i == 0) {
                      Intent profileIntent = new Intent(mCtxt, Profile.class);
                      profileIntent.putExtra("uid", user.getUID());
@@ -76,7 +76,7 @@ public class CompanionsTasksAdapter extends RecyclerView.Adapter<CompanionsTasks
                      intent.putExtra("userId", user.getUID());
                      mCtxt.startActivity(intent);
                   } else if (i == 2) {
-                     FirebaseDatabase.getInstance().getReference().child("TaskSupers").child(taskId).child(user.getUID()).setValue(ServerValue.TIMESTAMP).addOnCompleteListener(new OnCompleteListener<Void>() {
+                     FirebaseDatabase.getInstance().getReference().child("TaskSupers").child(task.getTask_id()).child(user.getUID()).setValue(ServerValue.TIMESTAMP).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                            if (task.isSuccessful()) {
@@ -85,9 +85,9 @@ public class CompanionsTasksAdapter extends RecyclerView.Adapter<CompanionsTasks
                         }
                      });
                   }
-               }
-            });
-            builder.show();
+               });
+               builder.show();
+            }
          }
       });
 

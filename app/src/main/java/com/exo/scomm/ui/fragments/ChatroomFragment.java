@@ -117,8 +117,9 @@ public class ChatroomFragment extends Fragment {
                 mUsers.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()){
                     User user = snapshot.getValue(User.class);
+                    String uid = snapshot.getKey();
                     for (Chatlist chatlist : usersList){
-                        if (user.getId().equals(chatlist.getId())){
+                        if (uid.equals(chatlist.getId())){
                             mUsers.add(user);
                         }
                     }

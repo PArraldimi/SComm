@@ -60,7 +60,7 @@ public class CompanionsAdapter extends RecyclerView.Adapter<CompanionsAdapter.My
     } else {
       final User user = usersList.get(position);
       holder.username.setText(user.getUsername());
-      Picasso.get().load(user.getImage()).placeholder(R.drawable.profile_image).into(holder.profile);
+      Picasso.get().load(user.getImage()).placeholder(R.drawable.scomm_user_placeholder_white).into(holder.profile);
 
       holder.itemView.setOnClickListener(v -> {
         CharSequence[] options = new CharSequence[]{"Open Profile", "Send Message"};
@@ -69,14 +69,14 @@ public class CompanionsAdapter extends RecyclerView.Adapter<CompanionsAdapter.My
         builder.setItems(options, (dialog, i) -> {
           if (i == 0) {
             Intent profileIntent = new Intent(mCtxt, Profile.class);
-            profileIntent.putExtra("uid", user.getUID());
+            profileIntent.putExtra("uid", user.getId());
             mCtxt.startActivity(profileIntent);
           } else if (i == 1) {
-            Log.e("User Key", user.getUID());
+            Log.e("User Key", user.getId());
             Intent intent = new Intent(mCtxt, MessageActivity.class);
             intent.putExtra("fromTaskDetails", "1");
             intent.putExtra("username", user.getUsername());
-            intent.putExtra("user_id", user.getUID());
+            intent.putExtra("user_id", user.getId());
             mCtxt.startActivity(intent);
 
 

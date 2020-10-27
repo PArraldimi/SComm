@@ -150,13 +150,13 @@ public class MessageActivity extends AppCompatActivity {
 
         profile_image = findViewById(R.id.profile_image);
         RequestOptions placeholderOption = new RequestOptions();
-        placeholderOption.placeholder(R.drawable.profile_image_placeholder);
+        placeholderOption.placeholder(R.drawable.scomm_user_placeholder);
 
         Glide.with(this)
                 .applyDefaultRequestOptions(placeholderOption)
 
                 .load(user.getImage())
-                .placeholder(R.drawable.profile_image_placeholder)
+                .placeholder(R.drawable.scomm_user_placeholder)
                 .centerCrop()
                 .into(profile_image);
 

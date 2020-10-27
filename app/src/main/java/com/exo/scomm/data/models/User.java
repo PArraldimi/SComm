@@ -7,7 +7,6 @@ public class User implements Serializable {
     private String username;
     private String image;
     private String status;
-    private String UID;
     private String phone;
     private String device_token;
 
@@ -19,7 +18,6 @@ public class User implements Serializable {
         this.username = username;
         this.image = image;
         this.status = status;
-        this.UID = UID;
         this.phone = phone;
         this.device_token = device_token;
     }
@@ -54,14 +52,6 @@ public class User implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getUID() {
-        return UID;
-    }
-
-    public void setUID(String UID) {
-        this.UID = UID;
     }
 
     public String getDevice_token() {

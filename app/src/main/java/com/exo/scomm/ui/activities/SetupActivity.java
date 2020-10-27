@@ -103,7 +103,7 @@ public class SetupActivity extends AppCompatActivity {
                     if (image != null) {
                         filePath = Uri.parse(image);
                         setupName.setText(name);
-                        Picasso.get().load(filePath).placeholder(R.drawable.profile_image).into(setupImage);
+                        Picasso.get().load(filePath).placeholder(R.drawable.scomm_user_placeholder_white).into(setupImage);
                     }
                 }
             }

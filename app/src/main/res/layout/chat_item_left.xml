@@ -1,84 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/card_view"
-    app:cardElevation="0dp"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="5dp"
-    app:cardBackgroundColor="#00000000"
-    >
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:padding="8dp"
+    android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+
+
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:background="@drawable/chat_item_left_background"
-            android:layout_weight="3"
-            android:layout_height="match_parent">
+        android:layout_marginStart="10dp"
+        android:text="hello"
+        android:id="@+id/show_message"
+        android:textSize="18sp"
+        android:padding="8dp"
+        android:background="@drawable/background_left"/>
 
-            <TextView
-                android:id="@+id/message"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:fontFamily="@font/arialregular"
-                android:gravity="start|top"
-                android:text="Hello"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp" />
-
-            <ImageView
-                android:id="@+id/not_sent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/message"
-                android:layout_marginStart="18dp"
-                android:background="@drawable/not_sent" />
-
-            <ImageView
-                android:id="@+id/sent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/message"
-                android:layout_marginStart="12dp"
-                android:background="@drawable/sent" />
-
-            <ImageView
-                android:id="@+id/delivered"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/message"
-                android:layout_marginStart="24dp"
-                android:background="@drawable/sent" />
-
-            <TextView
-                android:id="@+id/message_seen"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/message"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginBottom="5dp"
-                android:fontFamily="@font/arialregular"
-                android:gravity="end|bottom"
-                android:text="Date/Time sent"
-                android:textColor="#80FFFFFF"
-                android:textSize="13sp" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/txt_seen"
+        android:visibility="gone"
+        android:layout_below="@id/show_message"/>
 
 
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_weight="6"
-            android:layout_height="match_parent"/>
-
-
-
-
-    </LinearLayout>
-
-
-</androidx.cardview.widget.CardView>
+</RelativeLayout>

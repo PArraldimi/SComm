@@ -55,32 +55,32 @@ public class CompanionsTasksAdapter extends RecyclerView.Adapter<CompanionsTasks
       List<User> usersList = new ArrayList<>(companionsList);
       final User user = usersList.get(position);
       holder.username.setText(user.getUsername());
-      Picasso.get().load(user.getImage()).placeholder(R.drawable.profile_image).into(holder.profile);
+      Picasso.get().load(user.getImage()).placeholder(R.drawable.scomm_user_placeholder_white).into(holder.profile);
       holder.itemView.setOnClickListener(v -> {
          if (task.getType().equals("Public")) {
             if (!task.getTaskOwner().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
 
-               CharSequence[] options = new CharSequence[]{"Open Profile", "Send Message", "Make Super Scommer"};
+               CharSequence[] options = new CharSequence[]{"Open Profile", "Chat", "Make Super SCommer"};
                AlertDialog.Builder builder = new AlertDialog.Builder(mCtxt);
-               builder.setTitle("Select Options");
+               builder.setTitle("Select Option");
                builder.setItems(options, (dialog, i) -> {
                   if (i == 0) {
                      Intent profileIntent = new Intent(mCtxt, Profile.class);
-                     profileIntent.putExtra("uid", user.getUID());
+                     profileIntent.putExtra("uid", user.getId());
                      mCtxt.startActivity(profileIntent);
                   } else if (i == 1) {
-                     Log.e("User Key", "" + user.getUID());
+                     Log.e("User Key", "" + user.getId());
                      Intent intent = new Intent(mCtxt.getApplicationContext(), HomeActivity.class);
                      intent.putExtra("fromTaskDetails", "1");
                      intent.putExtra("username", user.getUsername());
-                     intent.putExtra("userId", user.getUID());
+                     intent.putExtra("userId", user.getId());
                      mCtxt.startActivity(intent);
                   } else if (i == 2) {
-                     FirebaseDatabase.getInstance().getReference().child("TaskSupers").child(task.getTask_id()).child(user.getUID()).setValue(ServerValue.TIMESTAMP).addOnCompleteListener(new OnCompleteListener<Void>() {
+                     FirebaseDatabase.getInstance().getReference().child("TaskSupers").child(task.getTask_id()).child(user.getId()).setValue(ServerValue.TIMESTAMP).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                            if (task.isSuccessful()) {
-                              Toast.makeText(mCtxt.getApplicationContext(), "User is now a super Schommer", Toast.LENGTH_SHORT).show();
+                              Toast.makeText(mCtxt.getApplicationContext(), "User is now a Super SCommer", Toast.LENGTH_SHORT).show();
                            }
                         }
                      });

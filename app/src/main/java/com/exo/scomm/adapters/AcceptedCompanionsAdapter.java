@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.exo.scomm.R;
 import com.exo.scomm.data.models.User;
 import com.exo.scomm.ui.activities.HomeActivity;
+import com.exo.scomm.ui.activities.MessageActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -61,12 +62,12 @@ public class AcceptedCompanionsAdapter extends RecyclerView.Adapter<AcceptedComp
         final User user = usersList.get(position);
         holder.userName.setText(user.getUsername());
         holder.phoneNo.setText(user.getPhone());
-        Picasso.get().load(user.getImage()).placeholder(R.drawable.profile_image).into(holder.profileImage);
+        Picasso.get().load(user.getImage()).placeholder(R.drawable.scomm_user_placeholder_white).into(holder.profileImage);
         holder.itemView.setOnClickListener(v -> {
             getSuperScommers(mTask.getTask_id());
             String owner = mTask.getTaskOwner();
             if (!user.getId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                CharSequence[] options = new CharSequence[]{"Send Message", "Make Super Scommer"};
+                CharSequence[] options = new CharSequence[]{"Send Message", "Make Super SCommer"};
 
                 if (user.getId().equals(owner)) {
                 }
@@ -82,14 +83,12 @@ public class AcceptedCompanionsAdapter extends RecyclerView.Adapter<AcceptedComp
                 builder.setTitle("Select Options");
                 builder.setItems(options, (dialog, i) -> {
                     if (i == 0) {
-                        Log.e("User Key", "" + user.getUID());
-                        Intent intent = new Intent(mCtxt.getApplicationContext(), HomeActivity.class);
-                        intent.putExtra("fromTaskDetails", "1");
-                        intent.putExtra("username", user.getUsername());
-                        intent.putExtra("userId", user.getUID());
+                        Log.e("User Key", "" + user.getId());
+                        Intent intent = new Intent(mCtxt.getApplicationContext(), MessageActivity.class);
+                        intent.putExtra("user_id", user.getId());
                         mCtxt.startActivity(intent);
                     } else if (i == 1) {
-                        FirebaseDatabase.getInstance().getReference().child("TaskSupers").child(mTask.getTask_id()).child(user.getUID()).setValue(ServerValue.TIMESTAMP).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        FirebaseDatabase.getInstance().getReference().child("TaskSupers").child(mTask.getTask_id()).child(user.getId()).setValue(ServerValue.TIMESTAMP).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {

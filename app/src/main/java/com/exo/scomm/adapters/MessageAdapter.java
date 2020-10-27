@@ -12,23 +12,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.exo.scomm.R;
 import com.exo.scomm.data.models.Chat;
-import com.exo.scomm.data.models.Messages;
 import com.exo.scomm.ui.activities.MessageActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
     private List<Chat> messagesList = new ArrayList<>();
@@ -121,8 +111,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         MessageViewHolder(@NonNull View itemView) {
             super(itemView);
             show_message = itemView.findViewById(R.id.message);
-            //profile_image = itemView.findViewById(R.id.profile_image);
-            txt_seen = itemView.findViewById(R.id.message_seen);
+            profile_image = itemView.findViewById(R.id.profile_image);
+            txt_seen = itemView.findViewById(R.id.txt_seen);
         }
     }
 }

@@ -7,7 +7,7 @@
     android:layout_marginEnd="5dp">
     <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="40dp"
-        android:src="@drawable/profile_image"
+        android:src="@drawable/scomm_user_placeholder_white"
         android:id="@+id/companion_profile_image"
         android:layout_marginBottom="4dp"
         android:elevation="0dp"

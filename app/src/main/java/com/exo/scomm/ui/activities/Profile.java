@@ -105,7 +105,7 @@ public class Profile extends AppCompatActivity {
 
                 mDisplayName.setText(mName);
                 mDisplayStatus.setText(status);
-                Picasso.get().load(image).placeholder(R.drawable.profile_image_placeholder).into(imageView);
+                Picasso.get().load(image).placeholder(R.drawable.scomm_user_placeholder).into(imageView);
 
 //                <-------------------------FRIENDS LIST / REQUEST FEATURE-------------->
                 mInvitesReqDBRef.child(mCurrentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {

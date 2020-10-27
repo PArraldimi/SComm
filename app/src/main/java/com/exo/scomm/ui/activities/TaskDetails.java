@@ -411,7 +411,7 @@ public class TaskDetails extends AppCompatActivity implements EditTaskDialog.Edi
                                 if (dataSnapshot.hasChild(userId)) {
                                     User user = dataSnapshot.child(userId).getValue(User.class);
                                     assert user != null;
-                                    user.setUID(userId);
+                                    user.setId(userId);
                                     taskCompList.add(user);
                                     CompanionsTasksAdapter adapter = new CompanionsTasksAdapter(TaskDetails.this, taskCompList, taskDetails.getTask_id(), taskDetails);
                                     myTaskCompanions.setAdapter(adapter);

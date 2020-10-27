@@ -56,14 +56,14 @@ public class PendingCompanionsAdapter extends RecyclerView.Adapter<PendingCompan
 
       holder.userName.setText(user.getUsername());
       holder.phoneNo.setText(user.getPhone());
-      Picasso.get().load(user.getImage()).placeholder(R.drawable.profile_image).into(holder.profileImage);
+      Picasso.get().load(user.getImage()).placeholder(R.drawable.scomm_user_placeholder_white).into(holder.profileImage);
       holder.itemView.setOnClickListener(v -> {
          CharSequence[] options = new CharSequence[]{"Send Message"};
          AlertDialog.Builder builder = new AlertDialog.Builder(mCtxt);
          builder.setTitle("Select Options");
          builder.setItems(options, (dialog, i) -> {
              if (i == 0) {
-               Log.e("User Key", "" + user.getUID());
+               Log.e("User Key", "" + user.getId());
                Intent intent = new Intent(mCtxt, MessageActivity.class);
                intent.putExtra("fromTaskDetails", "1");
                intent.putExtra("username", user.getUsername());

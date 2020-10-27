@@ -32,7 +32,7 @@ public class Utils {
     }
     User user = new User();
     user.setUsername(name);
-    user.setUID(uid);
+    user.setId(uid);
     user.setImage(image);
     return user;
   }

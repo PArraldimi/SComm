@@ -190,7 +190,7 @@ public class HomeFragment extends Fragment {
                                                     if (userId != null) {
                                                         User user = dataSnapshot.child(userId).getValue(User.class);
                                                         if (user != null) {
-                                                            user.setUID(userId);
+                                                            user.setId(userId);
                                                             companionsList.add(user);
                                                         }
 

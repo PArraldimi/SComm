@@ -11,7 +11,6 @@ public class UserMapper extends  FirebaseMapper<UserEntity, User> {
         user.setImage(userEntity.getImage());
         user.setStatus(userEntity.getStatus());
         user.setUsername(userEntity.getUsername());
-        user.setUID(userEntity.getUID());
         user.setPhone(userEntity.getPhone());
         return user;
     }

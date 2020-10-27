@@ -77,10 +77,10 @@ public class Companions extends AppCompatActivity {
                  @Override
                  protected void onBindViewHolder(@NonNull final FindFriendViewHolder holder, int position, @NonNull final User model) {
                     final String uid = getRef(position).getKey();
-                    model.setUID(uid);
+                    model.setId(uid);
                     holder.userName.setText(model.getUsername());
                     holder.userStatus.setText(model.getStatus());
-                    Picasso.get().load(model.getImage()).placeholder(R.drawable.profile_image).into(holder.profileImage);
+                    Picasso.get().load(model.getImage()).placeholder(R.drawable.scomm_user_placeholder_white).into(holder.profileImage);
 
                     holder.mView.setOnClickListener(new View.OnClickListener() {
                        @Override

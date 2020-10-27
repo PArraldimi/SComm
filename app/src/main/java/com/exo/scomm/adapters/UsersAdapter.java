@@ -1,5 +1,6 @@
 package com.exo.scomm.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -26,6 +27,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> {
 
@@ -64,7 +67,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
                 User user1 = snapshot.getValue(User.class);
                 //String userName = task.getResult().getString("name");
 
-                if (user1.getImage() != null) {
+                if (user1 != null) {
                     holder.setUserData(user1.getImage());
                 }
 
@@ -155,7 +158,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView username;
-        public ImageView profile_image;
+        public CircleImageView profile_image;
         private ImageView img_on;
         private ImageView img_off;
         private TextView last_msg;
@@ -168,17 +171,18 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
             last_msg = itemView.findViewById(R.id.single_user_msg);
         }
 
+        @SuppressLint("CheckResult")
         public void setUserData(String image) {
-            profile_image = itemView.findViewById(R.id.profile_image);
             RequestOptions placeholderOption = new RequestOptions();
-            placeholderOption.placeholder(R.drawable.profile_image_placeholder);
-
-            Glide.with(mContext)
-                    .applyDefaultRequestOptions(placeholderOption)
-                    .load(image)
-                    .placeholder(R.drawable.profile_image_placeholder)
-                    .centerCrop()
-                    .into(profile_image);
+            placeholderOption.placeholder(R.drawable.scomm_user_placeholder);
+            if (image != null) {
+                Glide.with(mContext)
+                        .applyDefaultRequestOptions(placeholderOption)
+                        .load(image)
+                        .placeholder(R.drawable.scomm_user_placeholder)
+                        .centerCrop()
+                        .into(profile_image);
+            }
         }
     }
 }

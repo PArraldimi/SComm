@@ -82,7 +82,7 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         mCalender = Calendar.getInstance();
         todayTasksRecycler = view.findViewById(R.id.task_recycler);
-        companionsRecycler = view.findViewById(R.id.companions_recycler);
+//        companionsRecycler = view.findViewById(R.id.companions_recycler);
         upComingRecycler = view.findViewById(R.id.upcoming_recycler);
         textViewDate = view.findViewById(R.id.text_view_date);
         seeAllCompanions = view.findViewById(R.id.see_all_users);
@@ -91,7 +91,7 @@ public class HomeFragment extends Fragment {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
         linearLayoutManager.setStackFromEnd(false);
-        companionsRecycler.setLayoutManager(linearLayoutManager);
+//        companionsRecycler.setLayoutManager(linearLayoutManager);
 
         FirebaseUser mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
         assert mCurrentUser != null;
@@ -127,7 +127,7 @@ public class HomeFragment extends Fragment {
             upComingRecycler.setAdapter(upComingTasksAdapter);
         });
 
-        getTaskCompanions();
+//        getTaskCompanions();
         return view;
     }
 
@@ -169,61 +169,61 @@ public class HomeFragment extends Fragment {
         Collections.sort(todayTasks, (o1, o2) -> new Date(o1.getDate()).compareTo(new Date(o2.getDate())));
     }
 
-    private void getTaskCompanions() {
-        final DatabaseReference companionsRef = companionRef.child(mCurrentUid);
-        companionsRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-                        final String task_id = childDataSnapshot.getKey();
-                        if (task_id != null) {
-                            companionsRef.child(task_id).addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.exists()) {
-                                        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-                                            final String userId = childDataSnapshot.getKey();
-                                            mUsersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                    if (userId != null) {
-                                                        User user = dataSnapshot.child(userId).getValue(User.class);
-                                                        if (user != null) {
-                                                            user.setId(userId);
-                                                            companionsList.add(user);
-                                                        }
-
-                                                    }
-                                                }
-
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                }
-                                            });
-                                        }
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-                        }
-                    }
-                    CompanionsAdapter adapter = new CompanionsAdapter(getContext(), companionsList);
-                    companionsRecycler.setAdapter(adapter);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
+//    private void getTaskCompanions() {
+//        final DatabaseReference companionsRef = companionRef.child(mCurrentUid);
+//        companionsRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                if (dataSnapshot.exists()) {
+//                    for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+//                        final String task_id = childDataSnapshot.getKey();
+//                        if (task_id != null) {
+//                            companionsRef.child(task_id).addValueEventListener(new ValueEventListener() {
+//                                @Override
+//                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                    if (dataSnapshot.exists()) {
+//                                        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+//                                            final String userId = childDataSnapshot.getKey();
+//                                            mUsersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//                                                @Override
+//                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                                    if (userId != null) {
+//                                                        User user = dataSnapshot.child(userId).getValue(User.class);
+//                                                        if (user != null) {
+//                                                            user.setId(userId);
+//                                                            companionsList.add(user);
+//                                                        }
+//
+//                                                    }
+//                                                }
+//
+//                                                @Override
+//                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                                }
+//                                            });
+//                                        }
+//                                    }
+//                                }
+//
+//                                @Override
+//                                public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                }
+//                            });
+//                        }
+//                    }
+//                    CompanionsAdapter adapter = new CompanionsAdapter(getContext(), companionsList);
+//                    companionsRecycler.setAdapter(adapter);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 
     @Override
     public void onStart() {

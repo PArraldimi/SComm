@@ -8,26 +8,18 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:420058158834:android:112e076cdb91ccc617e26b",
+        "mobilesdk_app_id": "1:420058158834:android:68b15eb6c2b7882117e26b",
         "android_client_info": {
           "package_name": "com.exo.scomm"
         }
       },
       "oauth_client": [
         {
-          "client_id": "420058158834-2aad1k5p3ephsfeuam3rau9adbnjgtgs.apps.googleusercontent.com",
+          "client_id": "420058158834-1dsl4haus2ogsisnn3u4tjvt2kdhri5v.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.exo.scomm",
-            "certificate_hash": "7b97d06bdc77256c01af4294f156e329ad09cab8"
-          }
-        },
-        {
-          "client_id": "420058158834-sflc1bc77hqhnqvc2leq0jbmetm6rogh.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.exo.scomm",
-            "certificate_hash": "4cd9efd1dcb532335b844eec2198b9f2235fd7a4"
+            "certificate_hash": "67df14fe9dfb41f4c13bff997ee3ada410f3aabc"
           }
         },
         {
